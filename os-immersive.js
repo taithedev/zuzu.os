@@ -61,7 +61,7 @@
     scene = document.createElement('div');
     scene.id = 'os-scene';
     scene.className = 'os-scene';
-    scene.innerHTML = \`
+    scene.innerHTML = `
       <div class="os-scene-day-wrap" aria-live="off">
         <p class="os-scene-overline">YOUR DESKTOP</p>
         <div id="os-scene-day" class="os-scene-day">MONDAY</div>
@@ -91,7 +91,7 @@
       </aside>
       <button id="os-scene-account" class="os-scene-account" title="Account menu" aria-label="Account menu"><span id="os-scene-avatar">Z</span><span class="os-scene-account-copy"><strong id="os-scene-account-name">Zuzu account</strong><small id="os-scene-account-role">Personal workspace</small></span><span>⌄</span></button>
       <div class="os-scene-bottom-left"><span class="os-scene-live-dot"></span><span>zuzu.os</span><span class="os-scene-bottom-divider"></span><span id="os-scene-state">PERSONAL DESKTOP</span></div>
-    \`;
+    `;
     desktop.appendChild(scene);
     const shortcuts = $('os-scene-shortcuts');
     shortcuts.innerHTML = shortcutApps.map(([id,name,icon]) =>
