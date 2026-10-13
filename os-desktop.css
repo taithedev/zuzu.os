@@ -1,0 +1,54 @@
+/* Additional desktop interactions: contextual menus, tray, notification center and quick controls. */
+:root{--os-accent:#7db1ff;--os-bright-accent:#a3c9ff}
+:root[data-os-accent=violet]{--os-accent:#b6a0ff;--os-bright-accent:#d4c8ff}
+:root[data-os-accent=mint]{--os-accent:#80d9c2;--os-bright-accent:#b2f1df}
+.os-system-tray{position:fixed;z-index:75;right:12px;bottom:19px;display:flex;align-items:center;gap:3px;padding:4px;border:1px solid #ffffff20;border-radius:15px;background:rgba(13,16,22,.82);backdrop-filter:blur(26px) saturate(145%);box-shadow:0 12px 38px #0007,inset 0 1px #ffffff0d;color:#edf2fa}
+.os-system-tray button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:0 9px;border:1px solid transparent;border-radius:10px;background:transparent;color:inherit;font-size:13px;cursor:pointer}
+.os-system-tray button:hover,.os-system-tray button[aria-expanded=true]{background:#ffffff10;border-color:#ffffff12}
+#os-quick-settings-toggle>span{font-size:9px;color:#abb7c8}
+#os-tray-clock{display:grid;gap:2px;justify-items:end;min-width:62px}
+#os-tray-time{font-size:10px;font-weight:650;font-variant-numeric:tabular-nums}
+#os-tray-date{font-size:9px;color:#aab6c7}
+.os-flyout{position:fixed;z-index:90;right:12px;bottom:76px;width:min(360px,calc(100vw - 24px));padding:17px;border:1px solid #ffffff20;border-radius:23px;background:rgba(13,16,23,.9);backdrop-filter:blur(42px) saturate(150%);box-shadow:0 28px 90px #000b,inset 0 1px #ffffff10;color:#edf2fa;animation:os-flyout-in .16s ease-out}
+@keyframes os-flyout-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.os-flyout-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}
+.os-flyout-heading>div{display:grid;gap:4px}
+.os-flyout-heading strong{font-size:13px;letter-spacing:-.02em}
+.os-flyout-heading small{font-size:10px;color:#98a5b8}
+.os-flyout-heading>button{min-width:31px;height:30px;padding:0 9px;border:1px solid #ffffff16;border-radius:9px;background:#ffffff08;color:#e6ebf4;font-size:12px}
+.os-quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.os-quick-grid button{display:grid;grid-template-columns:35px 1fr;grid-template-rows:1fr 1fr;align-items:center;column-gap:9px;min-height:65px;padding:10px;border:1px solid #ffffff13;border-radius:14px;background:#ffffff06;text-align:left;color:#e8edf5}
+.os-quick-grid button:hover{background:#ffffff0c;border-color:#ffffff20}
+.os-quick-grid button>span{grid-row:1/3;display:grid;place-items:center;width:34px;height:34px;border:1px solid color-mix(in srgb,var(--os-accent) 30%,transparent);border-radius:11px;background:color-mix(in srgb,var(--os-accent) 12%,transparent);color:var(--os-bright-accent);font-size:18px}
+.os-quick-grid strong{align-self:end;font-size:10px}
+.os-quick-grid small{align-self:start;margin-top:3px;font-size:9px;color:#9ba8ba}
+.os-range-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:15px;padding:13px;border:1px solid #ffffff10;border-radius:13px;background:#ffffff04}
+.os-range-row>span{font-size:10px;color:#cdd5e2}
+.os-range-row input{grid-column:1/2;grid-row:2;width:100%;accent-color:var(--os-accent)}
+.os-range-row output{grid-column:2;grid-row:1/3;color:#dce8f8;font-size:10px;font-variant-numeric:tabular-nums}
+.os-quick-footer{display:flex;justify-content:space-between;gap:8px;margin-top:13px;font-size:8px;color:#7f8da1}
+.os-quick-footer>span:first-child{display:flex;align-items:center;gap:6px}
+.os-quick-footer i{width:6px;height:6px;border-radius:50%;background:#8bdfb5}
+.os-notification-empty{display:grid;justify-items:center;gap:7px;padding:22px 8px 26px;text-align:center}
+.os-notification-empty>span{display:grid;place-items:center;width:44px;height:44px;border:1px solid #ffffff15;border-radius:15px;background:#ffffff08;font-size:20px;color:#b9c8db}
+.os-notification-empty strong{font-size:11px}
+.os-notification-empty p{margin:0;color:#9aa7b9;font-size:10px;line-height:1.55}
+.os-calendar-mini{display:flex;align-items:center;gap:13px;padding:13px;border:1px solid #ffffff13;border-radius:14px;background:#ffffff05}
+.os-calendar-mini>div{display:grid;justify-items:center;gap:2px;min-width:57px;padding:7px 5px;border-radius:10px;background:color-mix(in srgb,var(--os-accent) 12%,transparent)}
+.os-calendar-mini>div span,.os-calendar-mini>div small{font-size:8px;letter-spacing:.1em;color:var(--os-bright-accent)}
+.os-calendar-mini>div strong{font-size:23px;line-height:1.2;color:#f1f5fa}
+.os-calendar-mini>p{margin:0;font-size:10px;line-height:1.7;color:#dce3ee}
+.os-calendar-mini>p small{font-size:9px;color:#96a4b8}
+.os-context-menu{position:fixed;z-index:105;min-width:230px;padding:6px;border:1px solid #ffffff20;border-radius:15px;background:rgba(17,20,27,.94);backdrop-filter:blur(32px) saturate(150%);box-shadow:0 20px 65px #000b;color:#e8edf5;animation:os-flyout-in .12s ease-out}
+.os-context-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:10px 11px;border:0;border-radius:9px;background:transparent;color:inherit;text-align:left;font-size:10px;cursor:pointer}
+.os-context-menu button:hover{background:color-mix(in srgb,var(--os-accent) 17%,transparent)}
+.os-context-menu button>span{display:inline-grid;place-items:center;width:19px;font-size:14px;color:#c8d5e9}
+.os-context-menu button kbd{margin-left:auto;font-family:inherit;color:#8592a5;font-size:8px}
+.os-context-menu>div{height:1px;margin:5px 8px;background:#ffffff12}
+.os-brightness-overlay{position:fixed;z-index:64;inset:0;pointer-events:none;background:transparent}
+:root.os-reduced-transparency .os-menubar,:root.os-reduced-transparency .os-system-tray,:root.os-reduced-transparency .os-flyout,:root.os-reduced-transparency .os-context-menu,:root.os-reduced-transparency #desktop .taskbar{backdrop-filter:none!important;background:rgba(12,15,21,.98)!important}
+:root.os-reduced-motion *, :root.os-reduced-motion *::before, :root.os-reduced-motion *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}
+:root[data-os-accent=blue] #os-start-button,:root[data-os-accent=blue] .os-quick-grid button:focus-visible{outline-color:#8fbaff}
+@media(max-width:780px){.os-system-tray{right:7px;bottom:69px;padding:3px;border-radius:12px}.os-system-tray button{min-height:32px;padding:0 6px}.os-system-tray #os-quick-settings-toggle>span{display:none}.os-flyout{right:7px;bottom:120px;width:min(360px,calc(100vw - 14px));padding:13px}#desktop .taskbar{bottom:7px!important}}
+@media(max-width:440px){.os-system-tray{bottom:65px}.os-flyout{bottom:111px}.os-quick-grid button{grid-template-columns:30px 1fr;min-height:59px;padding:8px}.os-quick-grid button>span{width:29px;height:29px}.os-quick-grid strong{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.os-flyout,.os-context-menu{animation:none}}
