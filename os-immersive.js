@@ -40,6 +40,11 @@
     });
     const select = $('shell-layout-choice');
     if (select) select.value = style;
+    const startMark = document.querySelector('#os-start-button .os-start-mark');
+    if (startMark) {
+      startMark.classList.toggle('os-windows-logo',style === 'windows');
+      startMark.innerHTML = style === 'windows' ? '<i></i><i></i><i></i><i></i>' : 'z.';
+    }
     if (announce) toast(LABELS[style] + ' layout applied.');
   }
   function launchApp(id) {
