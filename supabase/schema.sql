@@ -93,3 +93,9 @@ with check (bucket_id = 'zuzu-user-files' and (storage.foldername(name))[1] = (s
 drop policy if exists "Users delete own storage folder" on storage.objects;
 create policy "Users delete own storage folder" on storage.objects for delete to authenticated
 using (bucket_id = 'zuzu-user-files' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+-- Keep the trigger function unavailable as a public RPC endpoint.
+revoke all on function public.handle_new_user() from public;
+revoke all on function public.handle_new_user() from anon;
+revoke all on function public.handle_new_user() from authenticated;
+grant execute on function public.handle_new_user() to supabase_auth_admin;
