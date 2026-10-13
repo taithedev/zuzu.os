@@ -4,9 +4,11 @@ A Windows-inspired personal web desktop with Supabase authentication, profile se
 
 ## Current features
 
-- Supabase email/password sign-up, sign-in, sign-out, and password reset.
+- ZuzuOS-branded account system backed by Supabase Auth: email/password sign-up, sign-in, sign-out, password reset, and password changes. No Microsoft sign-in is used.
 - Profile creation on registration, editable display name and username.
 - User-scoped database storage protected by row-level security (RLS).
+- Private file upload, listing, download, and deletion in the user's own storage folder (10 MB limit per file).
+- Account data export and a confirmed account deletion flow backed by a server-side Edge Function.
 - Quick note saved locally and synchronized to the signed-in user's account.
 - Settings window, theme accent selector, file/profile export, and external-link launcher.
 - Cine Hub discovery links, local audio playback, sketch canvas with PNG export, safe simulated terminal, local CIRI helper, and App Store catalog.
@@ -21,7 +23,7 @@ The frontend uses the public publishable key only. It never uses a service-role 
 - Tables: `profiles`, `user_data`
 - Private Storage bucket: `zuzu-user-files`
 
-The schema has already been applied to the connected `zuzu.os` project. If deploying to a different Supabase project, run `supabase/schema.sql` in the SQL Editor, then update `SUPABASE_URL` and `SUPABASE_KEY` at the top of `app.js` with that project's URL and publishable key.
+The schema has already been applied to the connected `zuzu.os` project. The `delete-account` Edge Function is deployed with JWT verification enabled and deletes the signed-in user's private uploads before deleting the account. If deploying to a different Supabase project, run `supabase/schema.sql` in the SQL Editor, then update `SUPABASE_URL` and `SUPABASE_KEY` at the top of `app.js` with that project's URL and publishable key.
 
 ### Auth dashboard settings
 
@@ -49,7 +51,7 @@ Import this repository into Vercel and use the repository root as the project ro
 
 - Database policies restrict profile and saved-data rows to the authenticated owner.
 - The private Storage bucket policies require uploads to be placed under a folder named with the signed-in user's UUID.
-- The Files app currently provides local note/profile export. Full drag-and-drop upload management and signed private-file previews are not implemented yet.
+- The Files app supports private uploads, listing, downloads, and deletion. Drag-and-drop upload and in-app document previews are not implemented yet.
 - Music plays files locally in the browser; it does not stream a music catalog. Cine Hub opens discovery links instead of hosting movies.
-- Microsoft OAuth is not enabled by default. To support Microsoft accounts, configure the Microsoft provider in Supabase Auth and add a provider sign-in button.
+- This project intentionally uses ZuzuOS-branded email/password accounts; no Microsoft identity provider or Microsoft sign-in button is part of the design.
 - Do not treat client-side UI visibility as authorization. Enforce privileged actions in Supabase RLS or trusted server-side functions.
