@@ -7,6 +7,47 @@
   const START = 'zuzu://home';
   const safeRead = (key, fallback) => { try { const v = JSON.parse(localStorage.getItem(key)); return v ?? fallback; } catch { return fallback; } };
   const safeWrite = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; } };
+  const cloudClient = () => window.zuzuOSAuth?.client || null;
+  async function saveCloud(itemKey, value) {
+    const client = cloudClient();
+    if (!client) return;
+    try {
+      const { data: { user }, error: authError } = await client.auth.getUser();
+      if (authError || !user) return;
+      const { error } = await client.from('user_data').upsert({
+        user_id: user.id, namespace: 'browser', item_key: itemKey, value
+      }, { onConflict: 'user_id,namespace,item_key' });
+      if (error) console.warn('Browser cloud sync:', error.message);
+    } catch (error) {
+      console.warn('Browser cloud sync unavailable:', error?.message || error);
+    }
+  }
+  async function restoreCloud() {
+    const client = cloudClient();
+    if (!client) return;
+    try {
+      const { data: { user }, error: authError } = await client.auth.getUser();
+      if (authError || !user) return;
+      const { data, error } = await client.from('user_data')
+        .select('item_key,value')
+        .eq('user_id', user.id)
+        .eq('namespace', 'browser')
+        .in('item_key', ['bookmarks', 'history']);
+      if (error) {
+        console.warn('Browser cloud restore:', error.message);
+        return;
+      }
+      const rows = new Map((data || []).map(row => [row.item_key, row.value]));
+      for (const [itemKey, storageKey] of [['bookmarks', BOOKMARK_KEY], ['history', HISTORY_KEY]]) {
+        const value = rows.get(itemKey);
+        // Prevent browser data from a previous local-only session appearing in a different account.
+        if (Array.isArray(value)) safeWrite(storageKey, value);
+        else safeWrite(storageKey, []);
+      }
+    } catch (error) {
+      console.warn('Browser cloud restore unavailable:', error?.message || error);
+    }
+  }
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const normalize = (raw) => {
     const value = String(raw || '').trim();
@@ -21,7 +62,9 @@
     if (url === START) return;
     const history = safeRead(HISTORY_KEY, []);
     history.unshift({url, title: host(url), at: Date.now()});
-    safeWrite(HISTORY_KEY, history.filter((item, i, arr) => arr.findIndex(x => x.url === item.url) === i).slice(0, 80));
+    const trimmed = history.filter((item, i, arr) => arr.findIndex(x => x.url === item.url) === i).slice(0, 80);
+    safeWrite(HISTORY_KEY, trimmed);
+    void saveCloud('history', trimmed);
   }
   function current() { return tabs[active]; }
   function createTab(url = START) {
@@ -142,7 +185,7 @@
       const b = document.createElement('button'); b.className='zb-bookmark';
       const label=document.createElement('span'); label.textContent=item.title || host(item.url);
       const remove=document.createElement('button'); remove.type='button'; remove.textContent='×'; remove.title='Remove bookmark';
-      remove.onclick=e=>{e.stopPropagation();const all=safeRead(BOOKMARK_KEY,[]);all.splice(index,1);safeWrite(BOOKMARK_KEY,all);renderBookmarks();};
+      remove.onclick=e=>{e.stopPropagation();const all=safeRead(BOOKMARK_KEY,[]);all.splice(index,1);safeWrite(BOOKMARK_KEY,all);void saveCloud('bookmarks',all);renderBookmarks();};
       b.append(label,remove); b.onclick=()=>go(item.url); el.append(b);
     });
   }
@@ -152,7 +195,9 @@
     const all=safeRead(BOOKMARK_KEY,[]);
     if(all.some(x=>x.url===url)) return status('This page is already bookmarked.');
     all.unshift({url,title:host(url)});
-    if(!safeWrite(BOOKMARK_KEY,all.slice(0,50))) return status('Browser storage is full; bookmark could not be saved.');
+    const trimmed = all.slice(0,50);
+    if(!safeWrite(BOOKMARK_KEY,trimmed)) return status('Browser storage is full; bookmark could not be saved.');
+    void saveCloud('bookmarks',trimmed);
     renderBookmarks(); status('Bookmark saved.');
   }
   function manageBookmarks() {
@@ -162,11 +207,12 @@
     const latest=history.slice(0,5).map(x=>x.title).join(' · ');
     status('Saved on this device · Recent: ' + (latest || 'none'));
   }
-  function mount() {
+  async function mount() {
     const body=$('window-body');
     if(!body || mounted) return;
     mounted=true;
     tabs=[{id:++sequence,url:START,title:'New tab',back:[],forward:[]}]; active=0;
+    await restoreCloud();
     render();
   }
   document.addEventListener('click', e => {
