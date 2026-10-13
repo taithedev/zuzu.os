@@ -242,6 +242,13 @@
           <p id="password-status" class="muted" role="status"></p>
         </form>
       </section>
+      <section class="setting-section"><h3>Change email address</h3>
+        <form id="email-change-form" class="app-form">
+          <label>New email address<input id="new-email" type="email" autocomplete="email" required placeholder="new-address@example.com"></label>
+          <button class="secondary" type="submit">Send email change request</button>
+          <p id="email-change-status" class="muted" role="status"></p>
+        </form>
+      </section>
       <section class="setting-section"><h3>Delete account</h3>
         <p class="muted" style="font-size:12px">Permanently delete your ZuzuOS account, profile, saved data, and uploaded files. This cannot be undone.</p>
         <label>Type DELETE MY ZUZU ACCOUNT to confirm<input id="delete-confirmation" autocomplete="off" placeholder="DELETE MY ZUZU ACCOUNT"></label>
@@ -281,6 +288,20 @@
       }
     });
 
+    $('email-change-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = $('new-email').value.trim().toLowerCase();
+      if (!email || email === (state.user.email || '').toLowerCase()) return toast('Enter a different email address.');
+      const button = $('email-change-form').querySelector('button[type="submit"]');
+      button.disabled = true;
+      $('email-change-status').textContent = 'Requesting email change…';
+      const { error } = await db.auth.updateUser({ email });
+      button.disabled = false;
+      if (error) { $('email-change-status').textContent = error.message; return; }
+      $('email-change-form').reset();
+      $('email-change-status').textContent = 'Check your email for confirmation instructions before the address changes.';
+      toast('Email change requested.');
+    });
     $('password-change-form').addEventListener('submit', async (event) => {
       event.preventDefault();
       const password = $('new-password').value;
