@@ -52,3 +52,12 @@
 @media(max-width:780px){.os-system-tray{right:7px;bottom:69px;padding:3px;border-radius:12px}.os-system-tray button{min-height:32px;padding:0 6px}.os-system-tray #os-quick-settings-toggle>span{display:none}.os-flyout{right:7px;bottom:120px;width:min(360px,calc(100vw - 14px));padding:13px}#desktop .taskbar{bottom:7px!important}}
 @media(max-width:440px){.os-system-tray{bottom:65px}.os-flyout{bottom:111px}.os-quick-grid button{grid-template-columns:30px 1fr;min-height:59px;padding:8px}.os-quick-grid button>span{width:29px;height:29px}.os-quick-grid strong{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.os-flyout,.os-context-menu{animation:none}}
+
+#os-notification-list{display:grid;gap:7px;max-height:260px;overflow:auto}
+.os-notification-item{display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid #ffffff12;border-radius:12px;background:#ffffff05}
+.os-notification-item>span{display:grid;place-items:center;flex:0 0 24px;height:24px;border:1px solid color-mix(in srgb,var(--os-accent) 30%,transparent);border-radius:8px;color:var(--os-bright-accent)}
+.os-notification-item>div{display:grid;gap:5px;min-width:0}
+.os-notification-item strong{font-size:10px;line-height:1.5;color:#e6ebf4;overflow-wrap:anywhere;font-weight:550}
+.os-notification-item small{font-size:9px;color:#8795a9}
+.os-system-tray #os-notifications-toggle{position:relative}
+#os-notification-count:not(.hidden){position:absolute;top:-3px;right:-2px;display:grid;place-items:center;min-width:15px;height:15px;padding:0 3px;border:1px solid #11151b;border-radius:999px;background:#d56b79;color:#fff;font-size:8px;font-weight:750;line-height:1}
