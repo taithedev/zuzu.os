@@ -1,0 +1,40 @@
+/* ZuzuOS Browser — compact, native-feeling chrome without pretending to be a full OS browser. */
+.zb{display:flex;flex-direction:column;gap:12px;min-height:430px;color:var(--text,#f4f4f5)}
+.zb *{box-sizing:border-box}
+.zb-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.zb-iconbtn,.zb-action{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 10px;border:1px solid #ffffff18;border-radius:9px;background:#ffffff06;color:#e7e7eb;font-size:12px;cursor:pointer}
+.zb-iconbtn:hover,.zb-action:hover{background:#ffffff12;border-color:#ffffff2c}
+.zb-iconbtn:disabled{opacity:.35;cursor:not-allowed}
+.zb-address{display:flex;align-items:center;gap:8px;flex:1;min-width:170px;height:38px;padding:0 12px;border:1px solid #ffffff1c;border-radius:11px;background:#050506;color:#8e8e96}
+.zb-address:focus-within{border-color:#777780;box-shadow:0 0 0 3px #ffffff08}
+.zb-address input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#f5f5f7;font-size:12px}
+.zb-tabrow{display:flex;gap:5px;align-items:center;overflow:auto;padding:2px 0 5px;border-bottom:1px solid #ffffff12}
+.zb-tab{display:flex;align-items:center;gap:9px;min-width:95px;max-width:190px;height:33px;padding:0 10px;border:1px solid transparent;border-radius:9px;background:transparent;color:#9b9ba3;font-size:11px;cursor:pointer}
+.zb-tab.active{background:#171719;border-color:#ffffff14;color:#f5f5f7}
+.zb-tab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left}
+.zb-tab button{border:0;background:transparent;color:inherit;cursor:pointer;padding:2px}
+.zb-view{position:relative;min-height:300px;flex:1;overflow:hidden;border:1px solid #ffffff14;border-radius:13px;background:#000}
+.zb-start{min-height:300px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px 16px;background:radial-gradient(ellipse at 50% 35%,#19191d 0%,#080809 45%,#000 80%);text-align:center}
+.zb-wordmark{font-size:32px;font-weight:550;letter-spacing:-.07em;color:#f5f5f7}
+.zb-wordmark span{color:#7d7d85}
+.zb-start p{margin:7px 0 20px;color:#888890;font-size:11px}
+.zb-search{display:flex;gap:7px;width:min(480px,100%);padding:5px;border:1px solid #ffffff1d;border-radius:12px;background:#09090a}
+.zb-search input{flex:1;min-width:0;padding:8px 9px;border:0;outline:0;background:transparent;color:#f5f5f7;font-size:12px}
+.zb-search button,.zb-primary{padding:9px 13px;border:1px solid #eeeef0;border-radius:8px;background:#eeeef0;color:#09090b;font-size:11px;font-weight:650;cursor:pointer}
+.zb-shortcuts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:19px}
+.zb-shortcuts button{display:flex;align-items:center;gap:7px;padding:9px 11px;border:1px solid #ffffff12;border-radius:9px;background:#ffffff05;color:#c9c9cf;font-size:10px;cursor:pointer}
+.zb-shortcuts button:hover{background:#ffffff0d}
+.zb-frame{display:block;width:100%;height:100%;min-height:300px;border:0;background:#fff}
+.zb-blocked{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-height:300px;padding:clamp(20px,5vw,42px);background:#070708;color:#f5f5f7}
+.zb-blocked h3{margin:0 0 9px;font-size:19px;font-weight:550;letter-spacing:-.04em}
+.zb-blocked p{max-width:520px;color:#a0a0a8;font-size:12px;line-height:1.7}
+.zb-blocked .zb-toolbar{margin-top:10px}
+.zb-section{padding:10px 0;border-top:1px solid #ffffff10}
+.zb-section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;color:#85858e;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.zb-bookmarks{display:flex;flex-wrap:wrap;gap:7px}
+.zb-bookmark{display:flex;align-items:center;gap:7px;max-width:100%;padding:8px 10px;border:1px solid #ffffff14;border-radius:9px;background:#ffffff05;color:#d9d9df;font-size:10px;cursor:pointer}
+.zb-bookmark span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zb-bookmark button{border:0;background:transparent;color:#8d8d95;cursor:pointer}
+.zb-status{display:flex;justify-content:space-between;gap:8px;color:#777780;font-size:9px}
+.zb-status strong{color:#a7a7ae;font-weight:500}
+@media(max-width:560px){.zb{min-height:390px}.zb-view,.zb-frame,.zb-start,.zb-blocked{min-height:260px}.zb-address{order:2;flex-basis:100%}.zb-toolbar{gap:5px}.zb-toolbar .zb-iconbtn{min-width:31px}.zb-tab{min-width:86px}}
