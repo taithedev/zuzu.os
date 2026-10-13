@@ -12,7 +12,7 @@ function el(tag,cls,html){const n=document.createElement(tag);if(cls)n.className
 
 function restoreDesktopWallpaper(){
  const desktop=document.getElementById('desktop');
- let wallpaper='none';
+ let wallpaper='black';
  try{wallpaper=JSON.parse(localStorage.getItem('zuzu:wallpaper')||'"none"')}catch{}
  const custom=localStorage.getItem('zuzu:os-wallpaper');
  let image='';
