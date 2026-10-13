@@ -12,11 +12,13 @@
   <link rel="stylesheet" href="os-shell.css">
   <link rel="stylesheet" href="os-team.css">
   <link rel="stylesheet" href="os-desktop.css">
+  <link rel="stylesheet" href="os-immersive.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
   <script src="app.js" defer></script>
   <script src="os-shell.js" defer></script>
   <script src="os-team.js" defer></script>
   <script src="os-desktop.js" defer></script>
+  <script src="os-immersive.js" defer></script>
 </head>
 <body>
   <div class="ambient" aria-hidden="true"></div>
@@ -101,7 +103,7 @@
               <button class="setup-wallpaper" data-wallpaper-choice="aurora"><span class="wallpaper-preview aurora-preview"></span><strong>Aurora</strong><small>Cool blue glow</small></button>
               <button class="setup-wallpaper" data-wallpaper-choice="obsidian"><span class="wallpaper-preview obsidian-preview"></span><strong>Obsidian</strong><small>Deep and minimal</small></button>
               <button class="setup-wallpaper" data-wallpaper-choice="afterglow"><span class="wallpaper-preview afterglow-preview"></span><strong>Afterglow</strong><small>Warm evening light</small></button>
-              <button class="setup-wallpaper selected" data-wallpaper-choice="none"><span class="wallpaper-preview plain-preview"></span><strong>Midnight</strong><small>Clean dark canvas</small></button>
+              <button class="setup-wallpaper selected" data-wallpaper-choice="none"><span class="wallpaper-preview plain-preview"></span><strong>Silent Shore</strong><small>Mist over a winter lake</small></button>
             </div>
             <p class="setup-theme-label">CHOOSE A PRESET THEME</p>
             <div class="setup-theme-presets">
@@ -111,6 +113,12 @@
               <button type="button" class="setup-preset" data-theme-preset="crimson"><span class="preset-sample preset-crimson"></span><strong>Crimson Night</strong><small>Dark with a red accent</small></button>
             </div>
             <div class="setup-theme-note"><span class="theme-swatch"></span><div><strong>Dark mode is always on</strong><small>Every preset keeps the interface dark. Change it later in Settings.</small></div><span class="theme-on">ON</span></div>
+            <p class="setup-theme-label">CHOOSE YOUR DESKTOP LAYOUT</p>
+            <div class="setup-layout-picker" aria-label="Choose desktop layout">
+              <button type="button" class="setup-layout-option selected" data-shell-style-choice="cine" aria-pressed="true"><span class="setup-layout-preview"><i></i><i></i><i></i></span><strong>Cine Desktop</strong><small>Wallpaper, desktop shortcuts and widgets</small></button>
+              <button type="button" class="setup-layout-option" data-shell-style-choice="windows" aria-pressed="false"><span class="setup-layout-preview"><i></i><i></i><i></i></span><strong>Windows Style</strong><small>Centered Start and full-width taskbar</small></button>
+              <button type="button" class="setup-layout-option" data-shell-style-choice="macos" aria-pressed="false"><span class="setup-layout-preview"><i></i><i></i><i></i></span><strong>macOS Style</strong><small>Top menu and floating app dock</small></button>
+            </div>
           </article>
           <article class="setup-page" data-setup-page="2">
             <p class="eyebrow">YOUR SPACE, YOUR RULES</p><h1>Privacy, made clear.</h1>
