@@ -288,8 +288,9 @@
       <section class="setting-section"><h3>Account details</h3><div class="setting-row"><div><strong>${escapeHTML(state.user.email || '')}</strong><p>Email address used to sign in.</p></div><span class="sync-check">✓</span></div><div class="setting-row"><div><strong>Cloud sync</strong><p>Your saved notes and settings are linked to this account.</p></div><span class="sync-check">✓</span></div></section>
       <section class="setting-section"><h3>Appearance</h3>
         <div class="setting-row"><div><strong>Preset theme</strong><p>Choose a complete dark desktop palette.</p></div><label><select id="theme-preset-choice"><option value="cine">Cinematic Black</option><option value="oled">Pure OLED</option><option value="graphite">Graphite</option><option value="crimson">Crimson Night</option><option value="midnight">Midnight Blue</option></select></label></div>
+        <div class="setting-row"><div><strong>Desktop layout</strong><p>Switch between Cine Desktop, Windows-style, and macOS-style layouts.</p></div><label><select id="shell-layout-choice"><option value="cine">Cine Desktop</option><option value="windows">Windows Style</option><option value="macos">macOS Style</option></select></label></div>
         <div class="setting-row"><div><strong>Accent color</strong><p>Choose the color used for highlights.</p></div><label><select id="accent-choice"><option value="#9bc4ff">Sky blue</option><option value="#b5a4ff">Lavender</option><option value="#8ee0bd">Mint</option><option value="#f0c58c">Amber</option></select></label></div>
-        <div class="setting-row"><div><strong>Desktop wallpaper</strong><p>Choose the background for this device.</p></div><label><select id="wallpaper-choice"><option value="none">Default</option><option value="aurora">Aurora</option><option value="obsidian">Obsidian</option><option value="afterglow">Afterglow</option></select></label></div>
+        <div class="setting-row"><div><strong>Desktop wallpaper</strong><p>Choose the background for this device.</p></div><label><select id="wallpaper-choice"><option value="none">Silent Shore (default)</option><option value="silent-shore">Silent Shore</option><option value="aurora">Aurora</option><option value="obsidian">Obsidian</option><option value="afterglow">Afterglow</option></select></label></div>
       </section>
       <div class="app-actions"><button id="settings-signout" class="secondary">Sign out</button></div>`;
     $('profile-form').addEventListener('submit', updateProfile);
@@ -354,6 +355,7 @@
     applyThemePreset(local.get('theme-preset', 'cine'));
     $('theme-preset-choice').value = local.get('theme-preset', 'cine');
     $('theme-preset-choice').addEventListener('change', (e) => applyThemePreset(e.target.value, true));
+    $('shell-layout-choice').value = local.get('shell-style', 'cine');
     $('accent-choice').value = local.get('accent', '#9bc4ff');
     $('wallpaper-choice').value = local.get('wallpaper', 'none');
     $('wallpaper-choice').addEventListener('change', (e) => applyWallpaper(e.target.value));
@@ -580,16 +582,28 @@
     if (notify) toast(theme.label + ' theme applied.');
   }
   function applyWallpaper(value) {
-    const wallpaper = ['aurora','obsidian','afterglow'].includes(value) ? value : 'none';
+    const wallpaper = ['silent-shore','aurora','obsidian','afterglow'].includes(value) ? value : 'none';
     local.set('wallpaper', wallpaper);
+    const desktop = $('desktop');
     if (wallpaper === 'none') {
       document.body.style.backgroundImage = '';
       document.body.style.backgroundSize = '';
       document.body.style.backgroundAttachment = '';
+      if (desktop) {
+        desktop.style.backgroundImage = '';
+        desktop.style.backgroundSize = '';
+        desktop.style.backgroundAttachment = '';
+      }
     } else {
-      document.body.style.backgroundImage = 'url("assets/wallpapers/' + wallpaper + '.svg")';
+      const image = 'url("assets/wallpapers/' + wallpaper + '.svg")';
+      document.body.style.backgroundImage = image;
       document.body.style.backgroundSize = 'cover';
       document.body.style.backgroundAttachment = 'fixed';
+      if (desktop) {
+        desktop.style.backgroundImage = 'linear-gradient(180deg,#07111b22 0%,#07111b05 40%,#03070d45 100%),' + image;
+        desktop.style.backgroundSize = 'cover';
+        desktop.style.backgroundAttachment = 'fixed';
+      }
     }
   }
   function updateClock() {
@@ -599,6 +613,7 @@
     $('clock-date').textContent = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
   }
   async function boot() {
+    applyWallpaper(local.get('wallpaper', 'none'));
     $('setup-back').addEventListener('click', () => {
       if (setupStep > 0) { setupStep -= 1; renderSetupStep(); }
     });
