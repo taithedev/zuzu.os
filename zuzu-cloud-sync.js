@@ -77,6 +77,7 @@
         if (accents) document.documentElement.style.setProperty('--accent', accents);
         if (typeof window.zuzuApplySyncedDesktop === 'function') window.zuzuApplySyncedDesktop({style, theme, wallpaper, accent:accents});
       } else {
+        ready = true;
         await persist(user.id);
       }
       ready = true;
@@ -88,6 +89,26 @@
       notify('Desktop sync unavailable. Local changes are still saved.');
     }
   }
+  window.zuzuApplySyncedDesktop = function({style, theme, wallpaper, accent} = {}) {
+    const safeStyle = ['cine','windows','macos'].includes(style) ? style : 'windows';
+    document.getElementById('desktop')?.setAttribute('data-shell-style', safeStyle);
+    document.documentElement.dataset.shellStyle = safeStyle;
+    document.body.dataset.shellStyle = safeStyle;
+    const startMark = document.querySelector('#os-start-button .os-start-mark');
+    if (startMark) {
+      startMark.classList.toggle('os-windows-logo', safeStyle === 'windows');
+      startMark.innerHTML = safeStyle === 'windows' ? '<i></i><i></i><i></i><i></i>' : 'z.';
+    }
+    if (accent) document.documentElement.style.setProperty('--accent', accent);
+    const desk = document.getElementById('desktop');
+    const wallpaperName = ['silent-shore','aurora','obsidian','afterglow'].includes(wallpaper) ? wallpaper : 'none';
+    if (desk && wallpaperName !== 'none') {
+      const img = 'url("assets/wallpapers/' + wallpaperName + '.svg")';
+      desk.style.backgroundImage = 'linear-gradient(180deg,#07111b22 0%,#07111b05 40%,#03070d45 100%),' + img;
+      desk.style.backgroundSize = 'cover';
+      desk.style.backgroundAttachment = 'fixed';
+    }
+  };
   const originalSetItem = Storage.prototype.setItem;
   Storage.prototype.setItem = function(key, value) {
     originalSetItem.call(this, key, value);
