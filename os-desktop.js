@@ -3,7 +3,7 @@
   const $ = (id) => document.getElementById(id);
   const storeKey = 'zuzu:desktop-ui:v1';
   const state = { quickOpen:false, notificationsOpen:false, contextOpen:false, showAll:false, saved:{} };
-  const notifications = [];
+  const notificationItems = [];
   let unreadNotifications = 0;
   let lastToastMessage = '';
   const getPrefs = () => { try { return JSON.parse(localStorage.getItem(storeKey) || '{}') || {}; } catch { return {}; } };
@@ -124,7 +124,7 @@
     $('os-tray-clock').addEventListener('click', () => togglePanel('notifications'));
     quick.querySelector('[data-panel-close]').addEventListener('click', () => togglePanel('quick',false));
     notifications.querySelector('[data-panel-close]')?.addEventListener('click', () => togglePanel('notifications',false));
-    $('os-notifications-clear').addEventListener('click', () => { notifications.length = 0; unreadNotifications = 0; renderNotifications(); });
+    $('os-notifications-clear').addEventListener('click', () => { notificationItems.length = 0; unreadNotifications = 0; renderNotifications(); });
     quick.querySelectorAll('[data-quick-toggle]').forEach(button => button.addEventListener('click', () => quickToggle(button.dataset.quickToggle)));
     $('os-desktop-brightness').addEventListener('input', event => setBrightness(Number(event.target.value)));
     desktop.addEventListener('contextmenu', event => {
@@ -149,8 +149,8 @@
         const message = toastNode.textContent.trim();
         if (!toastNode.classList.contains('hidden') && message && message !== lastToastMessage) {
           lastToastMessage = message;
-          notifications.unshift({message, at:new Date()});
-          if (notifications.length > 12) notifications.length = 12;
+          notificationItems.unshift({message, at:new Date()});
+          if (notificationItems.length > 12) notificationItems.length = 12;
           unreadNotifications++;
           renderNotifications();
         }
@@ -179,8 +179,8 @@
     const list = $('os-notification-list');
     if (!list) return;
     const empty = document.querySelector('#os-notification-center .os-notification-empty');
-    if (empty) empty.classList.toggle('hidden',notifications.length > 0);
-    list.innerHTML = notifications.map(item => '<article class="os-notification-item"><span>•</span><div><strong>' + esc(item.message) + '</strong><small>' + esc(item.at.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})) + '</small></div></article>').join('');
+    if (empty) empty.classList.toggle('hidden',notificationItems.length > 0);
+    list.innerHTML = notificationItems.map(item => '<article class="os-notification-item"><span>•</span><div><strong>' + esc(item.message) + '</strong><small>' + esc(item.at.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})) + '</small></div></article>').join('');
     const badge = $('os-notification-count');
     if (badge) {
       badge.textContent = unreadNotifications > 9 ? '9+' : String(unreadNotifications);
