@@ -536,6 +536,13 @@
       state.user = session.user;
       await fetchProfile();
       showDesktop();
+      const recoveryLink = new URLSearchParams(location.hash.replace(/^#/, '')).get('type') === 'recovery'
+        || new URLSearchParams(location.search).has('code');
+      if (recoveryLink) {
+        openApp('settings');
+        setTimeout(() => $('new-password')?.focus(), 80);
+        toast('Choose a new password for your ZuzuOS account.');
+      }
     } else {
       showAuth();
     }
