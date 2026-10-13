@@ -5,10 +5,33 @@ const seed={'/':{type:'folder',name:'/'},'/Home':{type:'folder',name:'Home'},'/H
 let fs;try{fs=JSON.parse(localStorage.getItem(KEY)||'null')||seed}catch{fs=seed}
 let cwd='/Home',z=100,seq=0;const opened=new Map();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const apps=[['files','File Explorer','▧','Browse virtual files'],['editor','Text Editor','▤','Create and edit text'],['calc','Calculator','＋','Calculate expressions'],['system','System Monitor','◫','Browser and workspace info'],['studio','Owner Studio','✦','Customize this device'],['notes','Notes','▤','Quick notes'],['settings','Settings','⚙','Account and appearance'],['browser','Web','◉','Open a website'],['cinehub','Cine Hub','▣','Discover what to watch'],['music','Music','♫','Play local audio'],['paint','Paint','✎','Sketch and export'],['terminal','Terminal','⌘','Safe command simulator'],['store','App Store','＋','Browse tools']];
+const apps=[['files','File Explorer','▧','Browse virtual files'],['editor','Text Editor','▤','Create and edit text'],['calc','Calculator','＋','Calculate expressions'],['system','System Monitor','◫','Browser and workspace info'],['studio','Workspace Studio','✦','Customize this device'],['notes','Notes','▤','Quick notes'],['settings','Settings','⚙','Account and appearance'],['browser','Web','◉','Open a website'],['cinehub','Cine Hub','▣','Discover what to watch'],['music','Music','♫','Play local audio'],['paint','Paint','✎','Sketch and export'],['terminal','Terminal','⌘','Safe command simulator'],['store','App Store','＋','Browse tools']];
 function save(){try{localStorage.setItem(KEY,JSON.stringify(fs))}catch{toast('Virtual storage is full.')}}
 function toast(t){const e=document.getElementById('toast');if(e){e.textContent=t;e.classList.remove('hidden');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.add('hidden'),2400)}}
 function el(tag,cls,html){const n=document.createElement(tag);if(cls)n.className=cls;if(html!==undefined)n.innerHTML=html;return n}
+
+function restoreDesktopWallpaper(){
+ const desktop=document.getElementById('desktop');
+ let wallpaper='none';
+ try{wallpaper=JSON.parse(localStorage.getItem('zuzu:wallpaper')||'"none"')}catch{}
+ const custom=localStorage.getItem('zuzu:os-wallpaper');
+ let image='';
+ if(custom) image='url("'+custom+'")';
+ else if(['silent-shore','aurora','obsidian','afterglow'].includes(wallpaper)) image='url("assets/wallpapers/'+wallpaper+'.svg")';
+ if(image){
+  const composed='linear-gradient(180deg,#07111b22 0%,#07111b05 40%,#03070d45 100%),'+image;
+  document.body.style.backgroundImage=composed;
+  document.body.style.backgroundSize='cover';
+  document.body.style.backgroundAttachment='fixed';
+  if(desktop){desktop.style.backgroundImage=composed;desktop.style.backgroundSize='cover';desktop.style.backgroundAttachment='fixed'}
+ }else{
+  document.body.style.backgroundImage='';
+  document.body.style.backgroundSize='';
+  document.body.style.backgroundAttachment='';
+  if(desktop){desktop.style.backgroundImage='';desktop.style.backgroundSize='';desktop.style.backgroundAttachment=''}
+ }
+}
+
 function init(){
  const desktop=document.getElementById('desktop'),bar=desktop?.querySelector('.taskbar');if(!desktop||!bar||document.getElementById('os-start-button'))return;
  const start=el('button','os-start-button','<span class="os-start-mark">z.</span><span class="os-start-label">Start</span>');start.id='os-start-button';bar.insertBefore(start,bar.firstChild);
@@ -27,13 +50,13 @@ function init(){
  document.getElementById('close-window')?.insertAdjacentHTML('beforebegin','<button class="window-control" id="os-existing-min" title="Minimize">−</button><button class="window-control" id="os-existing-max" title="Maximize">□</button>');
  document.getElementById('os-existing-min')?.addEventListener('click',()=>aw.classList.add('hidden'));
  document.getElementById('os-existing-max')?.addEventListener('click',()=>aw.classList.toggle('os-maximized'));
- const wallpaper=localStorage.getItem('zuzu:os-wallpaper');if(wallpaper)document.body.style.backgroundImage='linear-gradient(#02030588,#02030588),url("'+wallpaper+'")';
+ restoreDesktopWallpaper();
  const greeting=localStorage.getItem('zuzu:os-welcome');if(greeting){const p=document.querySelector('.welcome-row .muted');if(p)p.textContent=greeting}
 }
 function launch(id){
  const existing=['notes','settings','browser','cinehub','music','paint','terminal','ciri','store'];
  if(existing.includes(id)){const b=document.querySelector('[data-app="'+id+'"]');if(b){b.click();const w=document.getElementById('app-window');w.classList.remove('hidden');w.style.zIndex=String(++z)}return}
- const titles={files:'File Explorer',editor:'Text Editor',calc:'Calculator',system:'System Monitor',studio:'Owner Studio'};
+ const titles={files:'File Explorer',editor:'Text Editor',calc:'Calculator',system:'System Monitor',studio:'Workspace Studio'};
  if(opened.has(id)){const w=opened.get(id);w.classList.remove('os-minimized');w.style.zIndex=String(++z);return}
  let content='';
  if(id==='files')content='<div class="os-toolbar"><button data-up>↑ Up</button><button data-new-file>＋ New file</button><button data-new-folder>＋ New folder</button></div><div class="os-path" id="os-path"></div><div id="os-file-list"></div><p class="os-hint">These files stay in this browser on this device. They are separate from your private Supabase uploads.</p>';
@@ -66,8 +89,8 @@ function wireCalc(win){let expr='';const out=win.querySelector('#calc-display');
 function fillSystem(win){win.querySelector('#sys-screen').textContent=innerWidth+' × '+innerHeight;win.querySelector('#sys-size').textContent=Math.round(new Blob([JSON.stringify(fs)]).size/1024)+' KB';win.querySelector('#sys-platform').textContent=navigator.userAgentData?.platform||navigator.platform||'Unknown';win.querySelector('#sys-count').textContent=Object.keys(fs).length-1}
 function wireStudio(win){
  win.querySelector('#studio-save').onclick=()=>{localStorage.setItem('zuzu:os-label',win.querySelector('#studio-label').value.trim()||'ZuzuOS');localStorage.setItem('zuzu:os-welcome',win.querySelector('#studio-welcome').value.trim()||'Your space. Your pace.');const p=document.querySelector('.welcome-row .muted');if(p)p.textContent=localStorage.getItem('zuzu:os-welcome');const brand=document.querySelector('.top-brand');if(brand)brand.lastElementChild.innerHTML=esc(localStorage.getItem('zuzu:os-label'))+'<span class="brand-dim">.os</span>';toast('Workspace preferences saved.')};
- win.querySelector('#studio-wallpaper').onchange=e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>2*1024*1024)return toast('Choose an image under 2 MB.');if(!['image/png','image/jpeg','image/webp'].includes(f.type))return toast('Choose PNG, JPEG or WebP.');const r=new FileReader();r.onload=()=>{try{localStorage.setItem('zuzu:os-wallpaper',r.result);document.body.style.backgroundImage='linear-gradient(#02030588,#02030588),url("'+r.result+'")';toast('Wallpaper saved on this device.')}catch{toast('Could not store that image.')}};r.readAsDataURL(f)};
- win.querySelector('#studio-clear').onclick=()=>{localStorage.removeItem('zuzu:os-wallpaper');document.body.style.backgroundImage='';toast('Custom wallpaper removed.')};
+ win.querySelector('#studio-wallpaper').onchange=e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>2*1024*1024)return toast('Choose an image under 2 MB.');if(!['image/png','image/jpeg','image/webp'].includes(f.type))return toast('Choose PNG, JPEG or WebP.');const r=new FileReader();r.onload=()=>{try{localStorage.setItem('zuzu:os-wallpaper',r.result);restoreDesktopWallpaper();toast('Wallpaper saved on this device.')}catch{toast('Could not store that image.')}};r.readAsDataURL(f)};
+ win.querySelector('#studio-clear').onclick=()=>{localStorage.removeItem('zuzu:os-wallpaper');restoreDesktopWallpaper();toast('Custom wallpaper removed.')};
  win.querySelector('#studio-export').onclick=()=>download({format:'zuzu-os-virtual-files',version:1,fs},'zuzu-os-files.json');
  win.querySelector('#studio-import').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.format!=='zuzu-os-virtual-files'||!d.fs||typeof d.fs!=='object')throw Error('Invalid ZuzuOS backup.');if(!confirm('Replace current virtual files with this backup?'))return;fs=d.fs;save();toast('Backup imported. Close and reopen File Explorer.')}catch(err){toast(err.message||'Import failed.')}};
 }
