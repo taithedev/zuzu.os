@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="zuzu.os — a personal web desktop.">
+  <title>zuzu.os</title>
+  <link rel="icon" href="assets/zuzu.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <main id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <div class="brand-mark">z<span>.</span></div>
+      <p class="eyebrow">YOUR PERSONAL SPACE</p>
+      <h1 id="auth-title">Welcome back.</h1>
+      <p id="auth-subtitle" class="muted">Sign in to continue to your desktop.</p>
+      <form id="auth-form">
+        <label id="name-field" class="field hidden">Display name<input id="display-name" autocomplete="name" maxlength="48" placeholder="What should we call you?"></label>
+        <label class="field">Email address<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <label class="field">Password<input id="password" type="password" autocomplete="current-password" minlength="8" required placeholder="At least 8 characters"></label>
+        <button id="auth-submit" class="primary full" type="submit">Sign in</button>
+      </form>
+      <button id="forgot-password" class="text-button">Forgot password?</button>
+      <p id="auth-message" class="message" role="status" aria-live="polite"></p>
+      <div class="auth-switch"><span id="switch-copy">New to zuzu.os?</span> <button id="switch-mode" class="text-button">Create an account</button></div>
+      <p class="fine-print">Your files and settings are private to your account.</p>
+    </div>
+    <div class="auth-caption"><span class="status-dot"></span> A calmer space to get things done <span>•</span> Built for you</div>
+  </main>
+
+  <main id="desktop" class="desktop hidden">
+    <header class="topbar">
+      <div class="top-brand"><span class="mini-logo">z.</span><span>zuzu<span class="brand-dim">.os</span></span></div>
+      <div class="top-center"><span class="live-dot"></span><span id="greeting">Your space, your pace.</span></div>
+      <button id="account-button" class="account-chip" aria-label="Open account menu"><span id="avatar" class="avatar">Z</span><span id="account-name">Account</span><span class="chevron">⌄</span></button>
+    </header>
+    <section class="desktop-content">
+      <div class="welcome-row"><div><p class="eyebrow">PERSONAL DESKTOP</p><h1 id="welcome-title">Good to see you.</h1><p class="muted">Everything you need, in one place.</p></div><div class="clock-card"><span id="clock-time">--:--</span><span id="clock-date">Loading date</span></div></div>
+      <div class="section-heading"><div><h2>Your apps</h2><p class="muted">Pick up where you left off.</p></div><button id="edit-shortcuts" class="quiet-button">Personalize ↗</button></div>
+      <div class="app-grid">
+        <button class="app-tile" data-app="notes"><span class="app-icon icon-notes">▤</span><span><strong>Notes</strong><small>Thoughts, saved</small></span><span class="tile-arrow">↗</span></button>
+        <button class="app-tile" data-app="files"><span class="app-icon icon-files">▧</span><span><strong>My files</strong><small>Your personal space</small></span><span class="tile-arrow">↗</span></button>
+        <button class="app-tile" data-app="settings"><span class="app-icon icon-settings">⚙</span><span><strong>Settings</strong><small>Make it yours</small></span><span class="tile-arrow">↗</span></button>
+        <button class="app-tile" data-app="browser"><span class="app-icon icon-browser">◉</span><span><strong>Web</strong><small>Open a website</small></span><span class="tile-arrow">↗</span></button>
+      </div>
+      <div class="bottom-grid">
+        <section class="panel note-panel"><div class="panel-heading"><div><span class="panel-kicker">QUICK CAPTURE</span><h2>A note to yourself</h2></div><span class="panel-icon">✎</span></div><textarea id="quick-note" rows="4" maxlength="5000" placeholder="Write something you don't want to forget..."></textarea><div class="panel-footer"><span id="note-status" class="muted">Saved to this device</span><button id="save-note" class="primary">Save note</button></div></section>
+        <section class="panel profile-panel"><div class="panel-heading"><div><span class="panel-kicker">YOUR ACCOUNT</span><h2>Everything in sync</h2></div><span class="panel-icon">⌁</span></div><div class="sync-status"><span class="sync-check">✓</span><div><strong id="sync-title">Account connected</strong><p id="sync-description" class="muted">Your profile is ready.</p></div></div><div class="profile-stats"><div><span class="muted">Account</span><strong id="profile-email">—</strong></div><div><span class="muted">Storage</span><strong>Private by default</strong></div></div><button id="open-settings" class="secondary full">Manage your account</button></section>
+      </div>
+      <footer class="desktop-footer"><span>zuzu.os <span class="brand-dim">/ personal desktop</span></span><span>Private by design <span class="footer-dot">•</span> <span id="connection-label">Connected</span></span></footer>
+    </section>
+    <nav class="taskbar"><button id="home-button" class="task-home" aria-label="Home">z.</button><span class="taskbar-separator"></span><button data-app="notes" class="task-app">▤ <span>Notes</span></button><button data-app="files" class="task-app">▧ <span>Files</span></button><button data-app="settings" class="task-app">⚙ <span>Settings</span></button><div class="taskbar-spacer"></div><span class="task-clock" id="task-clock">--:--</span><button id="task-account" class="task-account" aria-label="Account">●</button></nav>
+    <div id="account-menu" class="account-menu hidden"><div class="account-menu-head"><span id="menu-avatar" class="avatar large">Z</span><div><strong id="menu-name">Your account</strong><small id="menu-email">email</small></div></div><button id="menu-settings">Account settings <span>↗</span></button><button id="sign-out" class="danger-action">Sign out <span>⇥</span></button></div>
+    <div id="app-window" class="app-window hidden" role="dialog" aria-modal="true" aria-labelledby="window-title"><div class="window-bar"><div class="window-title"><span id="window-icon">◫</span><strong id="window-title">App</strong></div><button id="close-window" class="window-close" aria-label="Close window">×</button></div><div id="window-body" class="window-body"></div></div>
+    <div id="toast" class="toast hidden" role="status"></div>
+  </main>
+  <div id="cookie-notice" class="cookie-notice hidden"><div><strong>Just the essentials.</strong><p>zuzu.os uses local storage for preferences and Supabase to keep your account data in sync.</p></div><button id="cookie-accept" class="primary">Sounds good</button></div>
+</body>
+</html>
