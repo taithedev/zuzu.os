@@ -2,6 +2,7 @@
 :root{--scene-text:#f4f6fa;--scene-muted:#aeb8c7;--scene-accent:#8dbbff}
 #desktop{position:relative;isolation:isolate;min-height:100vh;overflow-x:hidden}
 #os-scene{display:none}
+#desktop[data-shell-style] .os-desktop-shortcuts{display:none!important}
 #desktop[data-shell-style] .desktop-content{display:none!important}
 #desktop[data-shell-style]>.topbar{display:none!important}
 #desktop[data-shell-style=cine]{background:#192630 url("assets/wallpapers/silent-shore.svg") center center/cover no-repeat fixed}
@@ -137,3 +138,12 @@
  #desktop[data-shell-style=windows] .os-scene-left-rail{top:109px}
 }
 @media(prefers-reduced-motion:reduce){.os-scene-widget,.os-scene-shortcut,#desktop[data-shell-style] .taskbar .task-app{transition:none!important}}
+
+.setup-pages{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#ffffff24 transparent}
+.setup-page{margin:auto 0}
+.setup-layout-option[data-shell-style-choice=windows] .setup-layout-preview{background:linear-gradient(180deg,#263b58,#101924)}
+.setup-layout-option[data-shell-style-choice=windows] .setup-layout-preview i{border-radius:3px}
+.setup-layout-option[data-shell-style-choice=macos] .setup-layout-preview{align-items:end;border-radius:7px;background:linear-gradient(180deg,#272532,#171923)}
+.setup-layout-option[data-shell-style-choice=macos] .setup-layout-preview i{height:12px!important;width:13%;border-radius:4px}
+.setup-layout-option[data-shell-style-choice=macos] .setup-layout-preview i:nth-child(2){height:20px!important}
+.plain-preview{background-image:url("assets/wallpapers/silent-shore.svg");background-size:cover;background-position:center}
