@@ -57,7 +57,7 @@
     if (local.get('setup-complete', false) || recoveryLink) return;
     setupStep = 0;
     renderSetupStep();
-    const chosenWallpaper = local.get('wallpaper', 'aurora');
+    const chosenWallpaper = local.get('wallpaper', 'none');
     document.querySelectorAll('[data-wallpaper-choice]').forEach((button) => button.classList.toggle('selected', button.dataset.wallpaperChoice === chosenWallpaper));
     $('setup-screen').classList.remove('hidden');
   }
@@ -564,6 +564,8 @@
     const theme = themePresets[key];
     const root = document.documentElement;
     root.dataset.themePreset = key;
+    document.body.dataset.themePreset = key;
+    local.set('accent', theme.accent);
     root.style.setProperty('--bg', theme.bg);
     root.style.setProperty('--panel-solid', theme.panel);
     root.style.setProperty('--accent', theme.accent);
@@ -636,7 +638,7 @@
     const accent = local.get('accent');
     applyThemePreset(local.get('theme-preset', 'cine'));
     if (accent) document.documentElement.style.setProperty('--accent', accent);
-    applyWallpaper(local.get('wallpaper', 'aurora'));
+    applyWallpaper(local.get('wallpaper', 'none'));
     if (!local.get('cookie-consent', false)) $('cookie-notice').classList.remove('hidden');
     updateClock();
     setInterval(updateClock, 15000);
