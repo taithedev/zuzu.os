@@ -35,11 +35,50 @@
     toast.timer = setTimeout(() => el.classList.add('hidden'), 2800);
   }
   function showAuth() {
+    $('reset-password-screen')?.classList.add('hidden');
     $('auth-screen').classList.remove('hidden');
     $('desktop').classList.add('hidden');
     $('account-menu').classList.add('hidden');
     $('app-window').classList.add('hidden');
   }
+
+  function showPasswordRecovery() {
+    $('auth-screen').classList.add('hidden');
+    $('desktop').classList.add('hidden');
+    $('setup-screen').classList.add('hidden');
+    $('reset-password-screen').classList.remove('hidden');
+    $('recovery-message').textContent = '';
+    setTimeout(() => $('recovery-password')?.focus(), 50);
+  }
+  async function submitPasswordRecovery(event) {
+    event.preventDefault();
+    const password = $('recovery-password').value;
+    const confirmation = $('recovery-password-confirm').value;
+    if (password.length < 8) return $('recovery-message').textContent = 'Use at least 8 characters.';
+    if (password !== confirmation) return $('recovery-message').textContent = 'The passwords do not match.';
+    const button = $('recovery-submit');
+    button.disabled = true;
+    button.textContent = 'Saving…';
+    $('recovery-message').textContent = 'Updating your password…';
+    try {
+      const { error } = await db.auth.updateUser({ password });
+      if (error) throw error;
+      $('recovery-password-form').reset();
+      $('recovery-message').textContent = 'Password updated. You are now signed in.';
+      history.replaceState({}, document.title, location.pathname);
+      state.user = (await db.auth.getUser()).data.user || state.user;
+      await fetchProfile();
+      $('reset-password-screen').classList.add('hidden');
+      showDesktop();
+      toast('Your password has been updated.');
+    } catch (error) {
+      $('recovery-message').textContent = error.message || 'Could not update the password. Request a new reset email and try again.';
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Save new password';
+    }
+  }
+
   let setupStep = 0;
   function renderSetupStep() {
     document.querySelectorAll('[data-setup-page]').forEach((page) => page.classList.toggle('active', Number(page.dataset.setupPage) === setupStep));
@@ -631,6 +670,7 @@
       button.addEventListener('click', () => applyThemePreset(button.dataset.themePreset));
     });
     $('auth-form').addEventListener('submit', submitAuth);
+    $('reset-password-form').addEventListener('submit', submitPasswordRecovery);
     $('switch-mode').addEventListener('click', () => setMode(state.mode === 'signin' ? 'signup' : 'signin'));
     $('forgot-password').addEventListener('click', forgotPassword);
     $('save-note').addEventListener('click', saveQuickNote);
@@ -668,14 +708,10 @@
     if (session?.user) {
       state.user = session.user;
       await fetchProfile();
-      showDesktop();
       const recoveryLink = new URLSearchParams(location.hash.replace(/^#/, '')).get('type') === 'recovery'
         || new URLSearchParams(location.search).has('code');
-      if (recoveryLink) {
-        openApp('settings');
-        setTimeout(() => $('new-password')?.focus(), 80);
-        toast('Choose a new password for your ZuzuOS account.');
-      }
+      if (recoveryLink) showPasswordRecovery();
+      else showDesktop();
     } else {
       showAuth();
     }
@@ -684,12 +720,8 @@
         state.user = sessionNow.user;
         setTimeout(async () => {
           await fetchProfile();
-          showDesktop();
-          if (event === 'PASSWORD_RECOVERY') {
-            openApp('settings');
-            setTimeout(() => $('new-password')?.focus(), 80);
-            toast('Choose a new password for your ZuzuOS account.');
-          }
+          if (event === 'PASSWORD_RECOVERY') showPasswordRecovery();
+          else showDesktop();
         }, 0);
       } else if (state.user) {
         state.user = null;
