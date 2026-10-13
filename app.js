@@ -204,17 +204,23 @@
     toast('Profile updated.');
   }
   function openApp(name) {
-    const title = ({notes:'Notes',files:'My files',settings:'Settings',browser:'Web'})[name];
+    const title = ({notes:'Notes',files:'My files',settings:'Settings',browser:'Web',cinehub:'Cine Hub',music:'Music',paint:'Paint',terminal:'Terminal',ciri:'CIRI',store:'App Store'})[name];
     if (!title) return;
     state.activeApp = name;
     $('window-title').textContent = title;
-    $('window-icon').textContent = ({notes:'▤',files:'▧',settings:'⚙',browser:'◉'})[name];
+    $('window-icon').textContent = ({notes:'▤',files:'▧',settings:'⚙',browser:'◉',cinehub:'▣',music:'♫',paint:'✎',terminal:'⌘',ciri:'✧',store:'＋'})[name];
     $('window-body').innerHTML = '';
     $('app-window').classList.remove('hidden');
     if (name === 'settings') renderSettings();
     if (name === 'notes') renderNotesApp();
     if (name === 'files') renderFilesApp();
     if (name === 'browser') renderBrowserApp();
+    if (name === 'cinehub') renderCineHubApp();
+    if (name === 'music') renderMusicApp();
+    if (name === 'paint') renderPaintApp();
+    if (name === 'terminal') renderTerminalApp();
+    if (name === 'ciri') renderCiriApp();
+    if (name === 'store') renderStoreApp();
   }
   function renderSettings() {
     const name = state.profile?.display_name || state.user.user_metadata?.display_name || '';
@@ -272,6 +278,52 @@
       window.open(url.href, '_blank', 'noopener,noreferrer');
     });
     document.querySelectorAll('.quick-link').forEach(btn => btn.addEventListener('click', () => window.open(btn.dataset.url, '_blank', 'noopener,noreferrer')));
+  }
+
+  function renderCineHubApp() {
+    $('window-body').innerHTML = `<p class="app-lead">A small discovery shelf. Availability varies by country and subscription; these links open a search in a new tab.</p><div class="app-list"><div class="list-item"><div><strong>Trending picks</strong><small>Browse current streaming options</small></div><button data-cine="https://www.justwatch.com/us">Explore</button></div><div class="list-item"><div><strong>Science fiction</strong><small>Space, futures and strange worlds</small></div><button data-cine="https://www.justwatch.com/us/movies?genres=science-fiction">Browse</button></div><div class="list-item"><div><strong>Animation</strong><small>Animated films and series</small></div><button data-cine="https://www.justwatch.com/us/movies?genres=animation">Browse</button></div></div>`;
+    $('window-body').querySelectorAll('[data-cine]').forEach(btn => btn.addEventListener('click', () => window.open(btn.dataset.cine, '_blank', 'noopener,noreferrer')));
+  }
+  function renderMusicApp() {
+    $('window-body').innerHTML = `<p class="app-lead">Play audio files from your device. Files are not uploaded to your account.</p><label class="field">Choose an audio file<input id="music-file" type="file" accept="audio/*"></label><audio id="music-audio" controls style="width:100%;margin-top:12px"></audio><p id="music-status" class="muted" style="font-size:11px">No track selected.</p>`;
+    $('music-file').addEventListener('change', () => {
+      const file = $('music-file').files?.[0];
+      if (!file) return;
+      const audio = $('music-audio');
+      if (audio.dataset.objectUrl) URL.revokeObjectURL(audio.dataset.objectUrl);
+      const url = URL.createObjectURL(file);
+      audio.dataset.objectUrl = url;
+      audio.src = url;
+      $('music-status').textContent = file.name + ' · ' + Math.round(file.size / 1024) + ' KB · local playback';
+      audio.play().catch(() => {});
+    });
+  }
+  function renderPaintApp() {
+    $('window-body').innerHTML = `<p class="app-lead">A simple canvas for quick sketches. Use your mouse or touch screen, then export your drawing as a PNG.</p><div class="app-actions" style="margin:0 0 12px"><label class="setting-row" style="margin:0;gap:8px">Color <input id="paint-color" type="color" value="#9bc4ff" style="width:45px;height:34px;padding:2px"></label><label class="setting-row" style="margin:0;gap:8px">Brush <input id="paint-size" type="range" min="1" max="28" value="5" style="width:100px"></label><button id="paint-clear" class="secondary">Clear</button><button id="paint-save" class="primary">Export PNG</button></div><canvas id="paint-canvas" width="900" height="430" style="display:block;width:100%;height:auto;max-height:52vh;border:1px solid var(--line);border-radius:12px;background:#f7f9ff;touch-action:none"></canvas>`;
+    const canvas=$('paint-canvas'), ctx=canvas.getContext('2d');
+    ctx.fillStyle='#f7f9ff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    let drawing=false, last=null;
+    const point=e=>{const r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height};};
+    canvas.addEventListener('pointerdown',e=>{drawing=true;last=point(e);canvas.setPointerCapture(e.pointerId);});
+    canvas.addEventListener('pointermove',e=>{if(!drawing)return;const p=point(e);ctx.strokeStyle=$('paint-color').value;ctx.lineWidth=Number($('paint-size').value);ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;});
+    canvas.addEventListener('pointerup',()=>{drawing=false;last=null;});
+    canvas.addEventListener('pointercancel',()=>{drawing=false;last=null;});
+    $('paint-clear').addEventListener('click',()=>{ctx.fillStyle='#f7f9ff';ctx.fillRect(0,0,canvas.width,canvas.height);});
+    $('paint-save').addEventListener('click',()=>{const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='zuzu-sketch.png';a.click();});
+  }
+  function renderTerminalApp() {
+    $('window-body').innerHTML = `<p class="app-lead">A safe desktop command simulator, not a system shell. It cannot run commands on your computer.</p><div id="terminal-output" style="background:#080d14;border:1px solid var(--line);border-radius:12px;padding:14px;min-height:170px;max-height:34vh;overflow:auto;color:#a9d8c5;font:12px/1.7 ui-monospace,monospace;white-space:pre-wrap">zuzu.os [web shell] · type help to see commands\n</div><form id="terminal-form" style="display:flex;gap:8px;margin-top:10px"><input id="terminal-input" aria-label="Command" autocomplete="off" spellcheck="false" placeholder="help" style="flex:1;min-width:0;background:#0b1420;color:var(--text);border:1px solid #344258;border-radius:10px;padding:11px;font:12px ui-monospace,monospace"><button class="primary" type="submit">Run</button></form>`;
+    const output=$('terminal-output');
+    $('terminal-form').addEventListener('submit',e=>{e.preventDefault();const cmd=$('terminal-input').value.trim().toLowerCase();$('terminal-input').value='';let result='';if(cmd==='help')result='help  about  date  apps  clear  whoami';else if(cmd==='about')result='zuzu.os — a personal web desktop.';else if(cmd==='date')result=new Date().toString();else if(cmd==='apps')result='Notes, My files, Settings, Web, Cine Hub, Music, Paint, CIRI, App Store';else if(cmd==='whoami')result=state.user?.email||'guest';else if(cmd==='clear'){output.textContent='';return;}else if(cmd==='')return;else result='Unknown command. Type help.';output.textContent+='\n> '+cmd+'\n'+result+'\n';output.scrollTop=output.scrollHeight;});
+  }
+  function renderCiriApp() {
+    $('window-body').innerHTML = `<p class="app-lead">CIRI is a lightweight local helper. It does not send your prompts to an AI service.</p><div id="ciri-history" class="app-list" style="margin-bottom:14px"><div class="list-item"><div><strong>CIRI</strong><small>Hi. Ask me for a quick idea, a focus tip, or help using this desktop.</small></div></div></div><form id="ciri-form" class="app-form"><label>Message<input id="ciri-input" maxlength="500" placeholder="What can you help me with?"></label><button class="primary" type="submit">Ask CIRI</button></form>`;
+    $('ciri-form').addEventListener('submit',e=>{e.preventDefault();const input=$('ciri-input'),q=input.value.trim();if(!q)return;const low=q.toLowerCase();let answer='I can help you use zuzu.os. Try Notes to save a thought, Settings to update your profile, or Paint for a sketch.';if(low.includes('focus')||low.includes('study'))answer='Try choosing one small task, setting a short timer, and putting unrelated tabs away until that task is done.';else if(low.includes('note'))answer='Open Notes or use the quick-capture panel on the desktop. Signed-in notes can sync to your account.';else if(low.includes('account')||low.includes('password'))answer='Open Settings to update your profile. Use “Forgot password?” on the sign-in screen to request a reset email.';else if(low.includes('time'))answer='The current time is '+new Date().toLocaleTimeString()+'.';const history=$('ciri-history');const user=document.createElement('div');user.className='list-item';user.innerHTML='<div><strong>You</strong><small></small></div>';user.querySelector('small').textContent=q;history.append(user);const reply=document.createElement('div');reply.className='list-item';reply.innerHTML='<div><strong>CIRI</strong><small></small></div>';reply.querySelector('small').textContent=answer;history.append(reply);input.value='';});
+  }
+  function renderStoreApp() {
+    const apps=[['Notes','Capture and sync a quick note','notes'],['Paint','Draw and export a sketch','paint'],['Music','Play audio from your device','music'],['Cine Hub','Browse streaming discovery links','cinehub'],['Terminal','Try safe desktop commands','terminal'],['CIRI','Use the local helper','ciri']];
+    $('window-body').innerHTML='<p class="app-lead">Small tools included with your desktop. No downloads or paid subscriptions required.</p><div class="app-list">'+apps.map(([name,desc,id])=>'<div class="list-item"><div><strong>'+escapeHTML(name)+'</strong><small>'+escapeHTML(desc)+'</small></div><button data-install="'+id+'">Open</button></div>').join('')+'</div>';
+    $('window-body').querySelectorAll('[data-install]').forEach(btn=>btn.addEventListener('click',()=>openApp(btn.dataset.install)));
   }
   function escapeHTML(value) {
     return String(value ?? '').replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
