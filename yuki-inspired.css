@@ -284,3 +284,200 @@ p, small, label, strong, h1, h2, h3, span { overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; }
 }
+
+
+/* YukiOS-style desktop shell: dense floating workspace, glass panels and desktop-first controls.
+   This is an original adaptation for ZuzuOS, not a replacement for its auth/data layer. */
+:root {
+  --zy-radius: 13px;
+  --zy-glass: rgba(18, 21, 29, .76);
+  --zy-glass-strong: rgba(13, 15, 21, .94);
+  --zy-line: rgba(255,255,255,.14);
+  --zy-line-soft: rgba(255,255,255,.075);
+  --zy-accent: #a6c8ff;
+}
+#desktop[data-shell-style] {
+  position: relative;
+  overflow: hidden;
+  min-height: 100dvh;
+  background-color: #090b10;
+  font-family: Inter, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+}
+#desktop[data-shell-style] .os-menubar {
+  position: relative;
+  z-index: 40;
+  min-height: 32px;
+  padding-inline: 12px;
+  background: rgba(8,10,15,.72);
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 1px rgba(255,255,255,.025);
+}
+#desktop[data-shell-style] .os-menubar button {
+  min-height: 27px;
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-size: 11px;
+}
+#desktop[data-shell-style] .taskbar {
+  z-index: 60;
+  min-height: 48px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 15px;
+  background: rgba(18,20,27,.78);
+  box-shadow: 0 14px 42px rgba(0,0,0,.4), inset 0 1px rgba(255,255,255,.06);
+  backdrop-filter: blur(34px) saturate(160%);
+  -webkit-backdrop-filter: blur(34px) saturate(160%);
+}
+#desktop[data-shell-style] .taskbar button,
+#desktop[data-shell-style] .task-app,
+#desktop[data-shell-style] .task-home {
+  min-height: 36px;
+  border-radius: 10px;
+}
+#desktop[data-shell-style] .task-app[aria-current="true"],
+#desktop[data-shell-style] .task-app.active,
+#desktop[data-shell-style] .taskbar button[aria-pressed="true"] {
+  background: rgba(166,200,255,.14);
+  box-shadow: inset 0 -2px #a6c8ff;
+}
+#desktop[data-shell-style] .os-desktop-shortcuts {
+  z-index: 2;
+  gap: 7px;
+}
+#desktop[data-shell-style] .os-shortcut {
+  border-radius: 9px;
+  text-shadow: 0 1px 4px #000, 0 2px 10px #0009;
+}
+#desktop[data-shell-style] .os-shortcut > span {
+  border-radius: 10px;
+  background: rgba(20,23,31,.74);
+  border-color: rgba(255,255,255,.12);
+  box-shadow: inset 0 1px rgba(255,255,255,.07), 0 4px 16px #0003;
+}
+#desktop[data-shell-style] .os-window,
+#desktop[data-shell-style] #app-window {
+  border: 1px solid rgba(255,255,255,.17);
+  border-radius: 14px;
+  background: rgba(17,19,26,.91);
+  box-shadow: 0 28px 90px rgba(0,0,0,.52), inset 0 1px rgba(255,255,255,.055);
+  backdrop-filter: blur(34px) saturate(145%);
+  -webkit-backdrop-filter: blur(34px) saturate(145%);
+  animation: zy-window-enter .2s cubic-bezier(.2,.8,.2,1) both;
+}
+#desktop[data-shell-style] .os-window-bar,
+#desktop[data-shell-style] .window-bar {
+  min-height: 42px;
+  background: rgba(255,255,255,.035);
+  border-bottom: 1px solid rgba(255,255,255,.085);
+}
+#desktop[data-shell-style] .os-window-controls button,
+#desktop[data-shell-style] .window-control {
+  border-radius: 8px;
+}
+#desktop[data-shell-style] .os-window-content,
+#desktop[data-shell-style] .window-body {
+  scrollbar-color: #515866 transparent;
+  scrollbar-width: thin;
+}
+#desktop[data-shell-style] .os-window-content::-webkit-scrollbar,
+#desktop[data-shell-style] .window-body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+#desktop[data-shell-style] .os-window-content::-webkit-scrollbar-thumb,
+#desktop[data-shell-style] .window-body::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 20px;
+  background: #505663;
+  background-clip: padding-box;
+}
+#desktop[data-shell-style] #os-start-menu,
+#desktop[data-shell-style] .os-start-menu,
+#desktop[data-shell-style] .os-flyout,
+#desktop[data-shell-style] .os-system-tray,
+#desktop[data-shell-style] .os-context-menu,
+#desktop[data-shell-style] .os-notification-center {
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 16px;
+  background: rgba(14,16,22,.92);
+  box-shadow: 0 25px 80px rgba(0,0,0,.5), inset 0 1px rgba(255,255,255,.045);
+  backdrop-filter: blur(36px) saturate(150%);
+  -webkit-backdrop-filter: blur(36px) saturate(150%);
+}
+#desktop[data-shell-style] .os-launch-item,
+#desktop[data-shell-style] .os-quick-grid button,
+#desktop[data-shell-style] .os-notification-center button {
+  border-radius: 10px;
+}
+#desktop[data-shell-style] .os-launch-item:hover,
+#desktop[data-shell-style] .os-quick-grid button:hover,
+#desktop[data-shell-style] .os-notification-center button:hover {
+  background: rgba(255,255,255,.075);
+}
+#desktop[data-shell-style] .os-system-tray {
+  padding: 4px;
+}
+#desktop[data-shell-style] .os-scene-widget,
+#desktop[data-shell-style] .os-widget,
+#desktop[data-shell-style] .clock-card,
+#desktop[data-shell-style] .panel {
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 13px;
+  background: rgba(16,18,25,.54);
+  box-shadow: 0 8px 28px rgba(0,0,0,.12), inset 0 1px rgba(255,255,255,.035);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+#desktop[data-shell-style] .os-scene-widget:hover,
+#desktop[data-shell-style] .os-widget:hover,
+#desktop[data-shell-style] .panel:hover {
+  border-color: rgba(255,255,255,.2);
+}
+#desktop[data-shell-style] input,
+#desktop[data-shell-style] textarea,
+#desktop[data-shell-style] select {
+  border-radius: 9px;
+}
+#desktop[data-shell-style] button {
+  transition: background-color .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+#desktop[data-shell-style] button:active {
+  transform: scale(.975);
+}
+#desktop[data-shell-style] button:disabled {
+  transform: none;
+}
+#desktop[data-shell-style] .os-start-menu,
+#desktop[data-shell-style] #os-start-menu {
+  animation: zy-panel-enter .18s cubic-bezier(.2,.8,.2,1) both;
+  transform-origin: bottom center;
+}
+#desktop[data-shell-style] .os-context-menu {
+  animation: zy-panel-enter .12s ease-out both;
+  transform-origin: top left;
+}
+@keyframes zy-panel-enter {
+  from { opacity: 0; translate: 0 7px; scale: .985; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+@media (max-width: 700px) {
+  #desktop[data-shell-style] .os-menubar { padding-inline: 6px; }
+  #desktop[data-shell-style] .taskbar {
+    max-width: calc(100vw - 16px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  #desktop[data-shell-style] .taskbar::-webkit-scrollbar { display: none; }
+  #desktop[data-shell-style] .os-window,
+  #desktop[data-shell-style] #app-window {
+    border-radius: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #desktop[data-shell-style] .os-window,
+  #desktop[data-shell-style] #os-start-menu,
+  #desktop[data-shell-style] .os-start-menu,
+  #desktop[data-shell-style] .os-context-menu {
+    animation: none !important;
+  }
+}
