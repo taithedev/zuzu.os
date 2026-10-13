@@ -720,7 +720,8 @@
         state.user = sessionNow.user;
         setTimeout(async () => {
           await fetchProfile();
-          if (event === 'PASSWORD_RECOVERY') showPasswordRecovery();
+          const recoveryLink = new URLSearchParams(location.hash.replace(/^#/, '')).get('type') === 'recovery' || new URLSearchParams(location.search).has('code');
+          if (event === 'PASSWORD_RECOVERY' || recoveryLink) showPasswordRecovery();
           else showDesktop();
         }, 0);
       } else if (state.user) {
