@@ -5,10 +5,11 @@ A Windows-inspired personal web desktop with Supabase authentication, profile se
 ## Current features
 
 - ZuzuOS-branded account system backed by Supabase Auth: email/password sign-up, sign-in, sign-out, password reset, and password changes. No Microsoft sign-in is used.
-- Profile creation on registration, editable display name and username.
+- Profile creation on registration, editable display name and username, email-change confirmation, and password updates.
 - User-scoped database storage protected by row-level security (RLS).
 - Private file upload, listing, download, and deletion in the user's own storage folder (10 MB limit per file).
 - Account data export and a confirmed account deletion flow backed by a server-side Edge Function.
+- Persistent local accent-color and wallpaper preferences.
 - Quick note saved locally and synchronized to the signed-in user's account.
 - Settings window, theme accent selector, file/profile export, and external-link launcher.
 - Cine Hub discovery links, local audio playback, sketch canvas with PNG export, safe simulated terminal, local CIRI helper, and App Store catalog.
