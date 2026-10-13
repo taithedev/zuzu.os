@@ -52,6 +52,10 @@
     }
     win.classList.remove('os-maximized');
     win.style.transform = 'none';
+    if (innerWidth < 700 && (mode === 'left' || mode === 'right')) {
+      win.classList.add('os-maximized');
+      return;
+    }
     const gap = 10;
     const top = 58;
     const bottom = 82;
@@ -145,6 +149,8 @@
     $('os-new-workspace').addEventListener('click', () => {
       if (workspaceCount >= 4) { toast('You can use up to four desktops in this session.'); return; }
       workspaceCount++;
+      state.saved.workspaceCount = workspaceCount;
+      savePrefs();
       switchWorkspace(workspaceCount);
       renderWorkspaces();
       toast('Desktop ' + workspaceCount + ' created.');
@@ -176,6 +182,7 @@
     });
     document.addEventListener('pointerdown', event => {
       if (!event.target.closest('#os-desktop-context')) context.classList.add('hidden');
+      if (!event.target.closest('#os-task-view-panel,#os-task-view')) toggleTaskView(false);
       if (!event.target.closest('#os-quick-settings,#os-quick-settings-toggle') && state.quickOpen) togglePanel('quick',false);
       if (!event.target.closest('#os-notification-center,#os-notifications-toggle,#os-tray-clock') && state.notificationsOpen) togglePanel('notifications',false);
     });
@@ -236,6 +243,8 @@
     setInterval(updateClock,30000);
     const prefs = getPrefs();
     state.saved = {...prefs};
+    if (Number.isInteger(prefs.workspaceCount)) workspaceCount = Math.max(2,Math.min(4,prefs.workspaceCount));
+    renderWorkspaces();
     if (prefs.blur === false) quickToggle('blur',false);
     if (prefs.motion === false) quickToggle('motion',false);
     if (Number.isFinite(prefs.brightness)) setBrightness(prefs.brightness);
@@ -276,6 +285,7 @@
   }
   function switchWorkspace(number) {
     const target = Math.max(1,Math.min(workspaceCount,Number(number)||1));
+    if (currentWorkspace !== target) showDesktopSnapshot = null;
     currentWorkspace = target;
     document.querySelectorAll('#desktop .os-window, #desktop #app-window').forEach(win => {
       if (!win.dataset.osWorkspace) win.dataset.osWorkspace = String(target);
