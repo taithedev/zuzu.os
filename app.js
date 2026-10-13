@@ -38,11 +38,38 @@
     $('account-menu').classList.add('hidden');
     $('app-window').classList.add('hidden');
   }
+  let setupStep = 0;
+  function renderSetupStep() {
+    document.querySelectorAll('[data-setup-page]').forEach((page) => page.classList.toggle('active', Number(page.dataset.setupPage) === setupStep));
+    document.querySelectorAll('[data-setup-step]').forEach((step) => {
+      const index = Number(step.dataset.setupStep);
+      step.classList.toggle('active', index === setupStep);
+      step.classList.toggle('done', index < setupStep);
+      const number = step.querySelector('span');
+      if (number) number.textContent = index < setupStep ? '✓' : String(index + 1);
+    });
+    document.querySelectorAll('.setup-progress span').forEach((dot, index) => dot.classList.toggle('active', index === setupStep));
+    $('setup-back').disabled = setupStep === 0;
+    $('setup-next').innerHTML = setupStep === 0 ? 'Get started <span>→</span>' : setupStep === 3 ? 'Open my desktop <span>→</span>' : 'Continue <span>→</span>';
+  }
+  function showSetupIfNeeded() {
+    const recoveryLink = new URLSearchParams(location.hash.replace(/^#/, '')).get('type') === 'recovery' || new URLSearchParams(location.search).has('code');
+    if (local.get('setup-complete', false) || recoveryLink) return;
+    setupStep = 0;
+    renderSetupStep();
+    $('setup-screen').classList.remove('hidden');
+  }
+  function closeSetup() {
+    local.set('setup-complete', true);
+    $('setup-screen').classList.add('hidden');
+    toast('Welcome to ZuzuOS. Your desktop is ready.');
+  }
   function showDesktop() {
     $('auth-screen').classList.add('hidden');
     $('desktop').classList.remove('hidden');
     renderProfile();
     loadQuickNote();
+    showSetupIfNeeded();
   }
   function initials(text) {
     const parts = String(text || 'Z').trim().split(/[\s._-]+/).filter(Boolean);
@@ -539,6 +566,19 @@
     $('clock-date').textContent = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
   }
   async function boot() {
+    $('setup-back').addEventListener('click', () => {
+      if (setupStep > 0) { setupStep -= 1; renderSetupStep(); }
+    });
+    $('setup-next').addEventListener('click', () => {
+      if (setupStep < 3) { setupStep += 1; renderSetupStep(); }
+      else closeSetup();
+    });
+    document.querySelectorAll('[data-wallpaper-choice]').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('[data-wallpaper-choice]').forEach((item) => item.classList.toggle('selected', item === button));
+        applyWallpaper(button.dataset.wallpaperChoice);
+      });
+    });
     $('auth-form').addEventListener('submit', submitAuth);
     $('switch-mode').addEventListener('click', () => setMode(state.mode === 'signin' ? 'signup' : 'signin'));
     $('forgot-password').addEventListener('click', forgotPassword);
