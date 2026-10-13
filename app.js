@@ -285,6 +285,7 @@
       </section>
       <section class="setting-section"><h3>Account details</h3><div class="setting-row"><div><strong>${escapeHTML(state.user.email || '')}</strong><p>Email address used to sign in.</p></div><span class="sync-check">✓</span></div><div class="setting-row"><div><strong>Cloud sync</strong><p>Your saved notes and settings are linked to this account.</p></div><span class="sync-check">✓</span></div></section>
       <section class="setting-section"><h3>Appearance</h3>
+        <div class="setting-row"><div><strong>Preset theme</strong><p>Choose a complete dark desktop palette.</p></div><label><select id="theme-preset-choice"><option value="cine">Cinematic Black</option><option value="oled">Pure OLED</option><option value="graphite">Graphite</option><option value="crimson">Crimson Night</option><option value="midnight">Midnight Blue</option></select></label></div>
         <div class="setting-row"><div><strong>Accent color</strong><p>Choose the color used for highlights.</p></div><label><select id="accent-choice"><option value="#9bc4ff">Sky blue</option><option value="#b5a4ff">Lavender</option><option value="#8ee0bd">Mint</option><option value="#f0c58c">Amber</option></select></label></div>
         <div class="setting-row"><div><strong>Desktop wallpaper</strong><p>Choose the background for this device.</p></div><label><select id="wallpaper-choice"><option value="none">Default</option><option value="aurora">Aurora</option><option value="obsidian">Obsidian</option><option value="afterglow">Afterglow</option></select></label></div>
       </section>
@@ -348,6 +349,9 @@
       toast('Your password has been updated.');
     });
     $('settings-signout').addEventListener('click', signOut);
+    applyThemePreset(local.get('theme-preset', 'cine'));
+    $('theme-preset-choice').value = local.get('theme-preset', 'cine');
+    $('theme-preset-choice').addEventListener('change', (e) => applyThemePreset(e.target.value, true));
     $('accent-choice').value = local.get('accent', '#9bc4ff');
     $('wallpaper-choice').value = local.get('wallpaper', 'none');
     $('wallpaper-choice').addEventListener('change', (e) => applyWallpaper(e.target.value));
@@ -548,6 +552,29 @@
   function escapeHTML(value) {
     return String(value ?? '').replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   }
+  const themePresets = {
+    cine: { label: 'Cinematic', bg: '#050608', panel: '#101216', accent: '#e5e7eb', glow: '0' },
+    oled: { label: 'OLED Black', bg: '#000000', panel: '#090909', accent: '#ffffff', glow: '0' },
+    graphite: { label: 'Graphite', bg: '#0c0d0f', panel: '#17191d', accent: '#a7b0bf', glow: '0' },
+    crimson: { label: 'Crimson Night', bg: '#090607', panel: '#171012', accent: '#e58b98', glow: '0' },
+    midnight: { label: 'Midnight Blue', bg: '#060910', panel: '#101725', accent: '#8cb8ff', glow: '0' }
+  };
+  function applyThemePreset(value, notify = false) {
+    const key = Object.hasOwn(themePresets, value) ? value : 'cine';
+    const theme = themePresets[key];
+    const root = document.documentElement;
+    root.dataset.themePreset = key;
+    root.style.setProperty('--bg', theme.bg);
+    root.style.setProperty('--panel-solid', theme.panel);
+    root.style.setProperty('--accent', theme.accent);
+    root.style.setProperty('--accent-strong', theme.accent);
+    root.style.setProperty('--theme-glow', theme.glow);
+    local.set('theme-preset', key);
+    const select = $('theme-preset-choice');
+    if (select) select.value = key;
+    document.querySelectorAll('[data-theme-preset]').forEach((button) => button.classList.toggle('selected', button.dataset.themePreset === key));
+    if (notify) toast(theme.label + ' theme applied.');
+  }
   function applyWallpaper(value) {
     const wallpaper = ['aurora','obsidian','afterglow'].includes(value) ? value : 'none';
     local.set('wallpaper', wallpaper);
@@ -581,6 +608,9 @@
         applyWallpaper(button.dataset.wallpaperChoice);
       });
     });
+    document.querySelectorAll('[data-theme-preset]').forEach((button) => {
+      button.addEventListener('click', () => applyThemePreset(button.dataset.themePreset));
+    });
     $('auth-form').addEventListener('submit', submitAuth);
     $('switch-mode').addEventListener('click', () => setMode(state.mode === 'signin' ? 'signup' : 'signin'));
     $('forgot-password').addEventListener('click', forgotPassword);
@@ -604,6 +634,7 @@
     document.querySelectorAll('[data-app]').forEach(button => button.addEventListener('click', () => openApp(button.dataset.app)));
     $('cookie-accept').addEventListener('click', () => { local.set('cookie-consent', true); $('cookie-notice').classList.add('hidden'); });
     const accent = local.get('accent');
+    applyThemePreset(local.get('theme-preset', 'cine'));
     if (accent) document.documentElement.style.setProperty('--accent', accent);
     applyWallpaper(local.get('wallpaper', 'aurora'));
     if (!local.get('cookie-consent', false)) $('cookie-notice').classList.remove('hidden');
