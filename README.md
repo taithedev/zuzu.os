@@ -9,6 +9,7 @@ A Windows-inspired personal web desktop with Supabase authentication, profile se
 - User-scoped database storage protected by row-level security (RLS).
 - Quick note saved locally and synchronized to the signed-in user's account.
 - Settings window, theme accent selector, file/profile export, and external-link launcher.
+- Cine Hub discovery links, local audio playback, sketch canvas with PNG export, safe simulated terminal, local CIRI helper, and App Store catalog.
 - Responsive desktop shell, taskbar, account menu, and cookie/preferences notice.
 
 ## Supabase project
@@ -48,6 +49,7 @@ Import this repository into Vercel and use the repository root as the project ro
 
 - Database policies restrict profile and saved-data rows to the authenticated owner.
 - The private Storage bucket policies require uploads to be placed under a folder named with the signed-in user's UUID.
-- The current Files app is a starter interface; full drag-and-drop upload management is not implemented yet.
+- The Files app currently provides local note/profile export. Full drag-and-drop upload management and signed private-file previews are not implemented yet.
+- Music plays files locally in the browser; it does not stream a music catalog. Cine Hub opens discovery links instead of hosting movies.
 - Microsoft OAuth is not enabled by default. To support Microsoft accounts, configure the Microsoft provider in Supabase Auth and add a provider sign-in button.
 - Do not treat client-side UI visibility as authorization. Enforce privileged actions in Supabase RLS or trusted server-side functions.
