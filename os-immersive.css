@@ -71,7 +71,7 @@
 #desktop[data-shell-style=windows] .os-scene-widgets{top:132px;right:22px;width:min(315px,calc(100vw - 130px))}
 #desktop[data-shell-style=windows] .os-scene-left-rail{top:120px;left:20px}
 #desktop[data-shell-style=windows] .os-scene-bottom-left{display:none}
-#desktop[data-shell-style=windows] .taskbar{position:fixed!important;z-index:71!important;left:0!important;right:0!important;bottom:0!important;transform:none!important;width:100%!important;max-width:100%!important;height:66px!important;min-height:66px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;padding:8px 140px 8px 14px!important;border:0!important;border-top:1px solid #ffffff1b!important;border-radius:0!important;background:rgba(18,21,28,.83)!important;backdrop-filter:blur(36px) saturate(150%)!important;box-shadow:0 -5px 35px #0004!important}
+#desktop[data-shell-style=windows] .taskbar{position:fixed!important;z-index:71!important;left:0!important;right:0!important;bottom:0!important;transform:none!important;width:100%!important;max-width:100%!important;height:66px!important;min-height:66px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;padding:8px 140px!important;border:0!important;border-top:1px solid #ffffff1b!important;border-radius:0!important;background:rgba(18,21,28,.83)!important;backdrop-filter:blur(36px) saturate(150%)!important;box-shadow:0 -5px 35px #0004!important}
 #desktop[data-shell-style=windows] .taskbar .taskbar-spacer,#desktop[data-shell-style=windows] .taskbar .taskbar-separator,#desktop[data-shell-style=windows] .taskbar #home-button{display:none!important}
 #desktop[data-shell-style=windows] .taskbar .task-app{display:grid!important;place-items:center!important;min-width:43px!important;width:45px!important;height:45px!important;padding:0!important;border:1px solid transparent!important;border-radius:12px!important;background:#ffffff04!important;color:#f0f4fa!important;font-size:19px!important}
 #desktop[data-shell-style=windows] .taskbar .task-app:hover{background:#ffffff14!important}
@@ -162,3 +162,6 @@
  #desktop[data-shell-style=windows] .taskbar .task-app{min-width:35px!important;width:37px!important}
  #desktop[data-shell-style=windows] #os-start-button{min-width:38px!important;width:38px!important}
 }
+
+#desktop[data-shell-style=windows] #os-start-button .os-start-mark.os-windows-logo{display:grid;grid-template-columns:repeat(2,9px);grid-template-rows:repeat(2,9px);gap:2px;width:20px;height:20px;padding:0;background:none!important;border:0;border-radius:0}
+#desktop[data-shell-style=windows] #os-start-button .os-start-mark.os-windows-logo i{display:block;background:#78b6ff;border-radius:1px}
