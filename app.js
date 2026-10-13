@@ -250,7 +250,8 @@
       <section class="setting-section"><h3>Account details</h3><div class="setting-row"><div><strong>${escapeHTML(state.user.email || '')}</strong><p>Email address used to sign in.</p></div><span class="sync-check">✓</span></div><div class="setting-row"><div><strong>Cloud sync</strong><p>Your saved notes and settings are linked to this account.</p></div><span class="sync-check">✓</span></div></section>
       <section class="setting-section"><h3>Appearance</h3><div class="setting-row"><div><strong>Accent color</strong><p>Choose the color used for highlights.</p></div><label><select id="accent-choice"><option value="#9bc4ff">Sky blue</option><option value="#b5a4ff">Lavender</option><option value="#8ee0bd">Mint</option><option value="#f0c58c">Amber</option></select></label></div></section>
       <div class="app-actions"><button id="settings-signout" class="secondary">Sign out</button></div>`;
-    $('profile-form').addEventListener('submit', updateProfile);\n    $('delete-account').addEventListener('click', async () => {
+    $('profile-form').addEventListener('submit', updateProfile);
+    $('delete-account').addEventListener('click', async () => {
       if ($('delete-confirmation').value.trim() !== 'DELETE MY ZUZU ACCOUNT') return toast('Type the exact confirmation phrase first.');
       if (!window.confirm('Permanently delete your ZuzuOS account and all uploaded files? This cannot be undone.')) return;
       const button = $('delete-account');
