@@ -197,6 +197,7 @@
       await createPeer(video);
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
+      await waitForIceGathering();
       await writeSignal('offer',{sdp:pc.localDescription});
       showCallStage(video, 'Calling ' + (person.display_name || person.username || 'user') + '…');
       setStatus('Calling. Keep this window open until the other person answers.');
@@ -206,11 +207,20 @@
     }
   }
 
+  function waitForIceGathering() {
+    if (!pc || pc.iceGatheringState === 'complete') return Promise.resolve();
+    return new Promise(resolve => {
+      const finish = () => { if (pc && pc.iceGatheringState === 'complete') { pc.removeEventListener('icegatheringstatechange', finish); resolve(); } };
+      pc.addEventListener('icegatheringstatechange', finish);
+      setTimeout(resolve, 7000);
+    });
+  }
+
   async function createPeer(video) {
     localStream = await navigator.mediaDevices.getUserMedia({audio:true,video:video ? {width:{ideal:1280},height:{ideal:720}} : false});
     pc = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
     localStream.getTracks().forEach(track => pc.addTrack(track,localStream));
-    pc.onicecandidate = event => { if (event.candidate && activeCall) writeSignal('ice',{candidate:event.candidate.toJSON()}).catch(err=>setStatus(err.message,true)); };
+    // Wait for ICE gathering before sending SDP; this avoids losing candidates when realtime events arrive out of order.
     pc.ontrack = event => {
       const stream = event.streams?.[0];
       if (!stream) return;
@@ -253,6 +263,7 @@
         await pc.setRemoteDescription(new RTCSessionDescription(signal.payload.sdp));
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
+        await waitForIceGathering();
         await writeSignal('answer',{sdp:pc.localDescription});
         showCallStage(wantsVideo,'Connecting to caller…');
       } catch (err) {
