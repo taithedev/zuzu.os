@@ -10,8 +10,7 @@
         }
       ],
       "destination": "https://zuzuos.lol/:path*",
-      "permanent": true,
-      "preserveQueryParams": true
+      "permanent": true
     }
   ]
 }
