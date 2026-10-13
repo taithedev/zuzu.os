@@ -242,10 +242,41 @@
           <p id="password-status" class="muted" role="status"></p>
         </form>
       </section>
+      <section class="setting-section"><h3>Delete account</h3>
+        <p class="muted" style="font-size:12px">Permanently delete your ZuzuOS account, profile, saved data, and uploaded files. This cannot be undone.</p>
+        <label>Type DELETE MY ZUZU ACCOUNT to confirm<input id="delete-confirmation" autocomplete="off" placeholder="DELETE MY ZUZU ACCOUNT"></label>
+        <button id="delete-account" class="secondary danger-action" type="button">Permanently delete my account</button>
+      </section>
       <section class="setting-section"><h3>Account details</h3><div class="setting-row"><div><strong>${escapeHTML(state.user.email || '')}</strong><p>Email address used to sign in.</p></div><span class="sync-check">✓</span></div><div class="setting-row"><div><strong>Cloud sync</strong><p>Your saved notes and settings are linked to this account.</p></div><span class="sync-check">✓</span></div></section>
       <section class="setting-section"><h3>Appearance</h3><div class="setting-row"><div><strong>Accent color</strong><p>Choose the color used for highlights.</p></div><label><select id="accent-choice"><option value="#9bc4ff">Sky blue</option><option value="#b5a4ff">Lavender</option><option value="#8ee0bd">Mint</option><option value="#f0c58c">Amber</option></select></label></div></section>
       <div class="app-actions"><button id="settings-signout" class="secondary">Sign out</button></div>`;
-    $('profile-form').addEventListener('submit', updateProfile);
+    $('profile-form').addEventListener('submit', updateProfile);\n    $('delete-account').addEventListener('click', async () => {
+      if ($('delete-confirmation').value.trim() !== 'DELETE MY ZUZU ACCOUNT') return toast('Type the exact confirmation phrase first.');
+      if (!window.confirm('Permanently delete your ZuzuOS account and all uploaded files? This cannot be undone.')) return;
+      const button = $('delete-account');
+      button.disabled = true;
+      button.textContent = 'Deleting account…';
+      try {
+        const { data: { session } } = await db.auth.getSession();
+        if (!session?.access_token) throw new Error('Your session expired. Sign in again and retry.');
+        const response = await fetch(SUPABASE_URL + '/functions/v1/delete-account', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + session.access_token, 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ confirmation: 'DELETE MY ZUZU ACCOUNT' })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'Account deletion failed.');
+        state.user = null; state.profile = null;
+        await db.auth.signOut();
+        showAuth();
+        message('Your ZuzuOS account has been deleted.');
+      } catch (error) {
+        toast(error.message || 'Account deletion failed.');
+        button.disabled = false;
+        button.textContent = 'Permanently delete my account';
+      }
+    });
+
     $('password-change-form').addEventListener('submit', async (event) => {
       event.preventDefault();
       const password = $('new-password').value;
@@ -508,10 +539,18 @@
     } else {
       showAuth();
     }
-    db.auth.onAuthStateChange((_event, sessionNow) => {
+    db.auth.onAuthStateChange((event, sessionNow) => {
       if (sessionNow?.user) {
         state.user = sessionNow.user;
-        setTimeout(async () => { await fetchProfile(); showDesktop(); }, 0);
+        setTimeout(async () => {
+          await fetchProfile();
+          showDesktop();
+          if (event === 'PASSWORD_RECOVERY') {
+            openApp('settings');
+            setTimeout(() => $('new-password')?.focus(), 80);
+            toast('Choose a new password for your ZuzuOS account.');
+          }
+        }, 0);
       } else if (state.user) {
         state.user = null;
         state.profile = null;
