@@ -306,10 +306,11 @@
       </section>
       <section class="setting-section"><h3>Account security</h3>
         <form id="password-change-form" class="app-form">
+          <label>Current password<input id="current-password" type="password" autocomplete="current-password" required placeholder="Verify it is you"></label>
           <label>New password<input id="new-password" type="password" minlength="8" autocomplete="new-password" required placeholder="At least 8 characters"></label>
           <label>Confirm new password<input id="confirm-password" type="password" minlength="8" autocomplete="new-password" required placeholder="Enter it again"></label>
           <button class="primary" type="submit">Update password</button>
-          <p id="password-status" class="muted" role="status"></p>
+          <p id="password-status" class="muted" role="status" aria-live="polite"></p>
         </form>
       </section>
       <section class="setting-section"><h3>Change email address</h3>
@@ -325,6 +326,32 @@
         <button id="delete-account" class="secondary danger-action" type="button">Permanently delete my account</button>
       </section>
       <section class="setting-section"><h3>Account details</h3><div class="setting-row"><div><strong>${escapeHTML(state.user.email || '')}</strong><p>Email address used to sign in.</p></div><span class="sync-check">✓</span></div><div class="setting-row"><div><strong>Cloud sync</strong><p>Your saved notes and settings are linked to this account.</p></div><span class="sync-check">✓</span></div></section>
+      <section class="setting-section" id="license-section">
+        <h3>ZuzuOS edition & license</h3>
+        <p class="muted" style="font-size:12px">Your edition is tied to your signed-in account. License keys are checked by Supabase, not just by the browser.</p>
+        <div class="setting-row"><div><strong id="license-current-plan">Checking edition…</strong><p id="license-current-version">Checking version…</p></div><span class="sync-check" id="license-status-mark">…</span></div>
+        <form id="license-activate-form" class="app-form">
+          <label>Product key<input id="license-key-input" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="80" required placeholder="ZUZU-PRO-XXXX-XXXX-XXXX"></label>
+          <button class="primary" type="submit">Activate key</button>
+          <p id="license-activate-status" class="muted" role="status" aria-live="polite"></p>
+        </form>
+        <div id="license-owner-tools" class="hidden">
+          <div class="setting-section"><h3>Owner license manager</h3>
+            <p class="muted" style="font-size:12px">Generate a key and copy it immediately. Only its hash is stored, so the full key cannot be recovered later.</p>
+            <form id="license-generate-form" class="app-form">
+              <label>Edition<select id="license-plan"><option value="pro">ZuzuOS Pro</option><option value="developer">Developer</option><option value="lifetime">Lifetime</option></select></label>
+              <label>Version entitlement<input id="license-version" maxlength="32" value="1.x" pattern="[A-Za-z0-9._-]+" required></label>
+              <label>Maximum activations<input id="license-max-activations" type="number" min="1" max="1000" value="1" required></label>
+              <label>Expiration date (optional)<input id="license-expires" type="date"></label>
+              <button class="primary" type="submit">Generate product key</button>
+              <p id="license-generate-status" class="muted" role="status" aria-live="polite"></p>
+              <button id="license-copy-key" class="secondary hidden" type="button">Copy generated key</button>
+            </form>
+            <div class="section-heading"><h3>Issued keys</h3><button id="license-refresh" class="secondary" type="button">Refresh</button></div>
+            <div id="license-key-list" class="app-list"><p class="muted">Load issued keys to manage them.</p></div>
+          </div>
+        </div>
+      </section>
       <section class="setting-section"><h3>Appearance</h3>
         <div class="setting-row"><div><strong>Preset theme</strong><p>Choose a complete dark desktop palette.</p></div><label><select id="theme-preset-choice"><option value="cine">Cinematic Black</option><option value="oled">Pure OLED</option><option value="graphite">Graphite</option><option value="crimson">Crimson Night</option><option value="midnight">Midnight Blue</option></select></label></div>
         <div class="setting-row"><div><strong>Desktop layout</strong><p>Switch between Cine Desktop, Windows-style, and macOS-style layouts.</p></div><label><select id="shell-layout-choice"><option value="cine">Cine Desktop</option><option value="windows">Windows Style</option><option value="macos">macOS Style</option></select></label></div>
@@ -376,20 +403,101 @@
     });
     $('password-change-form').addEventListener('submit', async (event) => {
       event.preventDefault();
+      const currentPassword = $('current-password').value;
       const password = $('new-password').value;
       const confirmation = $('confirm-password').value;
-      if (password.length < 8) return toast('Use at least 8 characters for your password.');
-      if (password !== confirmation) return toast('The passwords do not match.');
+      if (password.length < 8) { $('password-status').textContent = 'Use at least 8 characters.'; return; }
+      if (password !== confirmation) { $('password-status').textContent = 'The new passwords do not match.'; return; }
+      if (password === currentPassword) { $('password-status').textContent = 'Choose a different password.'; return; }
       const button = $('password-change-form').querySelector('button[type="submit"]');
       button.disabled = true;
-      $('password-status').textContent = 'Updating password…';
-      const { error } = await db.auth.updateUser({ password });
-      button.disabled = false;
-      if (error) { $('password-status').textContent = error.message; return; }
-      $('password-change-form').reset();
-      $('password-status').textContent = 'Password updated.';
-      toast('Your password has been updated.');
+      $('password-status').textContent = 'Verifying your current password…';
+      try {
+        const { error: verifyError } = await db.auth.signInWithPassword({ email: state.user.email, password: currentPassword });
+        if (verifyError) throw new Error('Current password is incorrect. Check it and try again.');
+        $('password-status').textContent = 'Updating password…';
+        const { error } = await db.auth.updateUser({ password });
+        if (error) throw error;
+        $('password-change-form').reset();
+        $('password-status').textContent = 'Password updated successfully.';
+        toast('Your password has been updated.');
+      } catch (error) {
+        $('password-status').textContent = error.message || 'Could not update your password. Try signing in again.';
+      } finally {
+        button.disabled = false;
+      }
     });
+    $('license-activate-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const key = $('license-key-input').value.trim();
+      const button = $('license-activate-form').querySelector('button[type="submit"]');
+      button.disabled = true;
+      $('license-activate-status').textContent = 'Validating product key…';
+      try {
+        const { data, error } = await db.rpc('os_activate_license', { p_license_key: key });
+        if (error) throw error;
+        const entitlement = Array.isArray(data) ? data[0] : data;
+        $('license-activate-form').reset();
+        $('license-activate-status').textContent = 'Activated: ' + String(entitlement?.plan || 'licensed').toUpperCase() + ' · version ' + (entitlement?.version || '1.x');
+        await loadLicensePanel();
+        toast('ZuzuOS license activated.');
+      } catch (error) {
+        $('license-activate-status').textContent = error.message || 'Could not activate that key.';
+      } finally { button.disabled = false; }
+    });
+    $('license-generate-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = $('license-generate-form').querySelector('button[type="submit"]');
+      button.disabled = true;
+      $('license-generate-status').textContent = 'Generating a secure key…';
+      $('license-copy-key').classList.add('hidden');
+      try {
+        const plan = $('license-plan').value;
+        const version = $('license-version').value.trim();
+        const max = Number($('license-max-activations').value);
+        const date = $('license-expires').value;
+        const expires = date ? new Date(date + 'T23:59:59.999Z').toISOString() : null;
+        const { data, error } = await db.rpc('os_generate_license_key', {
+          p_plan: plan, p_version: version, p_max_activations: max, p_expires_at: expires
+        });
+        if (error) throw error;
+        const generated = Array.isArray(data) ? data[0] : data;
+        if (!generated?.license_key) throw new Error('The server did not return a product key.');
+        $('license-generate-status').textContent = 'Copy this key now. The full key is only shown once: ' + generated.license_key;
+        $('license-copy-key').dataset.key = generated.license_key;
+        $('license-copy-key').classList.remove('hidden');
+        await loadOwnerLicenseList();
+      } catch (error) {
+        $('license-generate-status').textContent = error.message || 'Could not generate a key.';
+      } finally { button.disabled = false; }
+    });
+    $('license-copy-key').addEventListener('click', async () => {
+      const key = $('license-copy-key').dataset.key || '';
+      if (!key) return;
+      try {
+        await navigator.clipboard.writeText(key);
+        $('license-generate-status').textContent = 'Key copied. Store it somewhere safe; it cannot be displayed again.';
+      } catch {
+        $('license-generate-status').textContent = 'Select and copy the key shown above, then store it safely.';
+      }
+    });
+    $('license-refresh').addEventListener('click', loadOwnerLicenseList);
+    $('license-key-list').addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-revoke-license]');
+      if (!button) return;
+      if (!window.confirm('Revoke this license key? Existing activations will no longer be valid for new activations.')) return;
+      button.disabled = true;
+      try {
+        const { error } = await db.rpc('os_owner_revoke_license', { p_license_id: button.dataset.revokeLicense });
+        if (error) throw error;
+        await loadOwnerLicenseList();
+        toast('License key revoked.');
+      } catch (error) {
+        toast(error.message || 'Could not revoke this key.');
+        button.disabled = false;
+      }
+    });
+    void loadLicensePanel();
     $('settings-signout').addEventListener('click', signOut);
     applyThemePreset(local.get('theme-preset', 'cine'));
     $('theme-preset-choice').value = local.get('theme-preset', 'cine');
@@ -404,6 +512,51 @@
       document.documentElement.style.setProperty('--accent-strong', e.target.value);
       toast('Appearance updated.');
     });
+  }
+  async function loadLicensePanel() {
+    if (!db || !state.user || !$('license-section')) return;
+    $('license-current-plan').textContent = 'Checking edition…';
+    try {
+      const [{ data: entitlementData, error: entitlementError }, { data: roleData, error: roleError }] = await Promise.all([
+        db.rpc('os_my_entitlement'),
+        db.from('os_roles').select('role').eq('user_id', state.user.id).maybeSingle()
+      ]);
+      if (entitlementError) throw entitlementError;
+      const entitlement = Array.isArray(entitlementData) ? entitlementData[0] : entitlementData;
+      const plan = entitlement?.plan || 'free';
+      $('license-current-plan').textContent = ({free:'ZuzuOS Free',pro:'ZuzuOS Pro',developer:'ZuzuOS Developer',lifetime:'ZuzuOS Lifetime'})[plan] || 'ZuzuOS Free';
+      $('license-current-version').textContent = 'Version entitlement: ' + (entitlement?.version || '1.x');
+      $('license-status-mark').textContent = plan === 'free' ? 'FREE' : 'ACTIVE';
+      if (!roleError && roleData?.role === 'owner') {
+        $('license-owner-tools').classList.remove('hidden');
+        await loadOwnerLicenseList();
+      } else {
+        $('license-owner-tools').classList.add('hidden');
+      }
+    } catch (error) {
+      $('license-current-plan').textContent = 'Edition status unavailable';
+      $('license-current-version').textContent = 'Could not verify license status. ' + (error.message || '');
+      $('license-status-mark').textContent = '!';
+    }
+  }
+  async function loadOwnerLicenseList() {
+    const list = $('license-key-list');
+    if (!list || !$('license-owner-tools') || $('license-owner-tools').classList.contains('hidden')) return;
+    list.textContent = 'Loading issued keys…';
+    try {
+      const { data, error } = await db.rpc('os_owner_list_licenses');
+      if (error) throw error;
+      const rows = Array.isArray(data) ? data : [];
+      if (!rows.length) { list.textContent = 'No license keys have been generated yet.'; return; }
+      list.innerHTML = rows.map(row => {
+        const revoked = Boolean(row.revoked_at);
+        const expires = row.expires_at ? new Date(row.expires_at).toLocaleDateString() : 'Never';
+        return '<div class="list-item"><div><strong>' + escapeHTML(String(row.plan).toUpperCase()) + ' · ' + escapeHTML(row.version) + '</strong><small>' + Number(row.activations || 0) + '/' + Number(row.max_activations) + ' activations · Expires: ' + escapeHTML(expires) + ' · ' + (revoked ? 'REVOKED' : 'Active') + '</small></div>' +
+          (revoked ? '<span class="muted">Revoked</span>' : '<button class="secondary danger-action" type="button" data-revoke-license="' + escapeHTML(row.id) + '">Revoke</button>') + '</div>';
+      }).join('');
+    } catch (error) {
+      list.textContent = 'Could not load license keys: ' + (error.message || 'Unknown error');
+    }
   }
   function renderNotesApp() {
     $('window-body').innerHTML = `<p class="app-lead">A simple place for ideas. This is the same quick note shown on your desktop.</p><form id="notes-form" class="app-form"><label>Your note<textarea id="app-note" maxlength="10000" placeholder="Start writing…"></textarea></label><div class="app-actions"><button class="primary" type="submit">Save note</button><button class="secondary" id="reload-note" type="button">Reload saved note</button></div></form>`;
