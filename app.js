@@ -234,10 +234,34 @@
           <button class="primary" type="submit">Save profile</button>
         </form>
       </section>
+      <section class="setting-section"><h3>Account security</h3>
+        <form id="password-change-form" class="app-form">
+          <label>New password<input id="new-password" type="password" minlength="8" autocomplete="new-password" required placeholder="At least 8 characters"></label>
+          <label>Confirm new password<input id="confirm-password" type="password" minlength="8" autocomplete="new-password" required placeholder="Enter it again"></label>
+          <button class="primary" type="submit">Update password</button>
+          <p id="password-status" class="muted" role="status"></p>
+        </form>
+      </section>
       <section class="setting-section"><h3>Account details</h3><div class="setting-row"><div><strong>${escapeHTML(state.user.email || '')}</strong><p>Email address used to sign in.</p></div><span class="sync-check">✓</span></div><div class="setting-row"><div><strong>Cloud sync</strong><p>Your saved notes and settings are linked to this account.</p></div><span class="sync-check">✓</span></div></section>
       <section class="setting-section"><h3>Appearance</h3><div class="setting-row"><div><strong>Accent color</strong><p>Choose the color used for highlights.</p></div><label><select id="accent-choice"><option value="#9bc4ff">Sky blue</option><option value="#b5a4ff">Lavender</option><option value="#8ee0bd">Mint</option><option value="#f0c58c">Amber</option></select></label></div></section>
       <div class="app-actions"><button id="settings-signout" class="secondary">Sign out</button></div>`;
     $('profile-form').addEventListener('submit', updateProfile);
+    $('password-change-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const password = $('new-password').value;
+      const confirmation = $('confirm-password').value;
+      if (password.length < 8) return toast('Use at least 8 characters for your password.');
+      if (password !== confirmation) return toast('The passwords do not match.');
+      const button = $('password-change-form').querySelector('button[type="submit"]');
+      button.disabled = true;
+      $('password-status').textContent = 'Updating password…';
+      const { error } = await db.auth.updateUser({ password });
+      button.disabled = false;
+      if (error) { $('password-status').textContent = error.message; return; }
+      $('password-change-form').reset();
+      $('password-status').textContent = 'Password updated.';
+      toast('Your password has been updated.');
+    });
     $('settings-signout').addEventListener('click', signOut);
     $('accent-choice').value = local.get('accent', '#9bc4ff');
     $('accent-choice').addEventListener('change', (e) => {
@@ -258,15 +282,124 @@
     $('reload-note').addEventListener('click', () => { $('app-note').value = $('quick-note').value; });
   }
   async function renderFilesApp() {
-    $('window-body').innerHTML = `<p class="app-lead">Your personal files area. The quick note is available here; cloud files can be added as storage features are enabled.</p><div class="app-list"><div class="list-item"><div><strong>quick-note.txt</strong><small>Personal note · ${state.user ? 'account sync enabled' : 'device only'}</small></div><button id="open-note-file">Open</button></div><div class="list-item"><div><strong>account-profile.json</strong><small>Profile information · private</small></div><button id="open-profile-file">View</button></div></div>`;
-    $('open-note-file').addEventListener('click', () => openApp('notes'));
-    $('open-profile-file').addEventListener('click', () => {
-      const content = JSON.stringify({ display_name: state.profile?.display_name || '', username: state.profile?.username || null, email: state.user.email }, null, 2);
-      const blob = new Blob([content], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'account-profile.json'; a.click();
-      URL.revokeObjectURL(url);
+    $('window-body').innerHTML = `
+      <p class="app-lead">Private files stored in your ZuzuOS account. Upload documents and images up to 10 MB each. Your files are only accessible while signed in.</p>
+      <section class="setting-section">
+        <h3>Upload a file</h3>
+        <form id="upload-form" class="app-form">
+          <label>Choose file<input id="file-picker" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,text/plain,application/pdf" required></label>
+          <p class="muted" style="font-size:11px">Allowed: PNG, JPG, WebP, SVG, TXT, PDF. Maximum 10 MB.</p>
+          <button class="primary" type="submit">Upload to my files</button>
+          <p id="upload-status" class="muted" role="status"></p>
+        </form>
+      </section>
+      <section class="setting-section"><div class="section-heading"><h3>Your uploads</h3><button id="refresh-files" class="secondary">Refresh</button></div><div id="file-list" class="app-list"><p class="muted">Loading your files…</p></div></section>
+      <section class="setting-section"><h3>Account export</h3><p class="muted" style="font-size:12px">Download a copy of your profile and quick note as JSON.</p><button id="export-account" class="secondary">Export account data</button></section>`;
+    $('upload-form').addEventListener('submit', uploadPrivateFile);
+    $('refresh-files').addEventListener('click', listPrivateFiles);
+    $('export-account').addEventListener('click', exportAccountData);
+    await listPrivateFiles();
+  }
+  async function uploadPrivateFile(event) {
+    event.preventDefault();
+    const file = $('file-picker').files?.[0];
+    if (!file) return;
+    const allowed = ['image/png','image/jpeg','image/webp','image/svg+xml','text/plain','application/pdf'];
+    if (!allowed.includes(file.type)) return toast('That file type is not supported.');
+    if (file.size > 10 * 1024 * 1024) return toast('Files must be 10 MB or smaller.');
+    if (!db || !state.user) return toast('Sign in to upload files.');
+    const button = $('upload-form').querySelector('button[type="submit"]');
+    button.disabled = true;
+    $('upload-status').textContent = 'Uploading securely…';
+    const safeName = file.name.normalize('NFKD').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(-120) || 'upload';
+    const path = state.user.id + '/' + Date.now() + '-' + safeName;
+    try {
+      const { error } = await db.storage.from('zuzu-user-files').upload(path, file, {
+        cacheControl: '3600', upsert: false, contentType: file.type
+      });
+      if (error) throw error;
+      $('file-picker').value = '';
+      $('upload-status').textContent = 'Upload complete.';
+      toast('File uploaded.');
+      await listPrivateFiles();
+    } catch (error) {
+      $('upload-status').textContent = 'Upload failed.';
+      toast(error.message || 'Upload failed. Check your connection and try again.');
+    } finally {
+      button.disabled = false;
+    }
+  }
+  async function listPrivateFiles() {
+    const list = $('file-list');
+    if (!list) return;
+    if (!db || !state.user) { list.textContent = 'Sign in to view your private files.'; return; }
+    list.textContent = 'Loading…';
+    const { data, error } = await db.storage.from('zuzu-user-files').list(state.user.id, {
+      limit: 100, sortBy: { column: 'created_at', order: 'desc' }
     });
+    if (error) { list.textContent = 'Could not load files: ' + error.message; return; }
+    const files = (data || []).filter(item => item.name && item.id);
+    list.innerHTML = '';
+    if (!files.length) {
+      const empty = document.createElement('p');
+      empty.className = 'muted';
+      empty.textContent = 'No uploads yet. Your private files will appear here.';
+      list.append(empty);
+      return;
+    }
+    for (const file of files) {
+      const path = state.user.id + '/' + file.name;
+      const row = document.createElement('div');
+      row.className = 'list-item';
+      const info = document.createElement('div');
+      const title = document.createElement('strong');
+      title.textContent = file.name;
+      const meta = document.createElement('small');
+      const bytes = Number(file.metadata?.size || 0);
+      meta.textContent = (bytes ? (bytes < 1024*1024 ? Math.max(1,Math.round(bytes/1024))+' KB' : (bytes/1024/1024).toFixed(1)+' MB') + ' · ' : '') + new Date(file.created_at || file.updated_at || Date.now()).toLocaleDateString();
+      info.append(title,meta);
+      const actions = document.createElement('div');
+      actions.className = 'app-actions';
+      const download = document.createElement('button');
+      download.className = 'secondary';
+      download.textContent = 'Download';
+      download.addEventListener('click', async () => {
+        download.disabled = true;
+        try {
+          const { data, error } = await db.storage.from('zuzu-user-files').download(path);
+          if (error) throw error;
+          const url = URL.createObjectURL(data);
+          const a = document.createElement('a'); a.href = url; a.download = file.name; a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch (error) { toast(error.message || 'Download failed.'); }
+        finally { download.disabled = false; }
+      });
+      const remove = document.createElement('button');
+      remove.className = 'secondary danger-action';
+      remove.textContent = 'Delete';
+      remove.addEventListener('click', async () => {
+        if (!window.confirm('Delete "' + file.name + '" from your ZuzuOS account? This cannot be undone.')) return;
+        remove.disabled = true;
+        const { error } = await db.storage.from('zuzu-user-files').remove([path]);
+        if (error) { toast(error.message || 'Could not delete file.'); remove.disabled = false; return; }
+        toast('File deleted.');
+        await listPrivateFiles();
+      });
+      actions.append(download,remove);
+      row.append(info,actions);
+      list.append(row);
+    }
+  }
+  function exportAccountData() {
+    const data = {
+      product: 'zuzu.os',
+      exported_at: new Date().toISOString(),
+      account: { email: state.user?.email || null, profile: state.profile || null },
+      quick_note: $('quick-note')?.value ?? local.get('quick-note','')
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+    const a=document.createElement('a');a.href=url;a.download='zuzuos-account-export.json';a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
   function renderBrowserApp() {
     $('window-body').innerHTML = `<p class="app-lead">Open a website in a new browser tab. For your safety, links are opened outside this desktop.</p><form id="browser-form" class="app-form"><label>Website address<input id="browser-url" type="url" placeholder="https://example.com" value="https://"></label><div class="app-actions"><button class="primary" type="submit">Open website ↗</button></div></form><div class="app-actions"><button class="secondary quick-link" data-url="https://www.wikipedia.org">Wikipedia</button><button class="secondary quick-link" data-url="https://developer.mozilla.org">MDN Web Docs</button></div>`;
