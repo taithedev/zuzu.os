@@ -20,6 +20,7 @@ jobs:
         run: |
           node --check app.js
           node --check os-shell.js
+          node --check os-team.js
       - name: Verify required site assets
         run: |
           test -f index.html
@@ -27,6 +28,8 @@ jobs:
           test -f zuzu-refresh.css
           test -f os-shell.css
           test -f os-shell.js
+          test -f os-team.js
+          test -f os-team.css
           test -f assets/wallpapers/aurora.svg
           test -f assets/wallpapers/obsidian.svg
           test -f assets/wallpapers/afterglow.svg
