@@ -7,7 +7,7 @@
     ['files','File Explorer','▧'],['browser','Web Browser','◉'],['notes','Notes','▤'],
     ['paint','Paint','✎'],['cinehub','Cine Hub','▣'],['music','Music','♫'],['settings','Settings','⚙']
   ];
-  let activeStyle = 'cine';
+  let activeStyle = 'windows';
   let scene;
 
   function localRead(key, fallback = null) {
@@ -208,7 +208,7 @@
   }
   function boot() {
     if (!$('desktop')) return;
-    applyShellStyle(localRead('shell-style','cine'), false);
+    applyShellStyle(localRead('shell-style','windows'), false);
     createScene();
     bindStylePicker();
     renderAccount();
