@@ -315,3 +315,6 @@ body[data-theme-preset="oled"] .ambient{display:none}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* Keep the expanded first-run personalization step scrollable on short screens. */
+.setup-pages{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#ffffff24 transparent}.setup-page{margin:auto 0}
