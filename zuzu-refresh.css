@@ -105,3 +105,213 @@ body[data-theme-preset="oled"] .ambient{display:none}
 .ready-card{border-color:#ffffff17;background:#ffffff04}.ready-check{background:#ffffff0d;color:#e7e7e9}
 @media(max-width:760px){.setup-theme-presets{grid-template-columns:repeat(2,minmax(0,1fr))}.setup-preset{grid-template-columns:58px minmax(0,1fr);align-items:center;column-gap:9px}.setup-preset .preset-sample{grid-row:span 2;height:42px}.setup-preset strong,.setup-preset small{overflow-wrap:anywhere}}
 @media(prefers-reduced-motion:reduce){.ambient,.preset-sample:after,.setup-page{animation:none!important;transition:none!important}}
+
+
+/* ZuzuOS Arctic Glass / True Dark polish — OLED-first surfaces with Windows-inspired acrylic. */
+:root{
+  color-scheme:dark;
+  --bg:#030405;
+  --panel:rgba(17,19,23,.68);
+  --panel-solid:#111317;
+  --line:rgba(235,242,255,.105);
+  --text:#f5f7fb;
+  --muted:#a0a7b4;
+  --accent:#cbdcff;
+  --accent-strong:#edf3ff;
+  --glass:rgba(19,22,28,.64);
+  --glass-highlight:rgba(255,255,255,.075);
+  --glass-shadow:0 24px 80px rgba(0,0,0,.42);
+}
+*{ -webkit-tap-highlight-color:transparent; }
+html{background:#030405;scroll-behavior:smooth}
+body{
+  min-height:100vh;
+  background:#030405;
+  background-image:
+    radial-gradient(ellipse at 12% 0%,rgba(75,105,154,.12),transparent 35%),
+    radial-gradient(ellipse at 92% 85%,rgba(105,115,143,.08),transparent 34%),
+    linear-gradient(180deg,#050608 0%,#030405 78%);
+  background-attachment:fixed;
+  letter-spacing:-.012em;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+}
+body[data-theme-preset="oled"]{background:#000!important;background-image:none!important}
+body[data-theme-preset="oled"] .ambient{display:none}
+.ambient{
+  position:fixed;
+  inset:-15%;
+  pointer-events:none;
+  z-index:-1;
+  opacity:.7;
+  filter:blur(70px);
+  background:
+    radial-gradient(ellipse at 22% 24%,rgba(104,132,184,.13),transparent 32%),
+    radial-gradient(ellipse at 78% 72%,rgba(133,143,166,.08),transparent 34%);
+}
+.auth-screen{padding:28px 18px}
+.auth-card{
+  width:min(100%,440px);
+  padding:clamp(28px,5vw,44px);
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:26px;
+  background:linear-gradient(145deg,rgba(23,25,30,.88),rgba(8,9,11,.86));
+  -webkit-backdrop-filter:blur(38px) saturate(125%);
+  backdrop-filter:blur(38px) saturate(125%);
+  box-shadow:0 38px 120px rgba(0,0,0,.62),inset 0 1px rgba(255,255,255,.07);
+}
+.brand-mark{box-shadow:0 10px 34px rgba(0,0,0,.28);border:1px solid #ffffff1a}
+.eyebrow{letter-spacing:.19em}
+.field input,.field select,.field textarea,#quick-note{
+  background:rgba(0,0,0,.34);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:13px;
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.field input:focus,.field select:focus,.field textarea:focus,#quick-note:focus{
+  outline:none;border-color:rgba(206,222,255,.58);
+  background:rgba(15,18,24,.92);
+  box-shadow:0 0 0 3px rgba(181,204,255,.09);
+}
+.primary,.secondary,.quiet-button,.text-button,.task-app,.task-home,.task-account,.account-chip,.window-close,.app-tile,.setup-preset,.setup-wallpaper{
+  transition:background .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease,opacity .18s ease;
+}
+.primary{background:linear-gradient(180deg,#f5f7fb,#d9dfe9);color:#111319;border:1px solid #ffffffa0;box-shadow:0 6px 22px #0003;font-weight:750}
+.primary:hover{background:#fff;transform:translateY(-1px);box-shadow:0 10px 28px #0005}
+.secondary,.quiet-button{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11);backdrop-filter:blur(16px)}
+.secondary:hover,.quiet-button:hover{background:rgba(255,255,255,.085);border-color:#ffffff28}
+.topbar{
+  position:sticky;top:0;z-index:12;
+  background:rgba(7,8,10,.66);
+  border-bottom:1px solid rgba(255,255,255,.09);
+  -webkit-backdrop-filter:blur(34px) saturate(135%);
+  backdrop-filter:blur(34px) saturate(135%);
+  box-shadow:0 8px 32px rgba(0,0,0,.12);
+}
+.mini-logo{background:linear-gradient(145deg,#f4f6fb,#aab4c7);color:#101216;border:1px solid #ffffffa0;box-shadow:inset 0 1px #fff}
+.live-dot,.status-dot,.footer-dot{box-shadow:0 0 0 3px rgba(196,219,255,.08)}
+.desktop-content{width:min(1180px,calc(100% - 64px));padding-top:clamp(34px,5vw,60px)}
+.welcome-row{align-items:center;gap:26px;margin-bottom:34px}
+.welcome-row h1{font-size:clamp(32px,4.4vw,52px);font-weight:650;letter-spacing:-.065em}
+.clock-card{
+  min-width:176px;
+  background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:20px;
+  -webkit-backdrop-filter:blur(28px) saturate(120%);
+  backdrop-filter:blur(28px) saturate(120%);
+  box-shadow:inset 0 1px rgba(255,255,255,.055),0 16px 45px #0002;
+}
+.section-heading{margin-bottom:17px}
+.section-heading h2{font-size:16px;letter-spacing:-.035em}
+.app-grid{gap:13px}
+.app-tile{
+  position:relative;min-height:130px;
+  border-radius:19px;
+  border:1px solid rgba(255,255,255,.105);
+  background:linear-gradient(145deg,rgba(27,30,36,.78),rgba(12,13,16,.76));
+  -webkit-backdrop-filter:blur(26px) saturate(115%);
+  backdrop-filter:blur(26px) saturate(115%);
+  box-shadow:inset 0 1px rgba(255,255,255,.055),0 14px 32px rgba(0,0,0,.15);
+}
+.app-tile:hover{transform:translateY(-3px);background:linear-gradient(145deg,rgba(40,44,53,.86),rgba(17,18,22,.86));border-color:rgba(220,231,255,.23);box-shadow:inset 0 1px rgba(255,255,255,.08),0 20px 44px #0005}
+.app-tile:focus-visible,.task-app:focus-visible,.task-home:focus-visible,button:focus-visible{outline:2px solid #d4e2ff;outline-offset:3px}
+.app-icon{border-radius:15px;background:linear-gradient(145deg,#282d37,#15171c);border:1px solid #ffffff1b;box-shadow:inset 0 1px #ffffff0b,0 8px 18px #0002}
+.icon-notes{background:linear-gradient(145deg,#30343c,#191b20);color:#e8ebf1}
+.icon-files{background:linear-gradient(145deg,#263b38,#151e1d);color:#d3eee5}
+.icon-settings{background:linear-gradient(145deg,#35303e,#1c1a21);color:#e7def5}
+.icon-browser{background:linear-gradient(145deg,#34333a,#1b1b20);color:#f0e8da}
+.bottom-grid{gap:16px;margin-top:26px}
+.panel{
+  border:1px solid rgba(255,255,255,.105);
+  border-radius:21px;
+  background:linear-gradient(145deg,rgba(23,25,30,.75),rgba(10,11,13,.76));
+  -webkit-backdrop-filter:blur(32px) saturate(125%);
+  backdrop-filter:blur(32px) saturate(125%);
+  box-shadow:inset 0 1px rgba(255,255,255,.055),0 18px 45px rgba(0,0,0,.19);
+}
+.panel-heading{border-bottom-color:#ffffff0d}
+.panel-icon{border:1px solid #ffffff14;background:#ffffff09}
+#quick-note{min-height:110px;resize:vertical}
+.taskbar{
+  position:fixed;bottom:max(15px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  width:max-content;max-width:calc(100vw - 24px);min-height:64px;
+  padding:8px 10px;gap:6px;
+  border:1px solid rgba(255,255,255,.17);
+  border-radius:23px;
+  background:rgba(19,20,24,.72);
+  -webkit-backdrop-filter:blur(42px) saturate(145%);
+  backdrop-filter:blur(42px) saturate(145%);
+  box-shadow:0 22px 80px rgba(0,0,0,.62),inset 0 1px rgba(255,255,255,.085);
+}
+.task-home,.task-app,.task-account{height:44px;border-radius:15px}
+.task-home{width:46px;background:linear-gradient(145deg,#f4f6fb,#cbd3e1);color:#101216;box-shadow:inset 0 1px #fff}
+.taskbar-separator{height:28px;background:#ffffff20}
+.task-app{min-width:43px;padding:0 13px;background:rgba(255,255,255,.035);border:1px solid transparent}
+.task-app:hover,.task-account:hover{background:rgba(255,255,255,.09);border-color:#ffffff12}
+.task-account{border:1px solid #ffffff12;background:#ffffff06}
+.task-clock{padding:0 10px;line-height:1.35;color:#d5d9e1}
+.account-chip{background:rgba(255,255,255,.045);border:1px solid #ffffff13;backdrop-filter:blur(18px)}
+.account-chip:hover{background:rgba(255,255,255,.08)}
+.account-menu,.cookie-notice{
+  background:rgba(17,19,23,.88)!important;
+  border:1px solid rgba(255,255,255,.15)!important;
+  border-radius:20px!important;
+  -webkit-backdrop-filter:blur(38px) saturate(135%)!important;
+  backdrop-filter:blur(38px) saturate(135%)!important;
+  box-shadow:0 30px 90px #0009,inset 0 1px #ffffff0a!important;
+}
+.app-window{
+  background:rgba(12,13,16,.86)!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:20px!important;
+  -webkit-backdrop-filter:blur(42px) saturate(135%)!important;
+  backdrop-filter:blur(42px) saturate(135%)!important;
+  box-shadow:0 40px 120px rgba(0,0,0,.72),inset 0 1px rgba(255,255,255,.07)!important;
+  overflow:hidden;
+}
+.window-bar{background:rgba(255,255,255,.035);border-bottom:1px solid #ffffff12;min-height:52px}
+.window-close{border-radius:10px;background:transparent}
+.window-close:hover{background:#d94848;color:white}
+.window-body{background:transparent}
+.toast{background:rgba(23,25,30,.92);border:1px solid #ffffff18;border-radius:14px;backdrop-filter:blur(24px);box-shadow:0 16px 50px #0008}
+.setup-screen{background:#020304!important;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
+.setup-frame{
+  background:rgba(11,12,15,.88)!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:24px!important;
+  -webkit-backdrop-filter:blur(38px) saturate(120%)!important;
+  backdrop-filter:blur(38px) saturate(120%)!important;
+  box-shadow:0 40px 140px #000b,inset 0 1px #ffffff08!important;
+}
+.setup-rail{background:rgba(5,6,8,.62)!important}
+.setup-preset,.setup-wallpaper{background:rgba(255,255,255,.025);border-color:#ffffff12}
+.setup-preset:hover,.setup-wallpaper:hover{background:rgba(255,255,255,.055);border-color:#ffffff25;transform:translateY(-1px)}
+.setup-preset.selected,.setup-wallpaper.selected{border-color:#dce6fa;background:rgba(220,230,250,.075);box-shadow:0 0 0 1px #ffffff0a}
+.setup-theme-note{background:rgba(255,255,255,.025);backdrop-filter:blur(20px)}
+.setup-footer{padding-bottom:2px}
+#cookie-notice{z-index:40}
+@media(min-width:1000px){
+  .app-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .app-tile{min-height:142px;padding:21px}
+}
+@media(max-width:760px){
+  .desktop-content{width:calc(100% - 32px);padding-top:28px}
+  .welcome-row{align-items:flex-start;flex-direction:column}
+  .clock-card{width:100%;display:flex;justify-content:space-between;align-items:center}
+  .app-grid{gap:10px}
+  .app-tile{min-height:116px;border-radius:16px;padding:15px}
+  .bottom-grid{grid-template-columns:1fr}
+  .taskbar{bottom:max(8px,env(safe-area-inset-bottom));min-height:57px;border-radius:19px;padding:6px}
+  .task-home,.task-app,.task-account{height:42px;border-radius:13px}
+  .task-app{padding:0 10px}
+}
+@media(max-width:420px){
+  .desktop-content{width:calc(100% - 24px)}
+  .app-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .taskbar{max-width:calc(100vw - 12px);gap:3px}
+  .task-app{padding:0 8px;min-width:36px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
