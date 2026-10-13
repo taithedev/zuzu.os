@@ -7,6 +7,8 @@
   const db = hasConfig ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   }) : null;
+  // The public browser client contains only the publishable key; database RLS enforces all privileged actions.
+  window.zuzuOSAuth = { client: db };
   const $ = (id) => document.getElementById(id);
   const state = { user: null, profile: null, mode: 'signin', activeApp: null, noteTimer: null };
 
