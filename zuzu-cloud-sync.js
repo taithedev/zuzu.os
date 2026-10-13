@@ -3,7 +3,7 @@
   'use strict';
   const KEYS = [
     'zuzu:theme-preset', 'zuzu:wallpaper', 'zuzu:accent', 'zuzu:shell-style',
-    'zuzu:desktop-ui:v1', 'zuzu:os-vfs:v1', 'zuzu:os-wallpaper',
+    'zuzu:desktop-ui:v1', 'zuzu:os-vfs:v1',
     'zuzu:os-label', 'zuzu:os-welcome'
   ];
   const client = () => window.zuzuOSAuth?.client || null;
@@ -99,7 +99,20 @@
       startMark.classList.toggle('os-windows-logo', safeStyle === 'windows');
       startMark.innerHTML = safeStyle === 'windows' ? '<i></i><i></i><i></i><i></i>' : 'z.';
     }
-    if (accent) document.documentElement.style.setProperty('--accent', accent);
+    const palettes = {
+      cine: {bg:'#07080b', panel:'#111319', accent:'#9bc4ff'},
+      oled: {bg:'#000000', panel:'#090909', accent:'#ffffff'},
+      graphite: {bg:'#0c0d0f', panel:'#17191d', accent:'#a7b0bf'},
+      crimson: {bg:'#090607', panel:'#171012', accent:'#e58b98'},
+      midnight: {bg:'#060910', panel:'#101725', accent:'#8cb8ff'}
+    };
+    const palette = palettes[theme] || palettes.cine;
+    document.documentElement.dataset.themePreset = theme in palettes ? theme : 'cine';
+    document.body.dataset.themePreset = document.documentElement.dataset.themePreset;
+    document.documentElement.style.setProperty('--bg', palette.bg);
+    document.documentElement.style.setProperty('--panel-solid', palette.panel);
+    document.documentElement.style.setProperty('--accent', accent || palette.accent);
+    document.documentElement.style.setProperty('--accent-strong', accent || palette.accent);
     const desk = document.getElementById('desktop');
     const wallpaperName = ['silent-shore','aurora','obsidian','afterglow'].includes(wallpaper) ? wallpaper : 'none';
     if (desk && wallpaperName !== 'none') {
