@@ -17,11 +17,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Check JavaScript syntax
-        run: node --check app.js
+        run: |
+          node --check app.js
+          node --check os-shell.js
       - name: Verify required site assets
         run: |
           test -f index.html
           test -f styles.css
+          test -f zuzu-refresh.css
+          test -f os-shell.css
+          test -f os-shell.js
           test -f assets/wallpapers/aurora.svg
           test -f assets/wallpapers/obsidian.svg
           test -f assets/wallpapers/afterglow.svg
