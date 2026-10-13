@@ -1,0 +1,187 @@
+/* ZuzuOS product pass: a quieter, more tactile desktop UI.
+   Keep surfaces opaque enough to read; reserve motion for direct interaction. */
+:root {
+  color-scheme: dark;
+  --z-bg: #08090b;
+  --z-surface: #111317;
+  --z-surface-raised: #191c21;
+  --z-surface-hover: #22262d;
+  --z-border: #2b3038;
+  --z-border-soft: #20242b;
+  --z-text: #e7e9ed;
+  --z-muted: #969da8;
+  --z-accent: #7aa7f7;
+  --z-radius: 8px;
+  --z-radius-lg: 11px;
+}
+html, body { background: var(--z-bg); color: var(--z-text); }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; transition: background-color .12s ease, border-color .12s ease, color .12s ease; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--z-accent); outline-offset: 2px;
+}
+.hidden { display: none !important; }
+
+/* Account screens: product UI rather than a landing-page template. */
+.auth-screen { background: #08090b !important; gap: 18px; }
+.auth-screen::before {
+  background: radial-gradient(ellipse at 50% 38%, #14171d 0, #0a0b0d 43%, #08090b 76%) !important;
+}
+.auth-screen::after { display: none; }
+.auth-card {
+  width: min(100%, 400px); padding: 30px;
+  border: 1px solid #2a2e35; border-radius: 12px;
+  background: #111317; box-shadow: 0 20px 60px #0007; backdrop-filter: none;
+}
+.brand-mark { width: 38px; height: 38px; border-radius: 9px; font-size: 23px; }
+.auth-card .eyebrow { margin-top: 22px; font-size: 10px; letter-spacing: .12em; }
+.auth-card h1 { font-size: 27px; line-height: 1.2; font-weight: 600; letter-spacing: -.035em; }
+.auth-card > p.muted { font-size: 13px; }
+.field { gap: 7px; font-size: 12px; }
+.field input {
+  min-height: 42px; border: 1px solid #363b44; border-radius: 7px;
+  background: #0a0c0f; padding: 10px 12px;
+}
+.field input:hover { border-color: #515965; }
+.field input:focus { border-color: var(--z-accent); box-shadow: 0 0 0 2px #7aa7f71c; }
+.primary, .secondary, .quiet-button {
+  min-height: 36px; border-radius: 7px; box-shadow: none; transform: none;
+}
+.primary { background: #e5e9f0; color: #11151b; border: 1px solid #e5e9f0; font-weight: 600; }
+.primary:hover { background: #fff; transform: none; }
+.secondary, .quiet-button { background: #1b1e24; border: 1px solid #353a44; color: #e2e5eb; }
+.secondary:hover, .quiet-button:hover { background: #252a32; }
+.text-button { text-decoration: none; color: #b7c9e8; }
+.auth-caption { font-size: 11px; color: #777f8b; }
+
+/* Main dashboard uses compact hierarchy and consistent surfaces. */
+#desktop { background-color: #08090b !important; }
+#desktop .topbar {
+  min-height: 52px; padding: 0 22px; background: #101216;
+  border-bottom: 1px solid var(--z-border-soft); box-shadow: none;
+}
+#desktop .top-brand { gap: 9px; font-size: 14px; font-weight: 650; letter-spacing: -.02em; }
+#desktop .mini-logo { border-radius: 6px; box-shadow: none; }
+#desktop .top-center { font-size: 11px; color: var(--z-muted); }
+#desktop .account-chip { min-height: 34px; border: 1px solid #30353e; border-radius: 7px; background: #191c21; }
+#desktop .desktop-content { width: min(1180px, 100%); padding: 30px 30px 92px; }
+#desktop .welcome-row { align-items: end; margin-bottom: 30px; }
+#desktop .welcome-row h1 { font-size: clamp(25px, 3vw, 34px); line-height: 1.18; font-weight: 600; letter-spacing: -.04em; }
+#desktop .welcome-row .eyebrow { margin-bottom: 10px; font-size: 10px; letter-spacing: .13em; color: #9ca4b1; }
+#desktop .welcome-row .muted { font-size: 13px; }
+#desktop .clock-card { min-width: 150px; padding: 12px 15px; border: 1px solid #2a2f37; border-radius: 9px; background: #111317; box-shadow: none; }
+#desktop .clock-card #clock-time { font-size: 24px; font-weight: 550; letter-spacing: -.03em; }
+#desktop .clock-card #clock-date { font-size: 11px; color: var(--z-muted); }
+#desktop .section-heading { margin-bottom: 12px; }
+#desktop .section-heading h2, #desktop .panel-heading h2 { font-size: 14px; font-weight: 600; letter-spacing: -.015em; }
+#desktop .section-heading .muted { margin-top: 4px; font-size: 11px; }
+#desktop .app-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 9px; }
+#desktop .app-tile {
+  position: relative; min-height: 74px; padding: 13px 12px;
+  gap: 11px; border: 1px solid #282d35; border-radius: 9px;
+  background: #111317; box-shadow: none;
+}
+#desktop .app-tile:hover { transform: translateY(-1px); background: #181b20; border-color: #424955; }
+#desktop .app-tile strong { font-size: 11px; font-weight: 600; }
+#desktop .app-tile small { margin-top: 4px; font-size: 10px; color: #929aa6; }
+#desktop .app-icon {
+  width: 36px; height: 36px; flex: 0 0 36px;
+  border: 1px solid #353b45; border-radius: 8px; background: #1a1e24;
+  color: #cbd6e8; box-shadow: none;
+}
+#desktop .app-icon .zuzu-icon { width: 19px; height: 19px; }
+#desktop .tile-arrow { opacity: .35; }
+#desktop .bottom-grid { gap: 12px; margin-top: 22px; }
+#desktop .panel {
+  padding: 17px; border: 1px solid #292e36; border-radius: 10px;
+  background: #111317; box-shadow: none;
+}
+#desktop .panel-heading { margin-bottom: 15px; }
+#desktop .panel-kicker { font-size: 9px; letter-spacing: .12em; color: #939ba7; }
+#desktop .panel-icon { color: #aab8ce; }
+#desktop .note-panel textarea {
+  min-height: 105px; border: 1px solid #303640; border-radius: 7px;
+  background: #0a0c0f; padding: 11px; font-size: 12px; line-height: 1.6;
+}
+#desktop .panel-footer { margin-top: 10px; }
+#desktop .panel-footer .muted, #desktop .profile-stats span { font-size: 10px; color: var(--z-muted); }
+#desktop .sync-status { padding: 12px; border: 1px solid #292f37; border-radius: 8px; background: #0c0e11; }
+#desktop .sync-check { color: #8ac8a2; background: #17251d; }
+#desktop .profile-stats { gap: 10px; margin: 13px 0; }
+#desktop .profile-stats strong { font-size: 11px; font-weight: 550; }
+#desktop .desktop-footer { margin-top: 25px; padding-top: 13px; border-top: 1px solid #20242b; font-size: 10px; color: #858d99; }
+#desktop .taskbar {
+  min-height: 52px; border: 1px solid #2b3038; border-radius: 10px;
+  background: #111317f5; box-shadow: 0 10px 35px #0009; backdrop-filter: blur(18px);
+}
+#desktop .taskbar button { border-radius: 7px; }
+#desktop .taskbar button:hover { background: #242830; }
+#desktop .task-home { background: #1b1f25; border: 1px solid #333a45; }
+
+/* Windows feel like desktop software: solid title bars, legible controls, less glass. */
+#desktop .os-window, #desktop #app-window {
+  border: 1px solid #353b45; border-radius: 9px; background: #111317;
+  backdrop-filter: none; box-shadow: 0 22px 70px #000a; animation-duration: .12s;
+}
+#desktop .os-window-bar, #desktop .window-bar {
+  min-height: 43px; background: #191c21; border-bottom: 1px solid #2b3038;
+}
+#desktop .os-window-title { font-size: 12px; font-weight: 550; }
+#desktop .os-window-title > span { width: 25px; height: 25px; border-radius: 6px; background: #232831; border-color: #363d48; }
+#desktop .os-window-controls { gap: 2px; }
+#desktop .os-window-controls button, #desktop .window-control, #desktop .window-close {
+  border-radius: 5px; width: 32px; height: 28px;
+}
+#desktop .os-window-controls button:hover, #desktop .window-control:hover { background: #303640; }
+#desktop .os-window-content, #desktop .window-body { background: #111317; color: #e2e6ed; }
+#desktop .os-start-menu, #os-start-menu {
+  border: 1px solid #343a44; border-radius: 12px; background: #111317f7;
+  backdrop-filter: blur(18px); box-shadow: 0 20px 65px #000b;
+}
+#os-start-menu .os-launch-item { border-radius: 7px; }
+#os-start-menu .os-launch-item:hover { background: #22262d; border-color: transparent; }
+#os-start-menu .os-launch-item > span:first-child { border-radius: 7px; background: #20242b; border-color: #363d48; }
+#desktop .os-system-tray, #desktop .os-flyout, #desktop .os-context-menu {
+  border: 1px solid #343a44; border-radius: 10px; background: #111317f7;
+  backdrop-filter: blur(18px); box-shadow: 0 18px 55px #000a;
+}
+#desktop .os-quick-grid button, #desktop .os-notification-item, #desktop .os-calendar-mini {
+  border-radius: 8px; background: #191c21; border-color: #303640;
+}
+#desktop .os-quick-grid button:hover { background: #242830; }
+#desktop .os-shortcut { border-radius: 7px; text-shadow: 0 1px 3px #000; }
+#desktop .os-shortcut:hover { background: #ffffff0c; border-color: #ffffff12; }
+#desktop .os-shortcut > span { border-radius: 8px; background: #191c21; border-color: #343a44; backdrop-filter: none; }
+#desktop .os-scene-widget, #desktop .os-scene-shortcut-icon { backdrop-filter: none; box-shadow: none; }
+#desktop .os-scene-widget { border-radius: 9px; background: #111317e8; border-color: #292e36; }
+#desktop .os-scene-shortcut-icon { border-radius: 8px; background: #191c21; border-color: #343a44; }
+#desktop .os-scene-widget:hover { transform: none; background: #191c21; }
+#desktop .os-scene-day { font-weight: 350; letter-spacing: .04em; }
+#desktop .os-scene-overline { letter-spacing: .14em; }
+#desktop .os-menubar { background: #101216f5; border-color: #292e36; backdrop-filter: blur(18px); }
+#desktop .os-flyout-heading strong { font-weight: 600; }
+#desktop .os-toolbar button, #desktop .os-toolbar label, #desktop .os-action, #desktop .os-import {
+  border-radius: 6px; background: #20242b; border-color: #383f49;
+}
+#desktop .os-toolbar button:hover, #desktop .os-action:hover { background: #2a3039; }
+#desktop .os-path, #desktop .os-editor, #desktop .os-calc output { border-radius: 7px; background: #090b0e; border-color: #2e343d; }
+#desktop .os-system-grid > div { border-radius: 8px; background: #191c21; border-color: #2e343d; }
+#desktop .os-owner-banner { border-radius: 8px; background: #191c21; border-color: #303640; }
+#desktop .os-resize-grip { opacity: .65; }
+#desktop .toast { border: 1px solid #3a414b; border-radius: 8px; background: #171a20; box-shadow: 0 12px 35px #0009; }
+
+@media (max-width: 900px) {
+  #desktop .app-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #desktop .desktop-content { padding: 22px 18px 90px; }
+}
+@media (max-width: 600px) {
+  #desktop .topbar { padding: 0 12px; }
+  #desktop .top-center { display: none; }
+  #desktop .welcome-row { align-items: start; gap: 14px; }
+  #desktop .clock-card { min-width: 104px; padding: 9px; }
+  #desktop .clock-card #clock-time { font-size: 19px; }
+  #desktop .app-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  #desktop .app-tile { min-height: 66px; padding: 9px; gap: 8px; }
+  #desktop .bottom-grid { grid-template-columns: 1fr; }
+  #desktop .auth-card { padding: 24px 20px; }
+}
