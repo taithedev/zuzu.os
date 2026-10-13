@@ -100,6 +100,7 @@
     const taskbar = desktop.querySelector('.taskbar');
     if (taskbar) {
       const moreApps = [['browser','◉','Browser'],['cinehub','▣','Cine Hub'],['music','♫','Music'],['paint','✎','Paint']];
+      let dockAnchor = taskbar.querySelector('[data-os-dock]:last-of-type') || taskbar.querySelector('[data-app="settings"]') || taskbar.querySelector('[data-app="files"]');
       moreApps.forEach(([id,icon,name]) => {
         if (taskbar.querySelector('[data-os-dock="' + id + '"]')) return;
         const button = document.createElement('button');
@@ -110,10 +111,10 @@
         button.title = name;
         button.setAttribute('aria-label',name);
         button.textContent = icon;
-        const settings = taskbar.querySelector('[data-app="settings"]');
-        const anchor = settings || taskbar.querySelector('[data-app="files"]');
-        if (anchor) anchor.insertAdjacentElement('afterend',button);
-        else taskbar.appendChild(button);
+        if (dockAnchor) {
+          dockAnchor.insertAdjacentElement('afterend',button);
+          dockAnchor = button;
+        } else taskbar.appendChild(button);
       });
     }
     scene.querySelectorAll('[data-scene-action]').forEach(button => {
