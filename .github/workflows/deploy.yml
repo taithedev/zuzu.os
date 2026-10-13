@@ -23,6 +23,7 @@ jobs:
           node --check os-team.js
           node --check os-desktop.js
           node --check os-immersive.js
+          node --check os-icons.js
       - name: Verify required site assets
         run: |
           test -f index.html
@@ -36,6 +37,8 @@ jobs:
           test -f os-desktop.css
           test -f os-immersive.js
           test -f os-immersive.css
+          test -f zuzu-cinema.css
+          test -f os-icons.js
           test -f assets/wallpapers/silent-shore.svg
           test -f assets/wallpapers/aurora.svg
           test -f assets/wallpapers/obsidian.svg
