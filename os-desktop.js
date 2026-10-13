@@ -174,13 +174,15 @@
   }
   function quickToggle(kind, persist = true) {
     if (kind === 'blur') {
-      state.saved.blur = !(state.saved.blur === false);
-      document.documentElement.classList.toggle('os-reduced-transparency',state.saved.blur === false);
-      $('os-quick-blur-state').textContent = state.saved.blur === false ? 'Off' : 'On';
+      const reduced = !document.documentElement.classList.contains('os-reduced-transparency');
+      document.documentElement.classList.toggle('os-reduced-transparency',reduced);
+      state.saved.blur = !reduced;
+      $('os-quick-blur-state').textContent = reduced ? 'Off' : 'On';
     } else if (kind === 'motion') {
-      state.saved.motion = !(state.saved.motion === false);
-      document.documentElement.classList.toggle('os-reduced-motion',state.saved.motion === false);
-      $('os-quick-motion-state').textContent = state.saved.motion === false ? 'Reduced' : 'On';
+      const reduced = !document.documentElement.classList.contains('os-reduced-motion');
+      document.documentElement.classList.toggle('os-reduced-motion',reduced);
+      state.saved.motion = !reduced;
+      $('os-quick-motion-state').textContent = reduced ? 'Reduced' : 'On';
     } else if (kind === 'wallpaper') {
       togglePanel('quick',false);
       launch('studio');
@@ -188,8 +190,6 @@
       state.saved.accent = state.saved.accent === 'blue' ? 'violet' : state.saved.accent === 'violet' ? 'mint' : 'blue';
       setAccent(state.saved.accent);
     }
-    if (kind === 'blur') state.saved.blur = document.documentElement.classList.contains('os-reduced-transparency') ? false : true;
-    if (kind === 'motion') state.saved.motion = document.documentElement.classList.contains('os-reduced-motion') ? false : true;
     if (persist) savePrefs();
   }
   function setBrightness(value) {
