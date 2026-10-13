@@ -193,7 +193,7 @@
   async function updateProfile(event) {
     event.preventDefault();
     const displayName = $('profile-display-name').value.trim();
-    const username = $('profile-username').value.trim() || null;
+    const username = $('profile-username').value.trim().toLowerCase() || null;
     if (!displayName) return toast('Enter a display name.');
     const { data, error } = await db.from('profiles').upsert({
       id: state.user.id, display_name: displayName, username, updated_at: new Date().toISOString()
@@ -248,7 +248,10 @@
         <button id="delete-account" class="secondary danger-action" type="button">Permanently delete my account</button>
       </section>
       <section class="setting-section"><h3>Account details</h3><div class="setting-row"><div><strong>${escapeHTML(state.user.email || '')}</strong><p>Email address used to sign in.</p></div><span class="sync-check">✓</span></div><div class="setting-row"><div><strong>Cloud sync</strong><p>Your saved notes and settings are linked to this account.</p></div><span class="sync-check">✓</span></div></section>
-      <section class="setting-section"><h3>Appearance</h3><div class="setting-row"><div><strong>Accent color</strong><p>Choose the color used for highlights.</p></div><label><select id="accent-choice"><option value="#9bc4ff">Sky blue</option><option value="#b5a4ff">Lavender</option><option value="#8ee0bd">Mint</option><option value="#f0c58c">Amber</option></select></label></div></section>
+      <section class="setting-section"><h3>Appearance</h3>
+        <div class="setting-row"><div><strong>Accent color</strong><p>Choose the color used for highlights.</p></div><label><select id="accent-choice"><option value="#9bc4ff">Sky blue</option><option value="#b5a4ff">Lavender</option><option value="#8ee0bd">Mint</option><option value="#f0c58c">Amber</option></select></label></div>
+        <div class="setting-row"><div><strong>Desktop wallpaper</strong><p>Choose the background for this device.</p></div><label><select id="wallpaper-choice"><option value="none">Default</option><option value="aurora">Aurora</option><option value="obsidian">Obsidian</option><option value="afterglow">Afterglow</option></select></label></div>
+      </section>
       <div class="app-actions"><button id="settings-signout" class="secondary">Sign out</button></div>`;
     $('profile-form').addEventListener('submit', updateProfile);
     $('delete-account').addEventListener('click', async () => {
@@ -296,6 +299,8 @@
     });
     $('settings-signout').addEventListener('click', signOut);
     $('accent-choice').value = local.get('accent', '#9bc4ff');
+    $('wallpaper-choice').value = local.get('wallpaper', 'none');
+    $('wallpaper-choice').addEventListener('change', (e) => applyWallpaper(e.target.value));
     $('accent-choice').addEventListener('change', (e) => {
       local.set('accent', e.target.value);
       document.documentElement.style.setProperty('--accent', e.target.value);
@@ -493,6 +498,19 @@
   function escapeHTML(value) {
     return String(value ?? '').replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   }
+  function applyWallpaper(value) {
+    const wallpaper = ['aurora','obsidian','afterglow'].includes(value) ? value : 'none';
+    local.set('wallpaper', wallpaper);
+    if (wallpaper === 'none') {
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundAttachment = '';
+    } else {
+      document.body.style.backgroundImage = 'url("assets/wallpapers/' + wallpaper + '.svg")';
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundAttachment = 'fixed';
+    }
+  }
   function updateClock() {
     const now = new Date();
     $('clock-time').textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
@@ -524,6 +542,7 @@
     $('cookie-accept').addEventListener('click', () => { local.set('cookie-consent', true); $('cookie-notice').classList.add('hidden'); });
     const accent = local.get('accent');
     if (accent) document.documentElement.style.setProperty('--accent', accent);
+    applyWallpaper(local.get('wallpaper', 'none'));
     if (!local.get('cookie-consent', false)) $('cookie-notice').classList.remove('hidden');
     updateClock();
     setInterval(updateClock, 15000);
