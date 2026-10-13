@@ -65,6 +65,60 @@
     <div id="app-window" class="app-window hidden" role="dialog" aria-modal="true" aria-labelledby="window-title"><div class="window-bar"><div class="window-title"><span id="window-icon">◫</span><strong id="window-title">App</strong></div><button id="close-window" class="window-close" aria-label="Close window">×</button></div><div id="window-body" class="window-body"></div></div>
     <div id="toast" class="toast hidden" role="status"></div>
   </main>
+  <section id="setup-screen" class="setup-screen hidden" aria-label="ZuzuOS first-time setup" aria-modal="true" role="dialog">
+    <div class="setup-frame">
+      <aside class="setup-rail">
+        <div class="setup-brand"><span class="mini-logo">z.</span><span>zuzu<span class="brand-dim">.os</span></span></div>
+        <div class="setup-steps">
+          <div class="setup-step active" data-setup-step="0"><span>1</span><div><strong>Welcome</strong><small>Get started</small></div></div>
+          <div class="setup-step" data-setup-step="1"><span>2</span><div><strong>Personalize</strong><small>Make it yours</small></div></div>
+          <div class="setup-step" data-setup-step="2"><span>3</span><div><strong>Privacy</strong><small>Your preferences</small></div></div>
+          <div class="setup-step" data-setup-step="3"><span>4</span><div><strong>Ready</strong><small>Finish setup</small></div></div>
+        </div>
+        <div class="setup-rail-foot">A desktop that feels like yours.<br><span>Version 1.0 · Web edition</span></div>
+      </aside>
+      <div class="setup-main">
+        <div class="setup-window-controls" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="setup-pages">
+          <article class="setup-page active" data-setup-page="0">
+            <div class="setup-orb"><span>z.</span></div>
+            <p class="eyebrow">WELCOME TO YOUR DESKTOP</p>
+            <h1>Meet your new<br><span>personal space.</span></h1>
+            <p class="setup-copy">ZuzuOS brings your apps, files, notes, and settings together in one calm, familiar desktop. Let’s get a few things ready.</p>
+            <div class="setup-feature-row"><span>▦ Apps in one place</span><span>◈ Your own look</span><span>⌁ Account sync</span></div>
+          </article>
+          <article class="setup-page" data-setup-page="1">
+            <p class="eyebrow">MAKE IT YOURS</p><h1>Set the mood.</h1>
+            <p class="setup-copy">Choose a desktop background. You can change it anytime in Settings.</p>
+            <div class="setup-wallpapers">
+              <button class="setup-wallpaper selected" data-wallpaper-choice="aurora"><span class="wallpaper-preview aurora-preview"></span><strong>Aurora</strong><small>Cool blue glow</small></button>
+              <button class="setup-wallpaper" data-wallpaper-choice="obsidian"><span class="wallpaper-preview obsidian-preview"></span><strong>Obsidian</strong><small>Deep and minimal</small></button>
+              <button class="setup-wallpaper" data-wallpaper-choice="afterglow"><span class="wallpaper-preview afterglow-preview"></span><strong>Afterglow</strong><small>Warm evening light</small></button>
+              <button class="setup-wallpaper" data-wallpaper-choice="none"><span class="wallpaper-preview plain-preview"></span><strong>Midnight</strong><small>Clean dark canvas</small></button>
+            </div>
+            <div class="setup-theme-note"><span class="theme-swatch"></span><div><strong>Dark theme</strong><small>On by default for a comfortable, low-glare desktop.</small></div><span class="theme-on">ON</span></div>
+          </article>
+          <article class="setup-page" data-setup-page="2">
+            <p class="eyebrow">YOUR SPACE, YOUR RULES</p><h1>Privacy, made clear.</h1>
+            <p class="setup-copy">Here’s how ZuzuOS uses data so you know what to expect.</p>
+            <div class="setup-privacy-list">
+              <div><span class="privacy-icon">♙</span><div><strong>Your account</strong><p>Supabase securely handles sign-in and account sessions.</p></div><span class="privacy-status">Protected</span></div>
+              <div><span class="privacy-icon">▤</span><div><strong>Your preferences</strong><p>Wallpaper and interface choices stay in this browser.</p></div><span class="privacy-status">Local</span></div>
+              <div><span class="privacy-icon">▧</span><div><strong>Your files</strong><p>Account uploads use private storage rules; only your account should access them.</p></div><span class="privacy-status">Private</span></div>
+            </div>
+            <p class="setup-fineprint">This is a web desktop, not a replacement for Windows. Your browser and device still control system-level permissions.</p>
+          </article>
+          <article class="setup-page" data-setup-page="3">
+            <div class="setup-orb ready-orb"><span>✓</span></div>
+            <p class="eyebrow">SETUP COMPLETE</p><h1>You’re all set.</h1>
+            <p class="setup-copy">Your desktop is ready. Open your apps from the Start menu, pin your favourites, and make ZuzuOS your own.</p>
+            <div class="ready-card"><span class="ready-check">✓</span><div><strong>Personal desktop configured</strong><small>Dark theme · Your chosen wallpaper · Account ready</small></div></div>
+          </article>
+        </div>
+        <footer class="setup-footer"><button id="setup-back" class="secondary" type="button" disabled>Back</button><div class="setup-progress" aria-label="Setup progress"><span class="active"></span><span></span><span></span><span></span></div><button id="setup-next" class="primary" type="button">Get started <span>→</span></button></footer>
+      </div>
+    </div>
+  </section>
   <div id="cookie-notice" class="cookie-notice hidden"><div><strong>Just the essentials.</strong><p>zuzu.os uses local storage for preferences and Supabase to keep your account data in sync.</p></div><button id="cookie-accept" class="primary">Sounds good</button></div>
 </body>
 </html>
