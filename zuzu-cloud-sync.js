@@ -3,7 +3,7 @@
   'use strict';
   const KEYS = [
     'zuzu:theme-preset', 'zuzu:wallpaper', 'zuzu:accent', 'zuzu:shell-style',
-    'zuzu:desktop-ui:v1', 'zuzu:os-vfs:v1',
+    'zuzu:desktop-ui:v1', 'zuzu:os-vfs:v1', 'zuzu:windows-remake-v1',
     'zuzu:os-label', 'zuzu:os-welcome'
   ];
   const client = () => window.zuzuOSAuth?.client || null;
@@ -64,6 +64,13 @@
           else localStorage.removeItem(key);
         }
         restoring = false;
+        // One-time migration to the requested Windows desktop layout.
+        if (localStorage.getItem('zuzu:windows-remake-v1') !== 'true') {
+          restoring = true;
+          localStorage.setItem('zuzu:shell-style', JSON.stringify('windows'));
+          localStorage.setItem('zuzu:windows-remake-v1', 'true');
+          restoring = false;
+        }
         // Re-apply settings that are read by the UI scripts after login.
         const style = JSON.parse(localStorage.getItem('zuzu:shell-style') || '"windows"');
         document.getElementById('desktop')?.setAttribute('data-shell-style', style);
