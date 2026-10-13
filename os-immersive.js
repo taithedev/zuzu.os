@@ -178,12 +178,17 @@
   }
   function renderAccount() {
     const name = $('account-name')?.textContent?.trim() || 'Zuzu account';
-    if ($('os-scene-account-name')) $('os-scene-account-name').textContent = name;
-    if ($('os-scene-avatar')) $('os-scene-avatar').textContent = $('avatar')?.textContent?.trim() || 'Z';
-    if ($('os-scene-account-role')) {
-      const badge = $('os-role-badge');
-      $('os-scene-account-role').textContent = badge?.textContent || 'Personal workspace';
-    }
+    const nameNode = $('os-scene-account-name');
+    if (nameNode && nameNode.textContent !== name) nameNode.textContent = name;
+
+    const avatar = $('avatar')?.textContent?.trim() || 'Z';
+    const avatarNode = $('os-scene-avatar');
+    if (avatarNode && avatarNode.textContent !== avatar) avatarNode.textContent = avatar;
+
+    const badge = $('os-role-badge');
+    const role = badge?.textContent?.trim() || 'Personal workspace';
+    const roleNode = $('os-scene-account-role');
+    if (roleNode && roleNode.textContent !== role) roleNode.textContent = role;
   }
   function bindStylePicker() {
     document.addEventListener('click', event => {
