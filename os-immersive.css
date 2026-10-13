@@ -150,3 +150,15 @@
 
 .setup-wallpapers{grid-template-columns:repeat(5,minmax(0,1fr))}.default-preview{background:linear-gradient(145deg,#202a36,#0b0d12);position:relative}.default-preview:after{content:"◈";display:grid;place-items:center;height:100%;color:#ced9e8;font-size:24px}
 @media(max-width:760px){.setup-wallpapers{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+@media(max-width:760px){
+ #desktop[data-shell-style=cine] .os-extra-dock-app[data-os-dock=browser],
+ #desktop[data-shell-style=cine] .os-extra-dock-app[data-os-dock=paint],
+ #desktop[data-shell-style=macos] .os-extra-dock-app[data-os-dock=browser],
+ #desktop[data-shell-style=macos] .os-extra-dock-app[data-os-dock=paint],
+ #desktop[data-shell-style=windows] .os-extra-dock-app[data-os-dock=browser],
+ #desktop[data-shell-style=windows] .os-extra-dock-app[data-os-dock=paint]{display:none!important}
+ #desktop[data-shell-style=windows] .taskbar{padding:4px 90px!important}
+ #desktop[data-shell-style=windows] .taskbar .task-app{min-width:35px!important;width:37px!important}
+ #desktop[data-shell-style=windows] #os-start-button{min-width:38px!important;width:38px!important}
+}
