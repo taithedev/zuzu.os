@@ -296,6 +296,7 @@
     const name = state.profile?.display_name || state.user.user_metadata?.display_name || '';
     const username = state.profile?.username || '';
     $('window-body').innerHTML = `
+      <header class="zuzu-settings-hero"><span class="zuzu-settings-hero-icon" aria-hidden="true">⚙</span><div><h2>Settings</h2><p>Manage your account, appearance, security and ZuzuOS edition.</p></div></header>
       <p class="app-lead">Your account, your preferences. Changes to your profile are stored securely with your account.</p>
       <section class="setting-section"><h3>Personal profile</h3>
         <form id="profile-form" class="app-form">
@@ -356,7 +357,13 @@
         <div class="setting-row"><div><strong>Preset theme</strong><p>Choose a complete dark desktop palette.</p></div><label><select id="theme-preset-choice"><option value="cine">Cinematic Black</option><option value="oled">Pure OLED</option><option value="graphite">Graphite</option><option value="crimson">Crimson Night</option><option value="midnight">Midnight Blue</option></select></label></div>
         <div class="setting-row"><div><strong>Desktop layout</strong><p>Switch between Cine Desktop, Windows-style, and macOS-style layouts.</p></div><label><select id="shell-layout-choice"><option value="cine">Cine Desktop</option><option value="windows">Windows Style</option><option value="macos">macOS Style</option></select></label></div>
         <div class="setting-row"><div><strong>Accent color</strong><p>Choose the color used for highlights.</p></div><label><select id="accent-choice"><option value="#9bc4ff">Sky blue</option><option value="#b5a4ff">Lavender</option><option value="#8ee0bd">Mint</option><option value="#f0c58c">Amber</option></select></label></div>
-        <div class="setting-row"><div><strong>Desktop wallpaper</strong><p>Choose the background for this device.</p></div><label><select id="wallpaper-choice"><option value="none">Default for layout</option><option value="silent-shore">Silent Shore</option><option value="aurora">Aurora</option><option value="obsidian">Obsidian</option><option value="afterglow">Afterglow</option></select></label></div>
+        <div class="setting-row"><div><strong>Desktop wallpaper</strong><p>Choose the base image for this device.</p></div><label><select id="wallpaper-choice"><option value="none">Default for layout</option><option value="silent-shore">Silent Shore</option><option value="aurora">Aurora</option><option value="obsidian">Obsidian</option><option value="afterglow">Afterglow</option></select></label></div>
+        <div class="zuzu-motion-settings">
+          <div class="setting-row"><div><strong>Live wallpaper</strong><p>Soft, animated color fields that move behind your windows.</p></div><label><select id="wallpaper-motion-choice"><option value="aurora">Flowing Aurora</option><option value="nebula">Deep Space</option><option value="mist">Blue Mist</option><option value="waves">Liquid Waves</option><option value="none">Off</option></select></label></div>
+          <div class="setting-row"><div><strong>Animation speed</strong><p>Control how quickly the background drifts.</p></div><label><input class="zuzu-motion-range" id="wallpaper-motion-speed" type="range" min="45" max="140" step="5" value="85" aria-label="Wallpaper animation speed"><span class="zuzu-motion-value" id="wallpaper-speed-value">85%</span></label></div>
+          <div class="setting-row"><div><strong>Motion intensity</strong><p>Adjust the glow and color strength.</p></div><label><input class="zuzu-motion-range" id="wallpaper-motion-intensity" type="range" min="0" max="100" step="5" value="70" aria-label="Wallpaper motion intensity"><span class="zuzu-motion-value" id="wallpaper-intensity-value">70%</span></label></div>
+          <p class="muted" style="font-size:11px;line-height:1.55;margin:10px 0 0">Your wallpaper preferences are saved on this device. Turn Motion off in Quick Settings or select Off here to pause the moving background.</p>
+        </div>
       </section>
       <div class="app-actions"><button id="settings-signout" class="secondary">Sign out</button></div>`;
     $('profile-form').addEventListener('submit', updateProfile);
