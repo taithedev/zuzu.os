@@ -1,0 +1,139 @@
+/* Three shell layouts: a cinematic scene, Windows-inspired centred taskbar, or macOS-style menu and dock. */
+:root{--scene-text:#f4f6fa;--scene-muted:#aeb8c7;--scene-accent:#8dbbff}
+#desktop{position:relative;isolation:isolate;min-height:100vh;overflow-x:hidden}
+#os-scene{display:none}
+#desktop[data-shell-style] .desktop-content{display:none!important}
+#desktop[data-shell-style]>.topbar{display:none!important}
+#desktop[data-shell-style=cine]{background:#192630 url("assets/wallpapers/silent-shore.svg") center center/cover no-repeat fixed}
+#desktop[data-shell-style=windows]{background:#17263d url("assets/wallpapers/aurora.svg") center/cover no-repeat fixed}
+#desktop[data-shell-style=macos]{background:#111522 url("assets/wallpapers/afterglow.svg") center/cover no-repeat fixed}
+#desktop[data-shell-style=cine]::before,#desktop[data-shell-style=windows]::before,#desktop[data-shell-style=macos]::before{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;background:linear-gradient(180deg,#07111b22 0%,#07111b05 40%,#03070d45 100%)}
+#desktop[data-shell-style=cine] #os-scene,#desktop[data-shell-style=windows] #os-scene,#desktop[data-shell-style=macos] #os-scene{display:block}
+#desktop[data-shell-style] .os-menubar{display:none}
+#desktop[data-shell-style=macos] .os-menubar{display:flex;z-index:69;background:#0a0d12a6;border-color:#ffffff18}
+.os-scene{position:fixed;z-index:1;inset:0;pointer-events:none;color:var(--scene-text);font-family:"Segoe UI",Inter,system-ui,sans-serif}
+.os-scene button{font:inherit}
+.os-scene-day-wrap{position:absolute;top:38px;left:50%;transform:translateX(-50%);display:grid;justify-items:center;text-align:center;max-width:65vw;text-shadow:0 2px 22px #0005}
+.os-scene-overline{margin:0 0 7px;font-size:8px;letter-spacing:.32em;color:#e8edf2a0}
+.os-scene-day{font-size:clamp(28px,3.2vw,44px);font-weight:350;letter-spacing:.25em;line-height:1.2}
+.os-scene-full-date{margin-top:7px;font-size:11px;letter-spacing:.14em;color:#e4e9efb5}
+.os-scene-left-rail{position:absolute;top:calc(50% - 225px);left:18px;display:grid;gap:10px;width:86px;pointer-events:auto}
+.os-scene-shortcut-title{padding:0 4px;color:#e0e6edb0;font-size:8px;font-weight:650;letter-spacing:.18em;text-shadow:0 2px 12px #0007}
+.os-scene-shortcuts{display:grid;gap:7px}
+.os-scene-shortcut{display:grid;justify-items:center;gap:6px;width:82px;min-height:80px;padding:8px 4px;border:1px solid transparent;border-radius:12px;background:transparent;color:#f3f5f8;cursor:pointer;text-shadow:0 1px 6px #000b;pointer-events:auto}
+.os-scene-shortcut:hover,.os-scene-shortcut:focus-visible{border-color:#ffffff32;background:#ffffff18;outline:none;backdrop-filter:blur(14px)}
+.os-scene-shortcut-icon{display:grid;place-items:center;width:42px;height:42px;border:1px solid #ffffff35;border-radius:13px;background:linear-gradient(145deg,#293441e8,#141a22dd);box-shadow:0 7px 22px #0004,inset 0 1px #ffffff30;color:#f4f6fa;font-size:22px}
+.os-scene-shortcut:nth-child(2) .os-scene-shortcut-icon{color:#b1d5ff}
+.os-scene-shortcut:nth-child(3) .os-scene-shortcut-icon{color:#ffedb2}
+.os-scene-shortcut>span:last-child{max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;font-weight:550}
+.os-scene-widgets{position:absolute;top:75px;right:22px;display:grid;gap:10px;width:min(292px,calc(100vw - 130px));pointer-events:auto}
+.os-widget-caption{margin:7px 0 -3px 2px;color:#e7edf2c4;font-size:8px;font-weight:750;letter-spacing:.16em;text-shadow:0 2px 10px #0009}
+.os-scene-widget{display:flex;align-items:center;gap:12px;width:100%;min-height:62px;padding:11px 13px;border:1px solid #ffffff10;border-radius:15px;background:linear-gradient(145deg,#26272bed,#202123ed);color:#f5f5f7;text-align:left;box-shadow:0 12px 32px #0003,inset 0 1px #ffffff0a;backdrop-filter:blur(24px) saturate(120%);cursor:pointer;transition:transform .16s,background .16s,border-color .16s}
+.os-scene-widget:hover{transform:translateY(-2px);border-color:#ffffff24;background:#2c3036f0}
+.os-widget-icon{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;border:1px solid #ffffff16;border-radius:12px;background:#11171f;font-size:24px}
+.os-widget-crystal{color:#ffdd76;background:linear-gradient(145deg,#3b3226,#17181d);font-size:31px}
+.os-widget-music{background:#112b22;color:#76e8a7}
+.os-widget-copy{display:grid;gap:4px;min-width:0;flex:1}
+.os-widget-copy strong{font-size:11px;line-height:1.2;font-weight:720}
+.os-widget-copy small{font-size:9px;line-height:1.4;color:#aab1bb}
+.os-widget-chevron{font-size:25px;color:#a7adb6;line-height:1}
+.os-update-widget{min-height:55px}
+.os-scene-account{position:absolute;top:18px;right:22px;display:flex;align-items:center;gap:9px;max-width:calc(100vw - 28px);padding:7px 10px;border:1px solid #ffffff18;border-radius:13px;background:#111822ba;color:#eef2f7;backdrop-filter:blur(18px);pointer-events:auto;cursor:pointer;box-shadow:0 9px 25px #0002}
+.os-scene-account>span:first-child{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:linear-gradient(145deg,#f0f4fa,#a8b8cc);color:#101720;font-size:11px;font-weight:800}
+.os-scene-account-copy{display:grid;gap:3px;text-align:left;min-width:0}
+.os-scene-account-copy strong{font-size:9px;font-weight:700}
+.os-scene-account-copy small{font-size:8px;color:#a2adbd}
+.os-scene-account>span:last-child{color:#a7b2c2}
+.os-scene-bottom-left{position:absolute;left:22px;bottom:22px;display:flex;align-items:center;gap:9px;font-size:9px;color:#e8edf0c6;letter-spacing:.12em;text-shadow:0 2px 10px #0007}
+.os-scene-live-dot{width:6px;height:6px;border-radius:50%;background:#a6e4c3;box-shadow:0 0 12px #a6e4c355}
+.os-scene-bottom-divider{width:1px;height:12px;background:#ffffff5a}
+/* macOS and cinematic layouts share a floating dock. */
+#desktop[data-shell-style=cine] .taskbar,#desktop[data-shell-style=macos] .taskbar{position:fixed!important;z-index:71!important;left:50%!important;right:auto!important;bottom:12px!important;transform:translateX(-50%)!important;width:max-content!important;max-width:calc(100vw - 24px)!important;min-height:58px!important;height:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;padding:8px 10px!important;border:1px solid #ffffff2c!important;border-radius:20px!important;background:rgba(17,20,25,.82)!important;backdrop-filter:blur(32px) saturate(150%)!important;box-shadow:0 18px 55px #0006,inset 0 1px #ffffff16!important}
+#desktop[data-shell-style=cine] .taskbar .taskbar-spacer,#desktop[data-shell-style=cine] .taskbar .taskbar-separator,#desktop[data-shell-style=macos] .taskbar .taskbar-spacer,#desktop[data-shell-style=macos] .taskbar .taskbar-separator{display:none!important}
+#desktop[data-shell-style=cine] .taskbar #home-button,#desktop[data-shell-style=macos] .taskbar #home-button{display:none!important}
+#desktop[data-shell-style=cine] .taskbar .task-app,#desktop[data-shell-style=macos] .taskbar .task-app{display:grid!important;place-items:center!important;min-width:40px!important;width:42px!important;height:42px!important;padding:0!important;border:1px solid transparent!important;border-radius:13px!important;background:#ffffff08!important;color:#f4f6f8!important;font-size:19px!important;transition:transform .16s,background .16s!important}
+#desktop[data-shell-style=cine] .taskbar .task-app:hover,#desktop[data-shell-style=macos] .taskbar .task-app:hover{transform:translateY(-5px) scale(1.07)!important;background:#ffffff18!important}
+#desktop[data-shell-style=cine] .taskbar .task-app span,#desktop[data-shell-style=macos] .taskbar .task-app span,#desktop[data-shell-style=cine] .taskbar .task-clock,#desktop[data-shell-style=macos] .taskbar .task-clock,#desktop[data-shell-style=cine] .taskbar #task-account,#desktop[data-shell-style=macos] .taskbar #task-account{display:none!important}
+#desktop[data-shell-style=cine] #os-start-button,#desktop[data-shell-style=macos] #os-start-button{display:grid!important;place-items:center!important;width:43px!important;min-width:43px!important;height:43px!important;padding:0!important;border-radius:14px!important;background:linear-gradient(145deg,#f6f7fa,#c6d1df)!important;color:#111720!important;box-shadow:inset 0 1px #fff,0 6px 16px #0004!important}
+#desktop[data-shell-style=cine] #os-start-button .os-start-label,#desktop[data-shell-style=macos] #os-start-button .os-start-label{display:none!important}
+#desktop[data-shell-style=cine] #os-start-button .os-start-mark,#desktop[data-shell-style=macos] #os-start-button .os-start-mark{width:auto;height:auto;border:0;background:none;color:#111720;font-size:17px}
+#desktop[data-shell-style=cine] #os-task-view,#desktop[data-shell-style=macos] #os-task-view{display:grid!important;place-items:center!important}
+#desktop[data-shell-style=cine] .os-system-tray{right:17px;bottom:16px;background:#1b1f25b8}
+#desktop[data-shell-style=macos] .os-system-tray{right:14px;top:55px;bottom:auto;background:#10141dc4}
+#desktop[data-shell-style=cine] .os-start-menu,#desktop[data-shell-style=macos] .os-start-menu{bottom:82px}
+/* Windows-inspired look with centered taskbar and a Windows-like Start panel. */
+#desktop[data-shell-style=windows]{background:#17263d url("assets/wallpapers/aurora.svg") center/cover no-repeat fixed}
+#desktop[data-shell-style=windows] .os-scene-day-wrap{top:32px;left:38px;transform:none;justify-items:start;text-align:left}
+#desktop[data-shell-style=windows] .os-scene-overline{font-size:8px;letter-spacing:.2em}
+#desktop[data-shell-style=windows] .os-scene-day{font-size:28px;letter-spacing:.08em;font-weight:550}
+#desktop[data-shell-style=windows] .os-scene-full-date{font-size:10px;letter-spacing:0}
+#desktop[data-shell-style=windows] .os-scene-widgets{top:132px;right:22px;width:min(315px,calc(100vw - 130px))}
+#desktop[data-shell-style=windows] .os-scene-left-rail{top:120px;left:20px}
+#desktop[data-shell-style=windows] .os-scene-bottom-left{display:none}
+#desktop[data-shell-style=windows] .taskbar{position:fixed!important;z-index:71!important;left:0!important;right:0!important;bottom:0!important;transform:none!important;width:100%!important;max-width:100%!important;height:66px!important;min-height:66px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;padding:8px 140px 8px 14px!important;border:0!important;border-top:1px solid #ffffff1b!important;border-radius:0!important;background:rgba(18,21,28,.83)!important;backdrop-filter:blur(36px) saturate(150%)!important;box-shadow:0 -5px 35px #0004!important}
+#desktop[data-shell-style=windows] .taskbar .taskbar-spacer,#desktop[data-shell-style=windows] .taskbar .taskbar-separator,#desktop[data-shell-style=windows] .taskbar #home-button{display:none!important}
+#desktop[data-shell-style=windows] .taskbar .task-app{display:grid!important;place-items:center!important;min-width:43px!important;width:45px!important;height:45px!important;padding:0!important;border:1px solid transparent!important;border-radius:12px!important;background:#ffffff04!important;color:#f0f4fa!important;font-size:19px!important}
+#desktop[data-shell-style=windows] .taskbar .task-app:hover{background:#ffffff14!important}
+#desktop[data-shell-style=windows] .taskbar .task-app span,#desktop[data-shell-style=windows] .taskbar .task-clock,#desktop[data-shell-style=windows] .taskbar #task-account{display:none!important}
+#desktop[data-shell-style=windows] #os-start-button{display:grid!important;place-items:center!important;width:45px!important;min-width:45px!important;height:45px!important;padding:0!important;border:1px solid #ffffff10!important;border-radius:13px!important;background:#172b47!important;color:#9dc4ff!important}
+#desktop[data-shell-style=windows] #os-start-button .os-start-label{display:none!important}
+#desktop[data-shell-style=windows] #os-start-button .os-start-mark{width:auto;height:auto;border:0;background:none;color:#9bc7ff;font-size:24px}
+#desktop[data-shell-style=windows] #os-task-view{display:grid!important;place-items:center!important}
+#desktop[data-shell-style=windows] .os-system-tray{right:8px;bottom:9px;min-height:47px;padding:3px;border-radius:11px;background:#11151cbf;box-shadow:none}
+#desktop[data-shell-style=windows] .os-system-tray #os-quick-settings-toggle>span{display:none}
+#desktop[data-shell-style=windows] .os-start-menu{bottom:77px;background:rgba(24,27,35,.95);border-color:#ffffff20;box-shadow:0 24px 100px #000a}
+#desktop[data-shell-style] .account-menu{z-index:120}
+/* Layout cards in first-run setup. */
+.setup-layout-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0 17px}
+.setup-layout-option{display:grid;gap:7px;min-width:0;padding:9px;border:1px solid #ffffff18;border-radius:13px;background:#ffffff04;color:#e7ebf2;text-align:left;cursor:pointer}
+.setup-layout-option:hover,.setup-layout-option.selected{border-color:#9bc4ff80;background:#9bc4ff12}
+.setup-layout-preview{display:flex;align-items:end;justify-content:center;gap:3px;height:54px;padding:6px;border:1px solid #ffffff11;border-radius:8px;background:linear-gradient(145deg,#303c50,#121720)}
+.setup-layout-preview i{width:15%;height:22px;border:1px solid #ffffff22;border-radius:3px;background:#ffffff25}
+.setup-layout-preview i:nth-child(2){height:31px}
+.setup-layout-option strong{font-size:10px;line-height:1.3}
+.setup-layout-option small{font-size:8px;line-height:1.35;color:#9ba7b8}
+.setup-layout-option[aria-pressed=true]{box-shadow:inset 0 0 0 1px #94bdff36}
+@media(max-width:760px){
+ .os-scene-day-wrap{top:26px;max-width:calc(100vw - 120px)}
+ .os-scene-day{font-size:26px;letter-spacing:.16em}
+ .os-scene-full-date{font-size:9px}
+ .os-scene-left-rail{left:5px;top:105px;width:67px;gap:6px}
+ .os-scene-shortcut{width:65px;min-height:61px;padding:5px 2px;gap:4px}
+ .os-scene-shortcut-icon{width:34px;height:34px;border-radius:10px;font-size:18px}
+ .os-scene-shortcut>span:last-child{max-width:63px;font-size:8px}
+ .os-scene-widgets{top:105px;right:7px;width:min(245px,calc(100vw - 95px));gap:7px}
+ .os-scene-widget{gap:8px;min-height:54px;padding:8px;border-radius:12px}
+ .os-widget-icon{flex-basis:34px;width:34px;height:34px;font-size:19px}
+ .os-widget-copy strong{font-size:10px}
+ .os-widget-copy small{font-size:8px}
+ .os-scene-account{top:8px;right:8px;padding:4px}
+ .os-scene-account-copy{display:none}
+ .os-scene-bottom-left{left:10px;bottom:80px}
+ #desktop[data-shell-style=windows] .os-scene-day-wrap{left:13px;top:18px}
+ #desktop[data-shell-style=windows] .os-scene-widgets{top:120px}
+ #desktop[data-shell-style=windows] .os-scene-left-rail{top:120px}
+ #desktop[data-shell-style=macos] .os-menubar{left:5px;right:5px;top:5px;height:35px;padding:0 9px}
+ #desktop[data-shell-style=macos] .os-system-tray{top:46px;right:6px}
+ #desktop[data-shell-style=windows] .taskbar{height:58px!important;min-height:58px!important;padding:4px 118px 4px 4px!important;gap:3px!important}
+ #desktop[data-shell-style=windows] .taskbar .task-app{width:37px!important;min-width:36px!important;height:37px!important}
+ #desktop[data-shell-style=windows] #os-start-button{width:38px!important;min-width:38px!important;height:38px!important}
+ #desktop[data-shell-style=windows] .os-system-tray{right:5px;bottom:6px;min-height:42px}
+ .setup-layout-picker{grid-template-columns:1fr}
+ .setup-layout-option{grid-template-columns:86px minmax(0,1fr);align-items:center}
+ .setup-layout-preview{grid-row:1/3}
+}
+@media(max-width:480px){
+ .os-scene-day-wrap{left:48%;max-width:45vw}
+ .os-scene-day{font-size:21px;letter-spacing:.1em}
+ .os-scene-overline{font-size:7px}
+ .os-scene-left-rail{top:103px}
+ .os-scene-widgets{top:96px;width:calc(100vw - 91px)}
+ .os-widget-caption{font-size:7px}
+ .os-scene-widget{min-height:48px;padding:6px}
+ .os-widget-icon{width:29px;height:29px;flex-basis:29px;font-size:16px}
+ .os-scene-shortcut{min-height:55px}
+ .os-scene-bottom-left{display:none}
+ #desktop[data-shell-style=windows] .os-scene-widgets{top:109px}
+ #desktop[data-shell-style=windows] .os-scene-left-rail{top:109px}
+}
+@media(prefers-reduced-motion:reduce){.os-scene-widget,.os-scene-shortcut,#desktop[data-shell-style] .taskbar .task-app{transition:none!important}}
