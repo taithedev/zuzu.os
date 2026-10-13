@@ -1,0 +1,98 @@
+/* ZuzuOS Motion Studio — Windows 11-inspired depth, motion wallpapers and soft Mica surfaces. */
+:root{
+  --zuzu-win-accent:#60a5fa;
+  --zuzu-win-accent-soft:rgba(96,165,250,.18);
+  --zuzu-motion-opacity:.72;
+  --zuzu-motion-duration-a:32s;
+  --zuzu-motion-duration-b:43s;
+  --zuzu-motion-duration-c:28s;
+}
+#desktop{isolation:isolate}
+#zuzu-live-wallpaper{
+  position:fixed;inset:-4%;z-index:-1;overflow:hidden;pointer-events:none;contain:paint;
+  opacity:var(--zuzu-motion-opacity);transition:opacity .65s ease,filter .65s ease;
+  background:transparent;
+}
+#zuzu-live-wallpaper[hidden]{display:none}
+.zuzu-motion-orb{position:absolute;display:block;border-radius:48% 52% 63% 37% / 42% 38% 62% 58%;filter:blur(clamp(38px,6vw,105px));mix-blend-mode:screen;will-change:transform,border-radius;transform:translate3d(0,0,0);backface-visibility:hidden}
+.zuzu-motion-orb--one{width:65vw;height:62vw;min-width:420px;min-height:420px;left:-12%;top:-28%;background:radial-gradient(ellipse at 40% 40%,rgba(39,126,255,.64),rgba(25,66,178,.22) 42%,transparent 70%);animation:zuzu-drift-a var(--zuzu-motion-duration-a) ease-in-out infinite alternate}
+.zuzu-motion-orb--two{width:56vw;height:54vw;min-width:360px;min-height:360px;right:-7%;top:4%;background:radial-gradient(ellipse at 50% 50%,rgba(88,68,224,.52),rgba(21,94,191,.2) 42%,transparent 71%);animation:zuzu-drift-b var(--zuzu-motion-duration-b) ease-in-out infinite alternate}
+.zuzu-motion-orb--three{width:64vw;height:48vw;min-width:410px;min-height:320px;left:26%;bottom:-34%;background:radial-gradient(ellipse at 50% 45%,rgba(14,126,170,.48),rgba(24,67,151,.13) 46%,transparent 72%);animation:zuzu-drift-c var(--zuzu-motion-duration-c) ease-in-out infinite alternate}
+.zuzu-motion-orb--four{width:38vw;height:45vw;min-width:300px;min-height:340px;left:32%;top:18%;background:radial-gradient(ellipse at 50% 50%,rgba(74,154,255,.16),transparent 68%);animation:zuzu-breathe 17s ease-in-out infinite alternate}
+#desktop[data-motion-wallpaper="aurora"] .zuzu-motion-orb--one{background:radial-gradient(ellipse at 40% 40%,rgba(0,154,255,.62),rgba(44,86,224,.22) 42%,transparent 70%)}
+#desktop[data-motion-wallpaper="aurora"] .zuzu-motion-orb--two{background:radial-gradient(ellipse at 50% 50%,rgba(28,206,170,.44),rgba(28,116,186,.17) 42%,transparent 71%)}
+#desktop[data-motion-wallpaper="aurora"] .zuzu-motion-orb--three{background:radial-gradient(ellipse at 50% 45%,rgba(42,82,226,.38),rgba(40,77,155,.13) 46%,transparent 72%)}
+#desktop[data-motion-wallpaper="nebula"] .zuzu-motion-orb--one{background:radial-gradient(ellipse at 40% 40%,rgba(111,74,255,.65),rgba(101,44,188,.24) 45%,transparent 72%)}
+#desktop[data-motion-wallpaper="nebula"] .zuzu-motion-orb--two{background:radial-gradient(ellipse at 50% 50%,rgba(231,69,172,.4),rgba(91,57,200,.2) 44%,transparent 72%)}
+#desktop[data-motion-wallpaper="nebula"] .zuzu-motion-orb--three{background:radial-gradient(ellipse at 50% 45%,rgba(34,85,212,.4),rgba(84,44,155,.14) 46%,transparent 72%)}
+#desktop[data-motion-wallpaper="mist"] .zuzu-motion-orb--one{background:radial-gradient(ellipse at 40% 40%,rgba(120,182,255,.58),rgba(65,117,194,.2) 44%,transparent 72%)}
+#desktop[data-motion-wallpaper="mist"] .zuzu-motion-orb--two{background:radial-gradient(ellipse at 50% 50%,rgba(164,194,239,.3),rgba(69,110,184,.15) 44%,transparent 72%)}
+#desktop[data-motion-wallpaper="mist"] .zuzu-motion-orb--three{background:radial-gradient(ellipse at 50% 45%,rgba(39,137,190,.33),transparent 70%)}
+#desktop[data-motion-wallpaper="waves"] .zuzu-motion-orb{filter:blur(32px);mix-blend-mode:screen}
+#desktop[data-motion-wallpaper="waves"] .zuzu-motion-orb--one{width:105vw;height:60vh;left:-25%;top:-22%;border-radius:50%;background:repeating-linear-gradient(152deg,transparent 0 34px,rgba(88,165,255,.22) 35px 38px,transparent 39px 66px)}
+#desktop[data-motion-wallpaper="waves"] .zuzu-motion-orb--two{width:100vw;height:65vh;right:-18%;top:36%;border-radius:50%;background:repeating-linear-gradient(22deg,transparent 0 42px,rgba(83,123,255,.18) 43px 46px,transparent 47px 82px)}
+#desktop[data-motion-wallpaper="waves"] .zuzu-motion-orb--three{background:radial-gradient(ellipse,rgba(0,165,226,.23),transparent 72%)}
+#desktop[data-motion-wallpaper="none"] #zuzu-live-wallpaper{display:none}
+#desktop[data-motion-wallpaper="none"] .zuzu-motion-orb{animation:none}
+.zuzu-motion-grain{position:absolute;inset:0;opacity:.08;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");mix-blend-mode:soft-light}
+@keyframes zuzu-drift-a{0%{transform:translate3d(-2%,0,0) rotate(-8deg) scale(.92);border-radius:46% 54% 61% 39%/42% 38% 62% 58%}50%{border-radius:60% 40% 44% 56%/53% 65% 35% 47%}100%{transform:translate3d(10%,11%,0) rotate(11deg) scale(1.12);border-radius:44% 56% 58% 42%/61% 39% 61% 39%}}
+@keyframes zuzu-drift-b{0%{transform:translate3d(4%,-4%,0) rotate(7deg) scale(1.02);border-radius:52% 48% 40% 60%/44% 56% 44% 56%}100%{transform:translate3d(-11%,9%,0) rotate(-13deg) scale(.88);border-radius:43% 57% 62% 38%/62% 39% 61% 38%}}
+@keyframes zuzu-drift-c{0%{transform:translate3d(-4%,6%,0) scale(.9)}100%{transform:translate3d(7%,-7%,0) scale(1.12)}}
+@keyframes zuzu-breathe{0%{transform:translate3d(0,3%,0) scale(.8);opacity:.5}100%{transform:translate3d(2%,-4%,0) scale(1.18);opacity:1}}
+/* Native-feeling animation curves and layered, translucent windows. */
+#desktop .os-window,#desktop #app-window{transform-origin:50% 70%;transition:box-shadow .22s ease,border-color .22s ease,filter .2s ease}
+#desktop .os-window:hover,#desktop #app-window:not(.hidden):hover{border-color:rgba(255,255,255,.25);box-shadow:0 28px 95px rgba(0,0,0,.52),0 0 0 1px rgba(255,255,255,.025),inset 0 1px rgba(255,255,255,.09)}
+#desktop .os-window-bar,#desktop .window-bar{background:linear-gradient(110deg,rgba(255,255,255,.065),rgba(255,255,255,.018));backdrop-filter:blur(26px) saturate(145%)}
+#desktop .taskbar{backdrop-filter:blur(36px) saturate(170%);box-shadow:0 15px 45px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.15)}
+#desktop .task-app,#desktop #os-task-view,#desktop #os-start-button{transition:background .18s ease,transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s ease}
+#desktop .task-app:hover,#desktop #os-task-view:hover,#desktop #os-start-button:hover{transform:translateY(-3px) scale(1.045)}
+#desktop .task-app:active,#desktop #os-task-view:active,#desktop #os-start-button:active{transform:translateY(0) scale(.97)}
+#desktop .os-shortcut,#desktop .os-scene-shortcut{transition:transform .2s cubic-bezier(.2,.8,.2,1),background .2s ease,border-color .2s ease}
+#desktop .os-shortcut:hover,#desktop .os-scene-shortcut:hover{transform:translateY(-3px)}
+#desktop .os-start-menu{transform-origin:bottom center;animation:zuzu-start-in .25s cubic-bezier(.16,1,.3,1) both}
+@keyframes zuzu-start-in{from{opacity:0;transform:translate(-50%,14px) scale(.96);filter:blur(4px)}to{opacity:1;transform:translate(-50%,0) scale(1);filter:blur(0)}}
+#desktop .os-flyout{transform-origin:bottom right;animation:zuzu-flyout-in .22s cubic-bezier(.16,1,.3,1) both}
+@keyframes zuzu-flyout-in{from{opacity:0;transform:translateY(10px) scale(.97);filter:blur(3px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+#desktop .os-window-content{scrollbar-color:rgba(190,206,229,.36) transparent;scrollbar-width:thin}
+#desktop .os-window-content::-webkit-scrollbar,#desktop #window-body::-webkit-scrollbar{width:9px}
+#desktop .os-window-content::-webkit-scrollbar-thumb,#desktop #window-body::-webkit-scrollbar-thumb{border:2px solid transparent;border-radius:20px;background:rgba(190,206,229,.26);background-clip:padding-box}
+#app-window{overflow:hidden;border-radius:18px}
+#window-body{scrollbar-width:thin;scrollbar-color:#586578 transparent}
+.setting-section{position:relative;overflow:hidden;animation:zuzu-setting-in .34s cubic-bezier(.16,1,.3,1) both}
+.setting-section:nth-of-type(2){animation-delay:25ms}.setting-section:nth-of-type(3){animation-delay:45ms}.setting-section:nth-of-type(4){animation-delay:65ms}.setting-section:nth-of-type(5){animation-delay:85ms}.setting-section:nth-of-type(6){animation-delay:105ms}.setting-section:nth-of-type(7){animation-delay:125ms}.setting-section:nth-of-type(8){animation-delay:145ms}
+@keyframes zuzu-setting-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.zuzu-settings-hero{display:flex;align-items:center;gap:15px;padding:18px 18px 20px;margin:0 0 16px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:linear-gradient(120deg,rgba(49,95,157,.24),rgba(255,255,255,.025) 62%);box-shadow:inset 0 1px rgba(255,255,255,.06)}
+.zuzu-settings-hero .zuzu-settings-hero-icon{display:grid;place-items:center;flex:0 0 52px;width:52px;height:52px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.04));font-size:25px;box-shadow:inset 0 1px rgba(255,255,255,.17),0 9px 25px rgba(0,0,0,.18)}
+.zuzu-settings-hero h2{margin:0 0 5px;font-size:clamp(21px,3vw,28px);font-weight:560;letter-spacing:-.045em;color:#f5f8ff}
+.zuzu-settings-hero p{margin:0;color:#a5b6ce;font-size:12px;line-height:1.55}
+.setting-section{border:1px solid rgba(255,255,255,.09)!important;border-radius:15px!important;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018))!important;padding:17px!important;margin:0 0 12px!important;box-shadow:inset 0 1px rgba(255,255,255,.035)}
+.setting-section>h3{font-size:13px!important;font-weight:650!important;letter-spacing:-.015em;color:#eaf1fb!important;padding-bottom:10px!important;margin:0 0 12px!important;border-bottom:1px solid rgba(255,255,255,.08)}
+.setting-section .setting-row{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.055)}
+.setting-section .setting-row:last-child{border-bottom:0}
+.setting-section .setting-row>div>strong{font-size:12px}
+.setting-section .setting-row p{color:#97a7bc;line-height:1.55}
+.setting-section select,.setting-section input:not([type=checkbox]):not([type=range]),.setting-section input[type=date],.setting-section input[type=number]{min-height:38px;max-width:100%;border-radius:9px!important;border:1px solid rgba(255,255,255,.14)!important;background:#131923!important;color:#edf3fc!important;padding:8px 10px!important}
+.setting-section select:focus,.setting-section input:focus{border-color:#60a5fa!important;box-shadow:0 0 0 3px rgba(96,165,250,.13)}
+.setting-section button{transition:transform .17s ease,filter .17s ease,border-color .17s ease}
+.setting-section button:hover{filter:brightness(1.09)}
+.setting-section button:active{transform:scale(.98)}
+.zuzu-motion-settings{padding:14px;margin-top:10px;border:1px solid rgba(116,169,239,.2);border-radius:13px;background:linear-gradient(140deg,rgba(49,96,157,.13),rgba(255,255,255,.02))}
+.zuzu-motion-settings .setting-row{gap:14px}
+.zuzu-motion-range{width:min(190px,42vw);accent-color:#60a5fa}
+.zuzu-motion-value{display:inline-block;min-width:36px;text-align:right;font-size:10px;color:#c3d9f8;font-variant-numeric:tabular-nums}
+#desktop[data-motion-wallpaper="aurora"]{--zuzu-wallpaper-glow:rgba(27,153,222,.12)}
+#desktop[data-motion-wallpaper="nebula"]{--zuzu-wallpaper-glow:rgba(130,75,235,.13)}
+#desktop[data-motion-wallpaper="mist"]{--zuzu-wallpaper-glow:rgba(105,175,255,.12)}
+#desktop[data-motion-wallpaper="waves"]{--zuzu-wallpaper-glow:rgba(57,129,255,.13)}
+@media(max-width:720px){
+ .zuzu-settings-hero{align-items:flex-start;padding:14px}.zuzu-settings-hero .zuzu-settings-hero-icon{flex-basis:42px;width:42px;height:42px}
+ .setting-section{padding:13px!important}.zuzu-motion-settings .setting-row{align-items:flex-start}
+ .zuzu-motion-range{width:min(145px,38vw)}
+}
+@media(prefers-reduced-motion:reduce){
+ #zuzu-live-wallpaper,.zuzu-motion-orb{animation:none!important;transition:none!important}
+ #desktop .os-window,#desktop #app-window,#desktop .task-app,#desktop #os-task-view,#desktop #os-start-button,#desktop .os-shortcut,#desktop .os-scene-shortcut{transition:none!important}
+ .setting-section{animation:none!important}
+}
+html.os-reduced-motion #zuzu-live-wallpaper,html.os-reduced-motion .zuzu-motion-orb{animation:none!important;transition:none!important}
+html.os-reduced-motion #desktop .os-window,html.os-reduced-motion #desktop #app-window,html.os-reduced-motion #desktop .task-app,html.os-reduced-motion #desktop #os-task-view,html.os-reduced-motion #desktop #os-start-button{transition:none!important}
