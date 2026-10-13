@@ -100,7 +100,7 @@
     const taskbar = desktop.querySelector('.taskbar');
     if (taskbar) {
       const moreApps = [['browser','◉','Browser'],['cinehub','▣','Cine Hub'],['music','♫','Music'],['paint','✎','Paint']];
-      let dockAnchor = taskbar.querySelector('[data-os-dock]:last-of-type') || taskbar.querySelector('[data-app="settings"]') || taskbar.querySelector('[data-app="files"]');
+      let dockAnchor = taskbar.querySelector('[data-app="settings"]') || taskbar.querySelector('[data-app="files"]');
       moreApps.forEach(([id,icon,name]) => {
         if (taskbar.querySelector('[data-os-dock="' + id + '"]')) return;
         const button = document.createElement('button');
