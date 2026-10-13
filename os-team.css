@@ -1,0 +1,97 @@
+/* ZuzuOS hybrid desktop: macOS dock + Windows 11 glass + cinematic dark surfaces */
+.os-menubar{position:fixed;z-index:7;top:8px;left:12px;right:12px;height:40px;display:flex;align-items:center;gap:14px;padding:0 14px;border:1px solid #ffffff19;border-radius:14px;background:rgba(10,12,16,.64);backdrop-filter:blur(28px) saturate(145%);box-shadow:0 8px 35px #0003;color:#e8edf6;font-size:10px}
+.os-menu-brand{display:flex;align-items:center;gap:8px;border:0;background:transparent;color:inherit;font-size:11px;cursor:pointer}
+.os-menu-brand>span{display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:linear-gradient(145deg,#f4f6fb,#c3ccdb);color:#10141b;font-weight:850}
+.os-menu-divider{height:18px;width:1px;background:#ffffff1a}
+.os-menu-edition{font-size:9px;letter-spacing:.16em;color:#a5afbf}
+.os-menu-spacer{flex:1}
+.os-menu-status{display:flex;align-items:center;gap:7px;color:#a8b7c9;font-size:9px;letter-spacing:.1em}
+.os-menu-status i{width:6px;height:6px;border-radius:50%;background:#9de2c2;box-shadow:0 0 12px #9de2c277}
+#os-menu-clock{min-width:48px;text-align:right;font-variant-numeric:tabular-nums;font-size:11px}
+.os-role-badge{display:inline-flex;align-items:center;align-self:center;margin-right:8px;padding:6px 9px;border:1px solid #ffffff18;border-radius:999px;background:#ffffff08;color:#b9c4d4;font-size:9px;letter-spacing:.04em}
+.os-role-badge[data-role=owner]{border-color:#c7a5ff55;background:#9e70ff19;color:#ddcaff}
+.os-role-badge[data-role=developer]{border-color:#8cbcff44;background:#5e9fff17;color:#b9d7ff}
+.os-team-window{width:min(780px,calc(100vw - 24px));height:min(720px,calc(100vh - 110px));left:calc(50% - 390px);top:calc(50% - 330px)}
+.os-team-window .os-window-content{padding:22px;background:radial-gradient(ellipse at 95% 0%,#182b4530,transparent 42%),rgba(8,10,14,.2)}
+.os-team-hero{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:3px 0 18px}
+.os-team-kicker{font-size:9px;letter-spacing:.17em;color:#94a4bb}
+.os-team-hero h2{margin:8px 0 5px;font-size:24px;letter-spacing:-.04em;color:#f4f6fb}
+.os-team-hero p,.os-team-roadmap-head p{margin:0;color:#9ca8ba;font-size:11px;line-height:1.6}
+.os-team-orb{display:grid;place-items:center;flex:0 0 62px;height:62px;border:1px solid #ffffff24;border-radius:21px;background:linear-gradient(145deg,#ffffff13,#8bb8ff0a);box-shadow:inset 0 1px #ffffff1b,0 10px 35px #0003;font-size:27px;color:#d6e3f8}
+.os-team-role-card{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid #ffffff15;border-radius:14px;background:#ffffff06;margin-bottom:18px}
+.os-role-dot{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#9aa4b4}
+.os-role-dot[data-role=owner]{background:#c7a5ff;box-shadow:0 0 12px #c7a5ff77}
+.os-role-dot[data-role=developer]{background:#91c2ff;box-shadow:0 0 12px #91c2ff77}
+.os-team-role-card>div{display:grid;gap:4px;min-width:0}
+.os-team-role-card strong{font-size:11px;color:#eef2f8}
+.os-team-role-card small{font-size:10px;color:#9ba7b8;overflow-wrap:anywhere}
+.os-team-admin,.os-team-compose{margin:16px 0;padding:16px;border:1px solid #ffffff15;border-radius:15px;background:#ffffff04}
+.os-team-admin h3,.os-team-compose h3,.os-team-roadmap-head h3{margin:0 0 7px;font-size:13px;color:#edf1f8}
+.os-team-admin>p{margin:0 0 12px;font-size:10px;line-height:1.6;color:#9ba7b8}
+#os-role-form,#os-update-form{display:grid;gap:10px}
+#os-role-form{grid-template-columns:minmax(0,1.5fr) minmax(140px,.7fr) auto;align-items:end}
+#os-role-form label,.os-team-form-row label{display:grid;gap:6px;font-size:10px;color:#aeb8c8}
+#os-role-form input,#os-role-form select,#os-update-form input,#os-update-form select,#os-update-form textarea,.os-update-controls select{width:100%;min-width:0;padding:10px 11px;border:1px solid #ffffff18;border-radius:10px;outline:none;background:#0b0e14;color:#eef2f8;font:inherit}
+#os-role-form input:focus,#os-role-form select:focus,#os-update-form input:focus,#os-update-form select:focus,#os-update-form textarea:focus{border-color:#8fbaff88}
+#os-role-form button,#os-update-form button{min-height:36px;padding:0 13px;border:1px solid #ffffff18;border-radius:10px;background:linear-gradient(145deg,#f4f6fa,#c6d0df);color:#12161e;font-size:10px;font-weight:750;cursor:pointer}
+#os-role-form button:disabled,#os-update-form button:disabled{opacity:.5;cursor:wait}
+.os-role-list{display:grid;gap:7px;margin-top:14px}
+.os-role-list-title{font-size:9px;letter-spacing:.14em;color:#99a6b8;text-transform:uppercase}
+.os-role-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid #ffffff10;border-radius:10px;background:#0002}
+.os-role-row>div{display:grid;gap:4px;min-width:0}
+.os-role-row strong{font-size:10px;color:#e9edf4}
+.os-role-row small{font-size:8px;color:#7f8b9d;overflow-wrap:anywhere}
+.os-role-pill{flex-shrink:0;padding:5px 8px;border-radius:999px;background:#ffffff0b;color:#c5cedb;font-size:9px}
+.os-role-pill[data-role=owner]{color:#ddcaff;background:#9e70ff19}
+.os-role-pill[data-role=developer]{color:#b9d7ff;background:#5e9fff17}
+.os-team-form-row{display:grid;grid-template-columns:140px minmax(0,1fr);gap:10px}
+#os-update-form textarea{resize:vertical;min-height:78px}
+#os-update-message{font-size:10px;color:#a9dfc7}
+.os-team-roadmap-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:22px 0 12px}
+.os-team-roadmap-head h3{margin-bottom:4px}
+.os-team-roadmap-head button,.os-update-controls button{padding:7px 10px;border:1px solid #ffffff17;border-radius:9px;background:#ffffff08;color:#e6ebf4;font-size:9px;cursor:pointer}
+.os-update-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.os-update-card{min-width:0;padding:14px;border:1px solid #ffffff14;border-radius:13px;background:linear-gradient(145deg,#ffffff07,#ffffff02)}
+.os-update-card-top{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.os-update-category,.os-update-status{padding:5px 7px;border-radius:999px;background:#ffffff0a;color:#b7c2d1;font-size:8px;text-transform:uppercase;letter-spacing:.07em}
+.os-update-status[data-status=shipped]{background:#7ed6a51b;color:#a7e8c1}
+.os-update-status[data-status=in_progress]{background:#8bbaff1c;color:#b9d6ff}
+.os-update-status[data-status=declined]{background:#ff73731b;color:#ffb0b0}
+.os-update-card h4{margin:12px 0 6px;font-size:12px;color:#edf2fa;overflow-wrap:anywhere}
+.os-update-card p{margin:0 0 10px;font-size:10px;line-height:1.65;color:#a7b1c0;overflow-wrap:anywhere}
+.os-update-card>small{font-size:9px;color:#7f8b9b}
+.os-update-controls{display:flex;align-items:end;justify-content:space-between;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid #ffffff10}
+.os-update-controls label{display:grid;gap:5px;font-size:9px;color:#9ba7b8}
+.os-update-controls select{font-size:9px;padding:7px}
+.os-update-empty{grid-column:1/-1;display:grid;justify-items:center;gap:8px;padding:30px 12px;border:1px dashed #ffffff1b;border-radius:14px;color:#b6c1d0;text-align:center}
+.os-update-empty>span{font-size:25px;color:#d4dfee}
+.os-update-empty strong{font-size:11px}
+.os-update-empty p,.os-team-loading,.os-team-error{margin:0;font-size:10px;line-height:1.6;color:#909caf}
+.os-team-error{color:#ffb5b5}
+.os-team-footnote{margin:18px 0 0;padding-top:12px;border-top:1px solid #ffffff10;color:#748194;font-size:9px;line-height:1.6}
+.os-team-window .os-window-bar{touch-action:none}
+.os-team-window .os-resize-grip{z-index:2}
+#os-team-launch>span:first-child{background:linear-gradient(145deg,#303b4c,#141922);color:#d9e5f8}
+#os-team-tile .app-icon{background:linear-gradient(145deg,#303b4c,#141922);color:#d9e5f8}
+/* The existing taskbar becomes a centered, translucent macOS-style dock. */
+#desktop .taskbar{position:fixed!important;z-index:70!important;left:50%!important;right:auto!important;bottom:12px!important;transform:translateX(-50%)!important;width:max-content!important;max-width:calc(100vw - 20px)!important;min-height:58px!important;height:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;padding:8px 11px!important;border:1px solid #ffffff25!important;border-radius:21px!important;background:rgba(12,14,19,.76)!important;backdrop-filter:blur(32px) saturate(155%)!important;box-shadow:0 15px 50px #0007,inset 0 1px #ffffff16!important}
+#desktop .taskbar .taskbar-spacer,#desktop .taskbar .taskbar-separator{display:none!important}
+#desktop .taskbar .task-app{display:grid!important;place-items:center!important;gap:2px!important;min-width:42px!important;height:43px!important;padding:3px 6px!important;border:1px solid transparent!important;border-radius:13px!important;background:#ffffff08!important;color:#e8edf5!important;font-size:17px!important;transition:transform .16s ease,background .16s ease!important}
+#desktop .taskbar .task-app span{display:none!important}
+#desktop .taskbar .task-app:hover{transform:translateY(-5px) scale(1.08)!important;background:#ffffff17!important}
+#desktop .taskbar .task-home{display:grid!important;place-items:center!important;flex:0 0 43px!important;width:43px!important;height:43px!important;border:1px solid #ffffff20!important;border-radius:14px!important;background:linear-gradient(145deg,#f4f6fb,#c7d0df)!important;color:#141820!important;font-weight:850!important}
+#desktop #os-start-button{height:43px!important;min-width:43px!important;justify-content:center!important;padding:0 8px!important;border-radius:14px!important}
+#desktop #os-start-button .os-start-label{display:none!important}
+#desktop .taskbar .task-clock,#desktop .taskbar .task-account{display:none!important}
+#desktop .taskbar .task-app[data-app=files]{font-size:0!important}
+#desktop .taskbar .task-app[data-app=files]::before{content:"▧";font-size:18px}
+#desktop .taskbar .task-app[data-app=notes]{font-size:0!important}
+#desktop .taskbar .task-app[data-app=notes]::before{content:"▤";font-size:18px}
+#desktop .taskbar .task-app[data-app=settings]{font-size:0!important}
+#desktop .taskbar .task-app[data-app=settings]::before{content:"⚙";font-size:18px}
+#desktop .desktop-content{padding-top:72px!important;padding-bottom:100px!important}
+#desktop .os-desktop-shortcuts{top:88px!important}
+#desktop .os-window-layer{z-index:35}
+#desktop .os-start-menu{z-index:80}
+@media(max-width:620px){.os-menubar{left:7px;right:7px;top:6px;height:36px;padding:0 10px;gap:9px}.os-menu-edition{display:none}.os-team-window{left:8px!important;top:52px!important;width:calc(100vw - 16px)!important;height:calc(100vh - 130px)!important;min-width:0}.os-team-window .os-window-content{padding:14px}.os-team-hero h2{font-size:20px}#os-role-form{grid-template-columns:1fr}.os-team-form-row{grid-template-columns:1fr}.os-update-list{grid-template-columns:1fr}#desktop .taskbar{gap:4px!important;padding:6px!important;bottom:7px!important;min-height:50px!important}#desktop .taskbar .task-app{min-width:35px!important;height:37px!important}#desktop .taskbar .task-home,#desktop #os-start-button{flex-basis:37px!important;width:37px!important;height:37px!important;min-width:37px!important}.os-role-badge{font-size:8px;margin-right:4px;padding:5px 7px}}
+@media(prefers-reduced-motion:reduce){#desktop .taskbar .task-app{transition:none!important}}
