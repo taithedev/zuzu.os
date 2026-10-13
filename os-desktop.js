@@ -6,6 +6,8 @@
   const notificationItems = [];
   let unreadNotifications = 0;
   let lastToastMessage = '';
+  let currentWorkspace = 1;
+  let workspaceCount = 2;
   const getPrefs = () => { try { return JSON.parse(localStorage.getItem(storeKey) || '{}') || {}; } catch { return {}; } };
   const savePrefs = () => { try { localStorage.setItem(storeKey, JSON.stringify(state.saved)); } catch {} };
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -25,7 +27,7 @@
     return false;
   }
   function activeWindow() {
-    const windows = [...document.querySelectorAll('#desktop .os-window:not(.os-minimized), #desktop #app-window:not(.hidden)')];
+    const windows = [...document.querySelectorAll('#desktop .os-window:not(.os-minimized):not(.os-other-workspace), #desktop #app-window:not(.hidden):not(.os-other-workspace)')];
     return windows.sort((a,b) => (Number.parseInt(getComputedStyle(a).zIndex,10)||0) - (Number.parseInt(getComputedStyle(b).zIndex,10)||0)).at(-1) || null;
   }
   function closeActiveWindow() {
@@ -69,6 +71,17 @@
   function ensurePanels() {
     const desktop = $('desktop');
     if (!desktop || $('os-system-tray')) return;
+    const taskbar = desktop.querySelector('.taskbar');
+    if (taskbar && !$('os-task-view')) {
+      const taskView = document.createElement('button');
+      taskView.id = 'os-task-view';
+      taskView.className = 'task-app os-task-view-button';
+      taskView.type = 'button';
+      taskView.title = 'Task view · virtual desktops';
+      taskView.setAttribute('aria-expanded','false');
+      taskView.textContent = '▣';
+      $('os-start-button')?.insertAdjacentElement('afterend',taskView);
+    }
     const overlay = document.createElement('div');
     overlay.id = 'os-brightness-overlay';
     overlay.className = 'os-brightness-overlay';
@@ -100,6 +113,14 @@
     context.innerHTML = '<button data-context="start"><span>⊞</span> Open Start</button><button data-context="explorer"><span>▧</span> Open File Explorer <kbd>Win+E</kbd></button><div></div><button data-context="newfile"><span>＋</span> New text file</button><button data-context="newfolder"><span>▰</span> New folder</button><div></div><button data-context="refresh"><span>⟳</span> Refresh desktop</button><button data-context="personalize"><span>◈</span> Personalize</button><button data-context="settings"><span>⚙</span> Settings</button>';
     desktop.appendChild(context);
 
+    const taskViewPanel = document.createElement('section');
+    taskViewPanel.id = 'os-task-view-panel';
+    taskViewPanel.className = 'os-task-view-panel hidden';
+    taskViewPanel.setAttribute('aria-label','Virtual desktops');
+    taskViewPanel.innerHTML = '<div class="os-task-view-heading"><div><strong>Task view</strong><small>Switch between separate browser workspaces</small></div><button id="os-task-view-close" aria-label="Close task view">×</button></div><div id="os-workspace-cards" class="os-workspace-cards"></div><div class="os-task-view-footer"><span>Open windows stay in their workspace.</span><button id="os-new-workspace">＋ New desktop</button></div>';
+    desktop.appendChild(taskViewPanel);
+    renderWorkspaces();
+
     context.addEventListener('click', (event) => {
       const button = event.target.closest('[data-context]');
       if (!button) return;
@@ -119,6 +140,21 @@
       }
     });
 
+    $('os-task-view').addEventListener('click', () => toggleTaskView());
+    $('os-task-view-close').addEventListener('click', () => toggleTaskView(false));
+    $('os-new-workspace').addEventListener('click', () => {
+      if (workspaceCount >= 4) { toast('You can use up to four desktops in this session.'); return; }
+      workspaceCount++;
+      switchWorkspace(workspaceCount);
+      renderWorkspaces();
+      toast('Desktop ' + workspaceCount + ' created.');
+    });
+    $('os-workspace-cards').addEventListener('click', event => {
+      const card = event.target.closest('[data-workspace]');
+      if (!card) return;
+      switchWorkspace(Number(card.dataset.workspace));
+      toggleTaskView(false);
+    });
     $('os-quick-settings-toggle').addEventListener('click', () => togglePanel('quick'));
     $('os-notifications-toggle').addEventListener('click', () => togglePanel('notifications'));
     $('os-tray-clock').addEventListener('click', () => togglePanel('notifications'));
@@ -142,6 +178,36 @@
       if (!event.target.closest('#os-desktop-context')) context.classList.add('hidden');
       if (!event.target.closest('#os-quick-settings,#os-quick-settings-toggle') && state.quickOpen) togglePanel('quick',false);
       if (!event.target.closest('#os-notification-center,#os-notifications-toggle,#os-tray-clock') && state.notificationsOpen) togglePanel('notifications',false);
+    });
+    const layer = $('os-window-layer');
+    if (layer) {
+      new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {
+        if (node.nodeType !== 1) return;
+        const windows = node.matches?.('.os-window') ? [node] : [...(node.querySelectorAll?.('.os-window') || [])];
+        windows.forEach(win => {
+          if (!win.dataset.osWorkspace) win.dataset.osWorkspace = String(currentWorkspace);
+          win.classList.toggle('os-other-workspace',Number(win.dataset.osWorkspace) !== currentWorkspace);
+        });
+      }))).observe(layer,{childList:true,subtree:true});
+    }
+    const appWindow = $('app-window');
+    if (appWindow) {
+      new MutationObserver(() => {
+        if (!appWindow.classList.contains('hidden') && !appWindow.dataset.osWorkspace) {
+          appWindow.dataset.osWorkspace = String(currentWorkspace);
+          appWindow.classList.remove('os-other-workspace');
+        }
+      }).observe(appWindow,{attributes:true,attributeFilter:['class']});
+    }
+    document.addEventListener('click', event => {
+      if (!event.target.closest('[data-app]')) return;
+      setTimeout(() => {
+        const win = $('app-window');
+        if (win && !win.classList.contains('hidden')) {
+          win.dataset.osWorkspace = String(currentWorkspace);
+          win.classList.remove('os-other-workspace');
+        }
+      },0);
     });
     const toastNode = $('toast');
     if (toastNode) {
@@ -186,6 +252,36 @@
       badge.textContent = unreadNotifications > 9 ? '9+' : String(unreadNotifications);
       badge.classList.toggle('hidden',unreadNotifications < 1);
     }
+  }
+  function renderWorkspaces() {
+    const cards = $('os-workspace-cards');
+    if (!cards) return;
+    cards.innerHTML = Array.from({length:workspaceCount},(_,i)=>i+1).map(number =>
+      '<button class="os-workspace-card' + (number === currentWorkspace ? ' is-active' : '') + '" data-workspace="' + number + '" type="button"><span class="os-workspace-preview"><i></i><i></i><i></i></span><strong>Desktop ' + number + '</strong><small>' + (number === currentWorkspace ? 'Current desktop' : 'Switch to desktop') + '</small></button>'
+    ).join('');
+    const add = $('os-new-workspace');
+    if (add) { add.disabled = workspaceCount >= 4; add.textContent = workspaceCount >= 4 ? 'Maximum desktops reached' : '＋ New desktop'; }
+  }
+  function toggleTaskView(force) {
+    const panel = $('os-task-view-panel');
+    if (!panel) return;
+    const open = force ?? panel.classList.contains('hidden');
+    panel.classList.toggle('hidden',!open);
+    $('os-task-view')?.setAttribute('aria-expanded',String(open));
+    if (open) {
+      togglePanel('quick',false);
+      togglePanel('notifications',false);
+      renderWorkspaces();
+    }
+  }
+  function switchWorkspace(number) {
+    const target = Math.max(1,Math.min(workspaceCount,Number(number)||1));
+    currentWorkspace = target;
+    document.querySelectorAll('#desktop .os-window, #desktop #app-window').forEach(win => {
+      if (!win.dataset.osWorkspace) win.dataset.osWorkspace = String(target);
+      win.classList.toggle('os-other-workspace',Number(win.dataset.osWorkspace) !== target);
+    });
+    renderWorkspaces();
   }
   function togglePanel(panel, force) {
     const opening = force ?? (panel === 'quick' ? !state.quickOpen : !state.notificationsOpen);
@@ -250,7 +346,7 @@
       return;
     }
     const wins = [...document.querySelectorAll('#desktop .os-window,#desktop #app-window')];
-    const visible = wins.filter(win => win.id === 'app-window' ? !win.classList.contains('hidden') : !win.classList.contains('os-minimized'));
+    const visible = wins.filter(win => !win.classList.contains('os-other-workspace') && (win.id === 'app-window' ? !win.classList.contains('hidden') : !win.classList.contains('os-minimized')));
     if (!visible.length) return;
     showDesktopSnapshot = visible.map(win => ({win,minimized:win.classList.contains('os-minimized'),hidden:win.classList.contains('hidden')}));
     visible.forEach(win => {
@@ -273,6 +369,12 @@
       if (event.ctrlKey && event.altKey && key === 't') {
         event.preventDefault(); launch('terminal'); return;
       }
+      if (event.ctrlKey && event.altKey && key === 'pageup') {
+        event.preventDefault(); switchWorkspace(currentWorkspace > 1 ? currentWorkspace - 1 : workspaceCount); return;
+      }
+      if (event.ctrlKey && event.altKey && key === 'pagedown') {
+        event.preventDefault(); switchWorkspace(currentWorkspace < workspaceCount ? currentWorkspace + 1 : 1); return;
+      }
       if (event.ctrlKey && event.altKey && key === 's') {
         event.preventDefault(); togglePanel('quick'); return;
       }
@@ -293,6 +395,7 @@
         return;
       }
       if (event.key === 'Escape') {
+        toggleTaskView(false);
         togglePanel('quick',false);
         togglePanel('notifications',false);
         $('os-desktop-context')?.classList.add('hidden');
