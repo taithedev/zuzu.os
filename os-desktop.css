@@ -113,3 +113,135 @@
 .os-other-workspace{display:none!important}
 @media(max-width:580px){.os-task-view-panel{bottom:79px;padding:11px}.os-workspace-cards{grid-template-columns:repeat(2,minmax(0,1fr));max-height:45vh;overflow:auto}.os-workspace-preview{min-height:54px}.os-task-view-footer{align-items:flex-start;flex-direction:column}.os-task-view-footer button{width:100%}}
 @media(prefers-reduced-motion:reduce){.os-task-view-panel{animation:none}}
+
+
+/* Rounded Windows and a refined floating taskbar */
+:root {
+  --os-window-radius: 18px;
+  --os-taskbar-radius: 21px;
+}
+#desktop .taskbar {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  min-height: 58px;
+  padding: 7px 10px;
+  border: 1px solid rgba(235,242,255,.17);
+  border-radius: var(--os-taskbar-radius);
+  background: rgba(16,20,29,.78);
+  -webkit-backdrop-filter: blur(34px) saturate(155%);
+  backdrop-filter: blur(34px) saturate(155%);
+  box-shadow: 0 14px 45px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.11);
+  transform: translateX(-50%);
+}
+#desktop .taskbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 39px;
+  min-height: 39px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: transparent;
+  color: #f1f5fc;
+  transition: background .16s ease, border-color .16s ease, transform .16s ease;
+}
+#desktop .taskbar button:hover {
+  border-color: rgba(255,255,255,.09);
+  background: rgba(255,255,255,.105);
+}
+#desktop .taskbar button:active { transform: scale(.95); }
+#desktop .taskbar button:focus-visible {
+  outline: 2px solid var(--os-bright-accent, #a3c9ff);
+  outline-offset: 2px;
+}
+#desktop .taskbar .task-home,
+#desktop .taskbar #os-start-button {
+  border-radius: 14px;
+  background: rgba(255,255,255,.07);
+}
+#desktop .taskbar .task-home:hover,
+#desktop .taskbar #os-start-button:hover {
+  background: color-mix(in srgb, var(--os-accent, #7db1ff) 22%, transparent);
+}
+#desktop .taskbar .task-app,
+#desktop .taskbar .taskbar-app,
+#desktop .taskbar [data-app] {
+  border-radius: 13px;
+}
+#desktop .taskbar .task-clock,
+#desktop .taskbar .task-account {
+  border-radius: 12px;
+}
+#desktop .taskbar .taskbar-separator {
+  flex: 0 0 1px;
+  width: 1px;
+  height: 25px;
+  margin: 0 2px;
+  background: rgba(255,255,255,.14);
+}
+#desktop .os-window,
+#desktop .app-window,
+#desktop [role="dialog"].os-window {
+  overflow: hidden;
+  border: 1px solid rgba(230,239,255,.17);
+  border-radius: var(--os-window-radius);
+  box-shadow: 0 24px 80px rgba(0,0,0,.4), inset 0 1px rgba(255,255,255,.055);
+}
+#desktop .os-window .window-bar,
+#desktop .app-window .window-bar {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+#desktop .os-window-content,
+#desktop .app-window .window-body {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+#desktop .os-start-menu,
+#desktop #os-start-menu,
+#desktop .os-flyout,
+#desktop .os-context-menu,
+#desktop .os-task-view-panel {
+  border-radius: 20px;
+}
+#desktop .os-shortcut,
+#desktop .os-desktop-shortcuts .os-shortcut {
+  border-radius: 13px;
+}
+#desktop .os-shortcut:focus-visible {
+  outline: 2px solid var(--os-bright-accent, #a3c9ff);
+  outline-offset: 2px;
+}
+@media (max-width: 780px) {
+  #desktop .taskbar {
+    bottom: 8px;
+    min-height: 51px;
+    max-width: calc(100vw - 14px);
+    gap: 4px;
+    padding: 5px 7px;
+    border-radius: 17px;
+  }
+  #desktop .taskbar button {
+    min-width: 34px;
+    min-height: 35px;
+    padding-inline: 7px;
+    border-radius: 11px;
+  }
+}
+@media (max-width: 440px) {
+  #desktop .taskbar { gap: 2px; padding-inline: 5px; }
+  #desktop .taskbar button { min-width: 30px; padding-inline: 5px; }
+  #desktop .taskbar .taskbar-separator { margin-inline: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #desktop .taskbar button { transition: none; }
+}
