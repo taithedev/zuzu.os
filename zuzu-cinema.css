@@ -1,0 +1,71 @@
+/* ZuzuOS cinematic finish — restrained, black-first, and deliberately quiet. */
+:root{color-scheme:dark;--bg:#000;--panel:#0b0b0c;--panel-solid:#101012;--line:#29292d;--text:#f5f5f7;--muted:#9a9aa1;--accent:#d8d8df;--accent-strong:#fff;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+html,body{background:#000!important;color:#f5f5f7}
+body{background-image:none!important}
+.ambient{background:none!important}
+#desktop[data-shell-style=cine],#desktop[data-shell-style=windows],#desktop[data-shell-style=macos]{background:#000!important;background-image:none!important}
+#desktop[data-shell-style]::before{background:linear-gradient(180deg,#00000000 0%,#00000012 68%,#00000090 100%)!important}
+#desktop[data-shell-style] .os-scene{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.os-scene-day-wrap{top:34px}
+.os-scene-overline{font-size:9px;letter-spacing:.24em;color:#ffffff73}
+.os-scene-day{font-size:clamp(28px,3.1vw,42px);font-weight:300;letter-spacing:.18em}
+.os-scene-full-date{font-size:11px;letter-spacing:.06em;color:#ffffff8c}
+.os-scene-shortcut{border-radius:10px}
+.os-scene-shortcut-icon{border-color:#ffffff18;background:#101012e8;box-shadow:0 8px 24px #0007,inset 0 1px #ffffff0a}
+.os-scene-widget{border-color:#ffffff12;border-radius:12px;background:#0c0c0ddf;box-shadow:0 12px 30px #0005;backdrop-filter:blur(22px)}
+.os-scene-widget:hover{background:#171719;border-color:#ffffff25;transform:translateY(-1px)}
+#desktop .taskbar,#desktop .os-menubar{border-color:#ffffff14;background:#080809e8;backdrop-filter:blur(28px) saturate(110%)}
+#desktop .taskbar{box-shadow:0 8px 40px #0008}
+#desktop .os-system-tray,#desktop .os-flyout,#desktop .os-context-menu,#os-start-menu{border-color:#ffffff1a;background:#0b0b0def;box-shadow:0 24px 90px #000b}
+#os-start-menu{border-radius:15px}
+#os-start-menu .os-launch-item:hover{background:#ffffff0b}
+#desktop .os-window,#desktop #app-window{border-color:#ffffff1c;background:#0a0a0bf5;box-shadow:0 35px 100px #000b}
+#desktop .os-window-bar,#desktop .window-bar{background:#111113;border-color:#ffffff12}
+#desktop .os-window-content,#desktop .window-body{color:#ededf0}
+#desktop button:focus-visible,#auth-screen button:focus-visible,#auth-screen input:focus-visible{outline:2px solid #e4e4e7;outline-offset:3px}
+.auth-screen{position:relative;isolation:isolate;justify-content:center;padding:40px 20px 28px;background:#000;overflow:hidden}
+.auth-screen::before{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(115deg,#000 0%,#050506 54%,#0c0c0e 100%);pointer-events:none}
+.auth-screen::after{content:"";position:absolute;z-index:-1;right:-16vw;top:-25vw;width:55vw;height:55vw;border:1px solid #ffffff09;border-radius:50%;box-shadow:0 0 0 6vw #ffffff02,0 0 0 12vw #ffffff015;pointer-events:none}
+.auth-card{width:min(100%,440px);padding:34px 36px 28px;border:1px solid #ffffff19;border-radius:18px;background:#09090bf5;box-shadow:0 35px 110px #000b;backdrop-filter:blur(24px)}
+.brand-mark{width:44px;height:44px;border-radius:12px;background:#f4f4f5;color:#09090b;font:800 27px Inter,-apple-system,sans-serif;box-shadow:none}
+.brand-mark span{color:#77777d}
+.auth-card .eyebrow{margin-top:25px;color:#8d8d95;letter-spacing:.2em}
+.auth-card h1{font-size:32px;font-weight:560;letter-spacing:-.055em}
+.auth-card>p.muted{color:#a0a0a7;line-height:1.65}
+.field{color:#d5d5da;font-size:12px;font-weight:550}
+.field input{border:1px solid #303035;border-radius:10px;background:#050506;padding:13px 14px;color:#f5f5f7}
+.field input:hover{border-color:#505057}
+.field input:focus{border-color:#b9b9c1;box-shadow:0 0 0 3px #ffffff0b}
+.primary{background:#f1f1f3;color:#09090b;border:1px solid #f1f1f3;border-radius:10px;box-shadow:none}
+.primary:hover{background:#fff;transform:translateY(-1px)}
+.secondary,.quiet-button{background:#111113;border:1px solid #333338;color:#e6e6ea;border-radius:10px}
+.text-button{color:#d0d0d6}
+.auth-caption{color:#777780}
+.status-dot{background:#a9a9b0;box-shadow:none}
+.fine-print{color:#777780;line-height:1.6}
+.setup-screen{background:#000f!important;backdrop-filter:blur(20px)}
+.setup-frame{border:1px solid #ffffff1b;background:#080809;box-shadow:0 40px 140px #000c;border-radius:18px;overflow:hidden}
+.setup-rail{background:#0c0c0e;border-right:1px solid #ffffff12}
+.setup-brand .mini-logo{background:#f2f2f4;color:#09090b}
+.setup-step.active>span,.setup-step.done>span{background:#f1f1f3;color:#09090b}
+.setup-main{background:#080809}
+.setup-window-controls span{background:#414146}
+.setup-page h1{font-weight:450;letter-spacing:-.055em}
+.setup-page h1 span{color:#a5a5ad}
+.setup-orb{background:#f1f1f3;color:#080809;box-shadow:none;border-radius:14px}
+.setup-wallpaper,.setup-preset,.setup-layout-option{background:#0d0d0f;border-color:#29292e;border-radius:12px}
+.setup-wallpaper.selected,.setup-preset.selected,.setup-layout-option.selected{border-color:#b9b9c1;box-shadow:inset 0 0 0 1px #b9b9c1}
+.default-preview{background:#000!important;border:1px solid #29292e}
+.setup-footer{border-color:#ffffff12}
+.setup-progress span.active{background:#e8e8eb}
+.app-icon,.os-shortcut-icon,.os-scene-shortcut-icon{display:grid;place-items:center}
+.zuzu-icon{width:1em;height:1em;display:block;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.app-icon .zuzu-icon{width:21px;height:21px}
+.task-app .zuzu-icon{width:16px;height:16px;vertical-align:middle}
+.os-launch-item>span:first-child .zuzu-icon{width:21px;height:21px}
+.os-shortcut>span:first-child .zuzu-icon,.os-scene-shortcut-icon .zuzu-icon{width:23px;height:23px}
+#window-icon .zuzu-icon{width:18px;height:18px}
+#desktop[data-shell-style=windows] .os-scene-shortcut-icon{background:#111113;border-color:#ffffff20}
+#desktop[data-shell-style=macos] .os-scene-widget{background:#0d0d0fe8}
+@media(max-width:700px){.auth-card{padding:29px 23px 24px}.setup-frame{width:calc(100vw - 20px);max-height:calc(100dvh - 20px);overflow:auto}.setup-rail{display:none}.setup-main{padding:25px 20px}.os-scene-widgets{right:10px;top:90px;width:min(250px,calc(100vw - 112px))}.os-scene-left-rail{left:8px;width:78px}.os-scene-shortcut{width:72px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
