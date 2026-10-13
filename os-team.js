@@ -122,6 +122,25 @@
     win.querySelector('[data-close]').onclick = () => win.remove();
     win.querySelector('[data-min]').onclick = () => win.classList.add('os-minimized');
     win.querySelector('[data-max]').onclick = () => win.classList.toggle('os-maximized');
+    const grip = win.querySelector('.os-resize-grip');
+    grip.addEventListener('pointerdown', (event) => {
+      if (win.classList.contains('os-maximized')) return;
+      event.preventDefault();
+      const rect = win.getBoundingClientRect();
+      const startX = event.clientX, startY = event.clientY;
+      const move = (e) => {
+        win.style.width = Math.max(340, Math.min(innerWidth - rect.left - 8, rect.width + e.clientX - startX)) + 'px';
+        win.style.height = Math.max(300, Math.min(innerHeight - rect.top - 78, rect.height + e.clientY - startY)) + 'px';
+      };
+      const up = () => {
+        grip.removeEventListener('pointermove', move);
+        grip.removeEventListener('pointerup', up);
+        grip.removeEventListener('pointercancel', up);
+      };
+      grip.addEventListener('pointermove', move);
+      grip.addEventListener('pointerup', up, {once:true});
+      grip.addEventListener('pointercancel', up, {once:true});
+    });
     const head = win.querySelector('.os-window-bar');
     head.addEventListener('pointerdown', (event) => {
       if (event.target.closest('button') || win.classList.contains('os-maximized')) return;
