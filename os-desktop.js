@@ -3,6 +3,9 @@
   const $ = (id) => document.getElementById(id);
   const storeKey = 'zuzu:desktop-ui:v1';
   const state = { quickOpen:false, notificationsOpen:false, contextOpen:false, showAll:false, saved:{} };
+  const notifications = [];
+  let unreadNotifications = 0;
+  let lastToastMessage = '';
   const getPrefs = () => { try { return JSON.parse(localStorage.getItem(storeKey) || '{}') || {}; } catch { return {}; } };
   const savePrefs = () => { try { localStorage.setItem(storeKey, JSON.stringify(state.saved)); } catch {} };
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -74,7 +77,7 @@
     const tray = document.createElement('div');
     tray.id = 'os-system-tray';
     tray.className = 'os-system-tray';
-    tray.innerHTML = '<button id="os-quick-settings-toggle" aria-expanded="false" title="Quick settings">☷ <span>Quick settings</span></button><button id="os-notifications-toggle" aria-expanded="false" title="Notifications">♧</button><button id="os-tray-clock" title="Date and time"><span id="os-tray-time">--:--</span><small id="os-tray-date">---</small></button>';
+    tray.innerHTML = '<button id="os-quick-settings-toggle" aria-expanded="false" title="Quick settings">☷ <span>Quick settings</span></button><button id="os-notifications-toggle" aria-expanded="false" title="Notifications">♧<span id="os-notification-count" class="hidden">0</span></button><button id="os-tray-clock" title="Date and time"><span id="os-tray-time">--:--</span><small id="os-tray-date">---</small></button>';
     desktop.appendChild(tray);
 
     const quick = document.createElement('section');
@@ -88,7 +91,7 @@
     notifications.id = 'os-notification-center';
     notifications.className = 'os-flyout os-notification-center hidden';
     notifications.setAttribute('aria-label','Notification center');
-    notifications.innerHTML = '<div class="os-flyout-heading"><div><strong>Notifications</strong><small>From this ZuzuOS session</small></div><button id="os-notifications-clear">Clear</button></div><div class="os-notification-empty"><span>✓</span><strong>You’re all caught up</strong><p>Notifications from ZuzuOS will appear here.</p></div><div class="os-calendar-mini"><div><span id="os-calendar-day">MON</span><strong id="os-calendar-date">12</strong><small id="os-calendar-month">OCTOBER</small></div><p>Today on your desktop<br><small id="os-calendar-full">Local date</small></p></div>';
+    notifications.innerHTML = '<div class="os-flyout-heading"><div><strong>Notifications</strong><small>From this ZuzuOS session</small></div><button id="os-notifications-clear">Clear</button></div><div id="os-notification-list" class="os-notification-list"></div><div class="os-notification-empty"><span>✓</span><strong>You’re all caught up</strong><p>Notifications from ZuzuOS will appear here.</p></div><div class="os-calendar-mini"><div><span id="os-calendar-day">MON</span><strong id="os-calendar-date">12</strong><small id="os-calendar-month">OCTOBER</small></div><p>Today on your desktop<br><small id="os-calendar-full">Local date</small></p></div>';
     desktop.appendChild(notifications);
 
     const context = document.createElement('div');
@@ -121,7 +124,7 @@
     $('os-tray-clock').addEventListener('click', () => togglePanel('notifications'));
     quick.querySelector('[data-panel-close]').addEventListener('click', () => togglePanel('quick',false));
     notifications.querySelector('[data-panel-close]')?.addEventListener('click', () => togglePanel('notifications',false));
-    $('os-notifications-clear').addEventListener('click', () => toast('No notifications to clear.'));
+    $('os-notifications-clear').addEventListener('click', () => { notifications.length = 0; unreadNotifications = 0; renderNotifications(); });
     quick.querySelectorAll('[data-quick-toggle]').forEach(button => button.addEventListener('click', () => quickToggle(button.dataset.quickToggle)));
     $('os-desktop-brightness').addEventListener('input', event => setBrightness(Number(event.target.value)));
     desktop.addEventListener('contextmenu', event => {
@@ -140,6 +143,20 @@
       if (!event.target.closest('#os-quick-settings,#os-quick-settings-toggle') && state.quickOpen) togglePanel('quick',false);
       if (!event.target.closest('#os-notification-center,#os-notifications-toggle,#os-tray-clock') && state.notificationsOpen) togglePanel('notifications',false);
     });
+    const toastNode = $('toast');
+    if (toastNode) {
+      new MutationObserver(() => {
+        const message = toastNode.textContent.trim();
+        if (!toastNode.classList.contains('hidden') && message && message !== lastToastMessage) {
+          lastToastMessage = message;
+          notifications.unshift({message, at:new Date()});
+          if (notifications.length > 12) notifications.length = 12;
+          unreadNotifications++;
+          renderNotifications();
+        }
+        if (toastNode.classList.contains('hidden')) lastToastMessage = '';
+      }).observe(toastNode,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
+    }
     const updateClock = () => {
       const now = new Date();
       $('os-tray-time').textContent = now.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
@@ -158,6 +175,18 @@
     if (Number.isFinite(prefs.brightness)) setBrightness(prefs.brightness);
     if (prefs.accent) setAccent(prefs.accent);
   }
+  function renderNotifications() {
+    const list = $('os-notification-list');
+    if (!list) return;
+    const empty = document.querySelector('#os-notification-center .os-notification-empty');
+    if (empty) empty.classList.toggle('hidden',notifications.length > 0);
+    list.innerHTML = notifications.map(item => '<article class="os-notification-item"><span>•</span><div><strong>' + esc(item.message) + '</strong><small>' + esc(item.at.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})) + '</small></div></article>').join('');
+    const badge = $('os-notification-count');
+    if (badge) {
+      badge.textContent = unreadNotifications > 9 ? '9+' : String(unreadNotifications);
+      badge.classList.toggle('hidden',unreadNotifications < 1);
+    }
+  }
   function togglePanel(panel, force) {
     const opening = force ?? (panel === 'quick' ? !state.quickOpen : !state.notificationsOpen);
     if (panel === 'quick') {
@@ -169,7 +198,7 @@
       state.notificationsOpen = opening;
       $('os-notification-center')?.classList.toggle('hidden',!opening);
       $('os-notifications-toggle')?.setAttribute('aria-expanded',String(opening));
-      if (opening) {state.quickOpen=false;$('os-quick-settings')?.classList.add('hidden');}
+      if (opening) {state.quickOpen=false;$('os-quick-settings')?.classList.add('hidden');unreadNotifications=0;renderNotifications();}
     }
   }
   function quickToggle(kind, persist = true) {
@@ -209,6 +238,26 @@
     if (label) label.textContent = safe[0].toUpperCase()+safe.slice(1);
     savePrefs();
   }
+  let showDesktopSnapshot = null;
+  function toggleShowDesktop() {
+    if (showDesktopSnapshot) {
+      showDesktopSnapshot.forEach(({win, minimized, hidden}) => {
+        if (!win.isConnected) return;
+        win.classList.toggle('os-minimized',minimized);
+        if (win.id === 'app-window') win.classList.toggle('hidden',hidden);
+      });
+      showDesktopSnapshot = null;
+      return;
+    }
+    const wins = [...document.querySelectorAll('#desktop .os-window,#desktop #app-window')];
+    const visible = wins.filter(win => win.id === 'app-window' ? !win.classList.contains('hidden') : !win.classList.contains('os-minimized'));
+    if (!visible.length) return;
+    showDesktopSnapshot = visible.map(win => ({win,minimized:win.classList.contains('os-minimized'),hidden:win.classList.contains('hidden')}));
+    visible.forEach(win => {
+      if (win.id === 'app-window') win.classList.add('hidden');
+      else win.classList.add('os-minimized');
+    });
+  }
   function enableKeyboardShortcuts() {
     document.addEventListener('keydown', event => {
       const key = event.key.toLowerCase();
@@ -232,10 +281,7 @@
       }
       if ((winKey && key === 'd') || (event.ctrlKey && event.altKey && key === 'd')) {
         event.preventDefault();
-        const wins = [...document.querySelectorAll('#desktop .os-window,#desktop #app-window')];
-        const hide = wins.some(win => !win.classList.contains('hidden') && !win.classList.contains('os-minimized'));
-        wins.forEach(win => win.classList.toggle('os-minimized',hide));
-        if ($('app-window')) $('app-window').classList.toggle('hidden',hide);
+        toggleShowDesktop();
         return;
       }
       if (winKey && ['arrowleft','arrowright','arrowup','arrowdown'].includes(key)) {
