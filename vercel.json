@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "zuzuos.vercel.app"
+        }
+      ],
+      "destination": "https://zuzuos.lol/:path*",
+      "permanent": true,
+      "preserveQueryParams": true
+    }
+  ]
+}
