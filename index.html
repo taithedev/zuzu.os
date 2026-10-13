@@ -48,6 +48,24 @@
     <div class="auth-caption"><span class="status-dot"></span> A calmer space to get things done <span>•</span> Built for you</div>
   </main>
 
+
+  <main id="reset-password-screen" class="auth-screen hidden">
+    <div class="auth-card">
+      <div class="brand-mark">z<span>.</span></div>
+      <p class="eyebrow">ACCOUNT RECOVERY</p>
+      <h1>Choose a new password.</h1>
+      <p class="muted">Set a new password for your ZuzuOS account. Use at least 8 characters.</p>
+      <form id="reset-password-form">
+        <label class="field">New password<input id="recovery-password" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters"></label>
+        <label class="field">Confirm password<input id="recovery-password-confirm" type="password" autocomplete="new-password" minlength="8" required placeholder="Enter it again"></label>
+        <button id="recovery-submit" class="primary full" type="submit">Save new password</button>
+      </form>
+      <p id="recovery-message" class="message" role="status" aria-live="polite"></p>
+      <p class="fine-print">If you did not request this change, close this page and keep your account secure.</p>
+    </div>
+    <div class="auth-caption"><span class="status-dot"></span> zuzu.os · Account recovery</div>
+  </main>
+
   <main id="desktop" class="desktop hidden">
     <header class="topbar">
       <div class="top-brand"><span class="mini-logo">z.</span><span>zuzu<span class="brand-dim">.os</span></span></div>
