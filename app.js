@@ -57,6 +57,8 @@
     if (local.get('setup-complete', false) || recoveryLink) return;
     setupStep = 0;
     renderSetupStep();
+    const chosenWallpaper = local.get('wallpaper', 'aurora');
+    document.querySelectorAll('[data-wallpaper-choice]').forEach((button) => button.classList.toggle('selected', button.dataset.wallpaperChoice === chosenWallpaper));
     $('setup-screen').classList.remove('hidden');
   }
   function closeSetup() {
@@ -603,7 +605,7 @@
     $('cookie-accept').addEventListener('click', () => { local.set('cookie-consent', true); $('cookie-notice').classList.add('hidden'); });
     const accent = local.get('accent');
     if (accent) document.documentElement.style.setProperty('--accent', accent);
-    applyWallpaper(local.get('wallpaper', 'none'));
+    applyWallpaper(local.get('wallpaper', 'aurora'));
     if (!local.get('cookie-consent', false)) $('cookie-notice').classList.remove('hidden');
     updateClock();
     setInterval(updateClock, 15000);
