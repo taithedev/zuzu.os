@@ -120,3 +120,40 @@
  #desktop.zu-scene .zu-desktop-shortcut,
  #desktop.zu-scene .zu-panel{transition:none!important}
 }
+
+/* Luminous desktop: wallpaper remains visible behind brighter acrylic surfaces. */
+#desktop.zu-scene{
+ --zu-acrylic:rgba(46,64,91,.68);
+ --zu-acrylic-border:rgba(239,248,255,.34);
+ background-color:#173653!important;
+ background-image:radial-gradient(ellipse at 48% 18%,rgba(83,159,226,.32),transparent 55%),linear-gradient(150deg,#294d77,#0e2445 70%)!important;
+ color:#f2f7ff!important;
+}
+#desktop.zu-scene #zu-background{filter:brightness(1.25) saturate(1.17);opacity:1!important}
+#desktop.zu-scene #zu-background::after{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(135deg,rgba(65,120,186,.16),transparent 56%,rgba(73,126,205,.1));
+}
+#desktop.zu-scene .taskbar{
+ background:linear-gradient(120deg,rgba(56,81,112,.75),rgba(32,54,87,.76))!important;
+ border-top-color:rgba(244,250,255,.36)!important;
+}
+#desktop.zu-scene #os-start-menu{
+ background:linear-gradient(150deg,rgba(56,75,104,.92),rgba(30,48,77,.92))!important;
+ border-color:rgba(245,250,255,.33)!important;
+}
+#desktop.zu-scene .os-window,#desktop.zu-scene #app-window{
+ background:linear-gradient(145deg,rgba(43,63,94,.95),rgba(26,44,74,.95))!important;
+ border-color:rgba(235,247,255,.35)!important;
+}
+#desktop.zu-scene .os-window-bar,#desktop.zu-scene .window-bar{
+ background:linear-gradient(100deg,rgba(73,99,133,.91),rgba(48,72,104,.89))!important;
+}
+#desktop.zu-scene .zu-panel,#desktop.zu-scene .account-menu,#desktop.zu-scene .os-flyout{
+ background:linear-gradient(145deg,rgba(57,77,107,.87),rgba(31,52,83,.87))!important;
+}
+#desktop.zu-scene .os-launch-item strong,
+#desktop.zu-scene .os-window-title,
+#desktop.zu-scene .window-title{color:#f8fbff!important}
+#desktop.zu-scene .zu-desktop-shortcut{color:#f8fbff!important;text-shadow:0 2px 5px rgba(0,0,0,.76)}
+#desktop.zu-scene .os-search{background:rgba(14,29,50,.62)!important;border-color:rgba(226,242,255,.3)!important;border-bottom-color:#84c7ff!important}
