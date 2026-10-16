@@ -366,6 +366,95 @@
         </div>
       </section>
       <div class="app-actions"><button id="settings-signout" class="secondary">Sign out</button></div>`;
+    // Group settings while keeping the existing form IDs and event handlers intact.
+    const settingsBody = $('window-body');
+    settingsBody.classList.add('zu-settings-active');
+    const sections = [...settingsBody.querySelectorAll(':scope > .setting-section')];
+    const pages = [
+      {id:'appearance', label:'Appearance', subtitle:'Themes, wallpapers and desktop layout', icon:'◐'},
+      {id:'profile', label:'Profile', subtitle:'Display name and account details', icon:'◉'},
+      {id:'security', label:'Security', subtitle:'Password, email and account access', icon:'◇'},
+      {id:'license', label:'Edition', subtitle:'Licenses and account entitlement', icon:'▣'}
+    ];
+    const sectionGroup = title => {
+      if (/appearance/i.test(title)) return 'appearance';
+      if (/personal profile|account details/i.test(title)) return 'profile';
+      if (/license|edition/i.test(title)) return 'license';
+      return 'security';
+    };
+    const shell = document.createElement('div');
+    shell.className = 'zu-settings-layout';
+    const menu = document.createElement('nav');
+    menu.className = 'zu-settings-sidebar';
+    menu.setAttribute('aria-label', 'Settings sections');
+    const panel = document.createElement('div');
+    panel.className = 'zu-settings-main';
+    panel.id = 'zu-settings-main';
+    for (const page of pages) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'zu-settings-nav';
+      button.dataset.settingsPage = page.id;
+      button.setAttribute('aria-controls', 'zu-settings-panel-' + page.id);
+      button.setAttribute('aria-pressed', 'false');
+      const mark = document.createElement('span');
+      mark.className = 'zu-settings-nav-icon';
+      mark.textContent = page.icon;
+      const words = document.createElement('span');
+      words.className = 'zu-settings-nav-label';
+      const title = document.createElement('strong');
+      title.textContent = page.label;
+      const sub = document.createElement('small');
+      sub.textContent = page.subtitle;
+      words.append(title,sub);
+      button.append(mark,words);
+      menu.appendChild(button);
+      const area = document.createElement('section');
+      area.id = 'zu-settings-panel-' + page.id;
+      area.className = 'zu-settings-page';
+      area.dataset.settingsPanel = page.id;
+      area.hidden = true;
+      const heading = document.createElement('div');
+      heading.className = 'zu-settings-page-heading';
+      const overline = document.createElement('span');
+      overline.textContent = 'ZUZUOS / SETTINGS';
+      const h = document.createElement('h3');
+      h.textContent = page.label;
+      const p = document.createElement('p');
+      p.textContent = page.subtitle;
+      heading.append(overline,h,p);
+      area.appendChild(heading);
+      panel.appendChild(area);
+    }
+    for (const section of sections) {
+      const title = section.querySelector('h3')?.textContent || '';
+      const target = panel.querySelector('[data-settings-panel="' + sectionGroup(title) + '"]');
+      if (target) target.appendChild(section);
+    }
+    const intro = settingsBody.querySelector('.app-lead');
+    intro?.remove();
+    const actions = settingsBody.querySelector('.app-actions');
+    if (actions) menu.appendChild(actions);
+    shell.append(menu,panel);
+    settingsBody.appendChild(shell);
+    const activate = pageId => {
+      if (!pages.some(p=>p.id===pageId)) pageId='appearance';
+      menu.querySelectorAll('[data-settings-page]').forEach(b => {
+        const current=b.dataset.settingsPage===pageId;
+        b.setAttribute('aria-pressed',String(current));
+        b.classList.toggle('active',current);
+      });
+      panel.querySelectorAll('[data-settings-panel]').forEach(p => {p.hidden=p.dataset.settingsPanel!==pageId;});
+      panel.scrollTop=0;
+      try {sessionStorage.setItem('zuzu:settings:last-page',pageId);} catch {}
+    };
+    menu.addEventListener('click',event => {
+      const button=event.target.closest('[data-settings-page]');
+      if (button) activate(button.dataset.settingsPage);
+    });
+    let initial='appearance';
+    try {initial=sessionStorage.getItem('zuzu:settings:last-page')||initial;}catch{}
+    activate(initial);
     $('profile-form').addEventListener('submit', updateProfile);
     $('delete-account').addEventListener('click', async () => {
       if ($('delete-confirmation').value.trim() !== 'DELETE MY ZUZU ACCOUNT') return toast('Type the exact confirmation phrase first.');
