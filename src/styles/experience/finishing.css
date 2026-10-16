@@ -33,3 +33,54 @@ body,.auth-screen,.setup-screen,#desktop.zu-scene,.zu-arcade-window{
 @media(max-width:540px){#desktop.zu-scene .taskbar{gap:1px!important}
  #desktop.zu-scene .taskbar .task-app{width:34px!important;min-width:34px!important;flex-basis:34px!important}}
 @media(prefers-reduced-motion:reduce){#desktop.zu-scene .taskbar .task-app{transition:none!important}}
+
+
+/* Gaming edition: leave the center clear so animated and photo wallpapers show fully. */
+#desktop.zu-scene .zu-art,
+#desktop.zu-scene .cine-ref-emblem,
+#desktop.zu-scene .os-scene-orb,
+#desktop.zu-scene .os-scene-center-art{display:none!important}
+#desktop.zu-scene .zu-time-head{top:31px;gap:7px}
+#desktop.zu-scene .zu-weekday{font-size:clamp(20px,2.1vw,35px);font-weight:430;letter-spacing:.13em}
+#desktop.zu-scene .zu-date{font-size:9px;letter-spacing:.15em}
+#desktop.zu-scene .zu-rail{
+  right:23px;top:94px;width:min(273px,calc(100vw - 46px));gap:12px;
+}
+#desktop.zu-scene .zu-rail-group{gap:6px}
+#desktop.zu-scene .zu-panel{min-height:56px;padding:10px 12px;background:rgba(12,15,20,.82)!important;box-shadow:0 9px 25px #0006!important}
+#desktop.zu-scene .zu-panel:hover{background:rgba(33,39,47,.94)!important}
+#desktop.zu-scene .zu-panel-mark{height:35px;width:35px;border-radius:9px}
+#desktop.zu-scene .zu-rail-group:first-child .zu-panel{
+  border-color:rgba(123,178,239,.45)!important;
+  background:linear-gradient(115deg,rgba(24,44,69,.92),rgba(10,17,27,.85))!important;
+}
+#desktop.zu-scene .zu-rail-group:first-child .zu-panel-mark{
+  color:#b8deff;background:rgba(81,136,202,.16);
+}
+#desktop.zu-scene .zu-rail-group:first-child .zu-panel:hover{background:rgba(30,62,96,.95)!important}
+#desktop.zu-scene .zu-badge-fps{font-size:9px;opacity:.8}
+#desktop.zu-scene .zu-ident{top:21px}
+#desktop.zu-scene .taskbar{bottom:17px!important}
+#desktop.zu-scene .zu-foot-left em{letter-spacing:.03em}
+@media(max-width:720px){
+  #desktop.zu-scene .zu-time-head{top:66px}
+  #desktop.zu-scene .zu-rail{
+    top:auto;bottom:89px;left:12px;right:12px;width:auto;
+    grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;
+  }
+  #desktop.zu-scene .zu-rail-group{min-width:0}
+  #desktop.zu-scene .zu-panel{min-height:48px;padding:8px;gap:7px;justify-content:center}
+  #desktop.zu-scene .zu-panel-mark{height:26px;width:26px}
+  #desktop.zu-scene .zu-panel-text small{display:none}
+  #desktop.zu-scene .zu-panel-text strong{font-size:9px}
+}
+@media(max-width:480px){
+  #desktop.zu-scene .zu-rail{grid-template-columns:repeat(3,minmax(0,1fr));bottom:81px}
+  #desktop.zu-scene .zu-panel{min-height:35px}
+  #desktop.zu-scene .zu-rail-group:nth-child(n+4){display:none}
+  #desktop.zu-scene .zu-time-head{top:72px}
+  #desktop.zu-scene .zu-foot-left{bottom:70px}
+}
+@media(prefers-reduced-motion:reduce){
+  #desktop.zu-scene .zu-panel{transition:none!important}
+}
