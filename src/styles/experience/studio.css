@@ -617,3 +617,4 @@ body:has(#reset-password-screen:not(.hidden)){
   .zu-art img{animation:none!important}
   .zu-panel{transition:none}
 }
+.zu-ident-mark img{display:block;width:100%;height:100%;object-fit:contain;border-radius:6px}
