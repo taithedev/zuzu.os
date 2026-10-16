@@ -26,3 +26,97 @@
 #desktop.zu-scene .zu-app-icon svg{width:100%;height:100%;display:block}
 @media(max-width:850px){#desktop.zu-scene .zu-desktop-shortcuts{top:95px;grid-template-rows:repeat(4,82px)}#desktop.zu-scene .zu-rail{display:none!important}#desktop.zu-scene .os-launch-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}#desktop.zu-scene #os-start-menu{padding:16px!important}}
 @media(prefers-reduced-motion:reduce){#desktop.zu-scene .taskbar button,#desktop.zu-scene #os-start-menu{animation:none!important;transition:none!important}}
+
+/* Acrylic / Mica-inspired polish. Browser-native translucency with safe fallbacks. */
+#desktop.zu-scene{
+ --zu-acrylic:rgba(26,33,46,.78);
+ --zu-acrylic-border:rgba(222,236,255,.24);
+ --zu-radius-window:14px;
+ --zu-radius-control:8px;
+ --zu-ease:cubic-bezier(.22,1,.36,1);
+}
+#desktop.zu-scene .taskbar{
+ background:linear-gradient(120deg,rgba(30,40,58,.82),rgba(18,24,37,.79))!important;
+ border-top:1px solid rgba(236,244,255,.23)!important;
+ -webkit-backdrop-filter:blur(32px) saturate(160%)!important;
+ backdrop-filter:blur(32px) saturate(160%)!important;
+ box-shadow:0 -7px 35px rgba(0,0,0,.16),inset 0 1px rgba(255,255,255,.1)!important;
+}
+#desktop.zu-scene #os-start-menu{
+ background:linear-gradient(145deg,rgba(39,48,66,.87),rgba(22,29,43,.85))!important;
+ border:1px solid var(--zu-acrylic-border)!important;
+ border-radius:var(--zu-radius-window)!important;
+ -webkit-backdrop-filter:blur(45px) saturate(165%)!important;
+ backdrop-filter:blur(45px) saturate(165%)!important;
+ box-shadow:0 24px 75px rgba(0,0,0,.45),inset 0 1px rgba(255,255,255,.12)!important;
+}
+#desktop.zu-scene .os-window,
+#desktop.zu-scene #app-window{
+ border-radius:var(--zu-radius-window)!important;
+ border:1px solid var(--zu-acrylic-border)!important;
+ background:linear-gradient(145deg,rgba(32,39,55,.91),rgba(17,22,34,.9))!important;
+ -webkit-backdrop-filter:blur(28px) saturate(135%)!important;
+ backdrop-filter:blur(28px) saturate(135%)!important;
+ box-shadow:0 24px 76px rgba(0,0,0,.51),0 2px 12px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.1)!important;
+ overflow:hidden;
+}
+#desktop.zu-scene .os-window-bar,
+#desktop.zu-scene .window-bar{
+ background:linear-gradient(90deg,rgba(50,61,81,.86),rgba(33,42,60,.82))!important;
+ border-bottom:1px solid rgba(255,255,255,.12)!important;
+}
+#desktop.zu-scene .os-flyout,
+#desktop.zu-scene .account-menu,
+#desktop.zu-scene .os-context-menu,
+#desktop.zu-scene .os-notification-center,
+#desktop.zu-scene .zu-panel{
+ background:linear-gradient(140deg,rgba(37,45,62,.89),rgba(20,26,39,.87))!important;
+ border:1px solid rgba(226,240,255,.19)!important;
+ border-radius:12px!important;
+ -webkit-backdrop-filter:blur(25px) saturate(145%)!important;
+ backdrop-filter:blur(25px) saturate(145%)!important;
+ box-shadow:0 12px 34px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.08)!important;
+}
+#desktop.zu-scene .taskbar button,
+#desktop.zu-scene .os-launch-item,
+#desktop.zu-scene .zu-desktop-shortcut,
+#desktop.zu-scene .os-window-controls button,
+#desktop.zu-scene .window-control,
+#desktop.zu-scene .zu-panel{
+ border-radius:var(--zu-radius-control)!important;
+ transition:background-color .16s ease,border-color .16s ease,box-shadow .2s ease,transform .23s var(--zu-ease)!important;
+}
+#desktop.zu-scene .taskbar button:hover,
+#desktop.zu-scene .os-launch-item:hover{
+ background:rgba(221,236,255,.12)!important;
+ box-shadow:inset 0 0 0 1px rgba(230,243,255,.14)!important;
+}
+#desktop.zu-scene .taskbar button:hover{transform:translateY(-2px)}
+#desktop.zu-scene .taskbar button:active{transform:translateY(0) scale(.96)!important}
+#desktop.zu-scene .zu-desktop-shortcut:hover{background:rgba(223,238,255,.16)!important}
+#desktop.zu-scene .zu-desktop-shortcut svg,
+#desktop.zu-scene .zu-app-icon svg,
+#desktop.zu-scene .taskbar .zu-real-icon{
+ filter:drop-shadow(0 2px 3px rgba(0,0,0,.28));
+ overflow:visible;
+}
+#desktop.zu-scene .os-launch-item:focus-visible,
+#desktop.zu-scene .taskbar button:focus-visible,
+#desktop.zu-scene .zu-desktop-shortcut:focus-visible{
+ outline:2px solid #85bdff!important;outline-offset:2px!important;
+}
+#desktop.zu-scene #os-start-menu:not(.hidden){animation:zu-acrylic-start-in .2s var(--zu-ease) both}
+@keyframes zu-acrylic-start-in{from{opacity:0;translate:0 9px}to{opacity:1;translate:0 0}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+ #desktop.zu-scene #os-start-menu,
+ #desktop.zu-scene .taskbar,
+ #desktop.zu-scene .os-window,
+ #desktop.zu-scene #app-window{background:#202a3b!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #desktop.zu-scene #os-start-menu:not(.hidden){animation:none!important}
+ #desktop.zu-scene .taskbar button,
+ #desktop.zu-scene .os-launch-item,
+ #desktop.zu-scene .zu-desktop-shortcut,
+ #desktop.zu-scene .zu-panel{transition:none!important}
+}
