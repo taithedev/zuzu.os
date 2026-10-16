@@ -27,6 +27,8 @@
   let lastFocus = null;
   let personal = [];
   let personalUrls = new Map();
+  let wallpaperEpoch = 0;
+  let refreshSequence = 0;
   const BUCKET='zuzu-wallpapers';
   const maxUpload=50*1024*1024;
   const client=()=>window.zuzuOSAuth?.client||null;
@@ -166,6 +168,7 @@
     if (![...backgrounds,...personal].some(item => item.id === id)) return false;
     if (selectedId === id && host && host.childElementCount) return true;
     selectedId = id;
+    wallpaperEpoch++;
     applySelected();
     return true;
   }
@@ -251,7 +254,7 @@
     dialog.innerHTML =
       '<section class="zu-wallpaper-sheet" role="dialog" aria-modal="true" aria-labelledby="zu-wallpaper-title" tabindex="-1">' +
       '<header class="zu-wallpaper-head"><div><span class="zu-overline">APPEARANCE / BACKGROUNDS</span>' +
-      '<h2 id="zu-wallpaper-title">Wallpaper library</h2><p>Choose a background. Changes save to this browser.</p></div>' +
+      '<h2 id="zu-wallpaper-title">Wallpaper library</h2><p>Choose a background. Your selection syncs with your account.</p></div>' +
       '<button class="zu-wallpaper-dismiss" type="button" data-zu-close aria-label="Close wallpaper library">×</button></header>' +
       '<div class="zu-wallpaper-body"><section class="zu-wallpaper-upload"><strong>My wallpapers</strong><p>Private to your account. PNG, JPG, JPEG, GIF, MP4, MOV and WebM up to 50 MB.</p><label class="zu-wallpaper-upload-btn">Upload wallpaper <input id="zu-wallpaper-file" type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.mp4,.mov,.webm,image/png,image/jpeg,image/gif,video/mp4,video/quicktime,video/webm" /></label><span id="zu-upload-status" role="status" aria-live="polite"></span></section><div id="zu-wallpaper-groups"></div></div>' +
       '<footer class="zu-wallpaper-foot"><span id="zu-wallpaper-current">Current: Signal</span><button type="button" data-zu-close>Done</button></footer></section>';
@@ -305,7 +308,9 @@
   async function refreshPersonal(){
     const db=client();
     if(!db)return;
+    const sequence=++refreshSequence;
     const {data:{user}}=await db.auth.getUser();
+    if(sequence!==refreshSequence)return;
     if(!user){personal=[];personalUrls.clear();showStatus('Sign in to upload and see your own wallpapers.');renderOptions();return;}
     const {data,error}=await db.storage.from(BUCKET).list(user.id,{limit:100,sortBy:{column:'created_at',order:'desc'}});
     if(error){showStatus('Could not load uploads: '+error.message);return;}
@@ -319,9 +324,12 @@
       const type=personalSource(file);
       items.push({id,name:file.name.replace(/\\.[^.]+$/,'').replace(/[_-]/g,' ').slice(0,64),type,source:signed.data.signedUrl,personal:true});
     }
+    if(sequence!==refreshSequence)return;
     personal=items;
     renderOptions();
-    if(personal.some(x=>x.id===selectedId))applySelected();
+    const stored=storageRead(STORAGE);
+    if(stored && personal.some(x=>x.id===stored) && selectedId!==stored){selectedId=stored;applySelected();}
+    else if(personal.some(x=>x.id===selectedId))applySelected();
     showStatus(items.length+' personal wallpaper'+(items.length===1?'':'s')+' available.');
   }
   async function uploadPersonal(file){
@@ -350,8 +358,14 @@
     if (!select(selectedId) && !selectedId.startsWith('my-')) select(defaultId);
     readManifest();
     void refreshPersonal();
+    document.addEventListener('zuzu:cloud-wallpaper-restored',event=>{
+      const id=event.detail?.id;
+      if(typeof id!=='string')return;
+      selectedId=id;
+      if(!select(id))void refreshPersonal();
+    });
     const db=client();
-    db?.auth.onAuthStateChange(()=>setTimeout(()=>{personal=[];personalUrls.clear();renderOptions();void refreshPersonal()},0));
+    db?.auth.onAuthStateChange(()=>setTimeout(()=>{refreshSequence++;personal=[];personalUrls.clear();renderOptions();void refreshPersonal()},0));
     const winBody = $('window-body');
     if (winBody) new MutationObserver(updateSettingsLink).observe(winBody,{childList:true,subtree:true});
     updateSettingsLink();
