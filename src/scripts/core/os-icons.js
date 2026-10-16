@@ -34,7 +34,7 @@
  function replace(node,name){if(!node||node.dataset.iconReady==='1')return;node.dataset.iconReady='1';node.innerHTML=svg(name);if(!node.hasAttribute('aria-label')&&node.closest('button')?.title)node.setAttribute('aria-label',node.closest('button').title)}
  function scan(root=document){
   root.querySelectorAll('.app-icon').forEach(n=>replace(n,appIcon[n.closest('[data-app]')?.dataset.app]||'default'));
-  root.querySelectorAll('.task-app').forEach(n=>{const id=n.dataset.app;const first=n.firstChild;if(first&&first.nodeType===3)first.textContent='';if(!n.querySelector('.zuzu-icon'))n.insertAdjacentHTML('afterbegin',svg(appIcon[id]||'default'))});
+  root.querySelectorAll('.task-app').forEach(n=>{if(n.querySelector('.zu-icon'))return;const id=n.dataset.app;const first=n.firstChild;if(first&&first.nodeType===3)first.textContent='';if(!n.querySelector('.zuzu-icon'))n.insertAdjacentHTML('afterbegin',svg(appIcon[id]||'default'))});
   root.querySelectorAll('.os-launch-item').forEach(n=>{const s=n.querySelector(':scope > span:first-child');replace(s,appIcon[n.dataset.osLaunch]||'default')});
   root.querySelectorAll('.os-shortcut').forEach(n=>replace(n.querySelector(':scope > span:first-child'),appIcon[n.dataset.osLaunch]||'default'));
   root.querySelectorAll('.os-scene-shortcut').forEach(n=>replace(n.querySelector('.os-scene-shortcut-icon'),appIcon[n.dataset.osLaunch]||'default'));

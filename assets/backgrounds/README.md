@@ -1,8 +1,8 @@
-# ZuzuOS Background Library
+# Built-in ZuzuOS backgrounds
 
-- `photos/` — still wallpapers.
-- `videos/` — looping MP4/WebM wallpapers.
-- `motion/` — motion-theme assets.
-- `manifest.json` — built-in background registry.
+- `manifest.json` is the source of truth for visible choices.
+- `photos/` contains still wallpapers.
+- `motion/` contains motion assets; active motion presets are defined in `src/styles/experience/wallpapers.css`.
+- `videos/` is reserved for real, compressed wallpaper clips. It does **not** contain bundled videos yet.
 
-The default is **Dark Flow**, generated with CSS so it moves without downloading a video.
+Read [docs/BACKGROUNDS.md](/docs/BACKGROUNDS.md) for instructions.

@@ -5,9 +5,9 @@
 #desktop[data-shell-style] .os-desktop-shortcuts{display:none!important}
 #desktop[data-shell-style] .desktop-content{display:none!important}
 #desktop[data-shell-style]>.topbar{display:none!important}
-#desktop[data-shell-style=cine]{background:#192630 url("assets/wallpapers/silent-shore.svg") center center/cover no-repeat fixed}
-#desktop[data-shell-style=windows]{background:#17263d url("assets/wallpapers/aurora.svg") center/cover no-repeat fixed}
-#desktop[data-shell-style=macos]{background:#111522 url("assets/wallpapers/afterglow.svg") center/cover no-repeat fixed}
+#desktop[data-shell-style=cine]{background:#192630 url("/assets/backgrounds/photos/silent-shore.svg") center center/cover no-repeat fixed}
+#desktop[data-shell-style=windows]{background:#17263d url("/assets/backgrounds/photos/aurora.svg") center/cover no-repeat fixed}
+#desktop[data-shell-style=macos]{background:#111522 url("/assets/backgrounds/photos/afterglow.svg") center/cover no-repeat fixed}
 #desktop[data-shell-style=cine]::before,#desktop[data-shell-style=windows]::before,#desktop[data-shell-style=macos]::before{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;background:linear-gradient(180deg,#07111b22 0%,#07111b05 40%,#03070d45 100%)}
 #desktop[data-shell-style=cine] #os-scene,#desktop[data-shell-style=windows] #os-scene,#desktop[data-shell-style=macos] #os-scene{display:block}
 #desktop[data-shell-style] .os-menubar{display:none}
@@ -63,7 +63,7 @@
 #desktop[data-shell-style=macos] .os-system-tray{right:14px;top:55px;bottom:auto;background:#10141dc4}
 #desktop[data-shell-style=cine] .os-start-menu,#desktop[data-shell-style=macos] .os-start-menu{bottom:82px}
 /* Windows-inspired look with centered taskbar and a Windows-like Start panel. */
-#desktop[data-shell-style=windows]{background:#17263d url("assets/wallpapers/aurora.svg") center/cover no-repeat fixed}
+#desktop[data-shell-style=windows]{background:#17263d url("/assets/backgrounds/photos/aurora.svg") center/cover no-repeat fixed}
 #desktop[data-shell-style=windows] .os-scene-day-wrap{top:32px;left:38px;transform:none;justify-items:start;text-align:left}
 #desktop[data-shell-style=windows] .os-scene-overline{font-size:8px;letter-spacing:.2em}
 #desktop[data-shell-style=windows] .os-scene-day{font-size:28px;letter-spacing:.08em;font-weight:550}
@@ -146,7 +146,7 @@
 .setup-layout-option[data-shell-style-choice=macos] .setup-layout-preview{align-items:end;border-radius:7px;background:linear-gradient(180deg,#272532,#171923)}
 .setup-layout-option[data-shell-style-choice=macos] .setup-layout-preview i{height:12px!important;width:13%;border-radius:4px}
 .setup-layout-option[data-shell-style-choice=macos] .setup-layout-preview i:nth-child(2){height:20px!important}
-.plain-preview{background-image:url("assets/wallpapers/silent-shore.svg");background-size:cover;background-position:center}
+.plain-preview{background-image:url("/assets/backgrounds/photos/silent-shore.svg");background-size:cover;background-position:center}
 
 .setup-wallpapers{grid-template-columns:repeat(5,minmax(0,1fr))}.default-preview{background:linear-gradient(145deg,#202a36,#0b0d12);position:relative}.default-preview:after{content:"◈";display:grid;place-items:center;height:100%;color:#ced9e8;font-size:24px}
 @media(max-width:760px){.setup-wallpapers{grid-template-columns:repeat(2,minmax(0,1fr))}}

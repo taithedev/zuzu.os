@@ -1,38 +1,63 @@
 {
-  "version": 1,
-  "default": "motion-darkflow",
+  "version": 2,
+  "default": "motion-signal",
   "backgrounds": [
     {
-      "id": "motion-darkflow",
-      "name": "Dark Flow",
+      "id": "motion-signal",
+      "name": "Signal",
       "type": "motion",
-      "source": "css",
-      "className": "bg-motion-darkflow",
+      "category": "motion",
+      "description": "Soft monochrome motion",
       "default": true
     },
     {
-      "id": "aurora",
-      "name": "Aurora",
-      "type": "photo",
-      "source": "assets/backgrounds/photos/aurora.svg"
+      "id": "motion-tide",
+      "name": "Tide",
+      "type": "motion",
+      "category": "motion",
+      "description": "Cool shifting atmosphere"
     },
     {
-      "id": "obsidian",
+      "id": "motion-ember",
+      "name": "Ember",
+      "type": "motion",
+      "category": "motion",
+      "description": "Dark copper light"
+    },
+    {
+      "id": "motion-void",
+      "name": "Void",
+      "type": "motion",
+      "category": "motion",
+      "description": "Minimal motion, nearly black"
+    },
+    {
+      "id": "photo-obsidian",
       "name": "Obsidian",
       "type": "photo",
-      "source": "assets/backgrounds/photos/obsidian.svg"
+      "category": "photo",
+      "source": "/assets/backgrounds/photos/obsidian.svg"
     },
     {
-      "id": "afterglow",
+      "id": "photo-aurora",
+      "name": "Aurora",
+      "type": "photo",
+      "category": "photo",
+      "source": "/assets/backgrounds/photos/aurora.svg"
+    },
+    {
+      "id": "photo-afterglow",
       "name": "Afterglow",
       "type": "photo",
-      "source": "assets/backgrounds/photos/afterglow.svg"
+      "category": "photo",
+      "source": "/assets/backgrounds/photos/afterglow.svg"
     },
     {
-      "id": "silent-shore",
+      "id": "photo-shore",
       "name": "Silent Shore",
       "type": "photo",
-      "source": "assets/backgrounds/photos/silent-shore.svg"
+      "category": "photo",
+      "source": "/assets/backgrounds/photos/silent-shore.svg"
     }
   ]
 }

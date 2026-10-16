@@ -1,0 +1,12 @@
+{
+  "name": "zuzu-os",
+  "private": true,
+  "version": "2.0.0",
+  "description": "ZuzuOS browser desktop",
+  "scripts": {
+    "check": "node tests/check.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -98,10 +98,7 @@
       <div class="os-scene-bottom-left"><span class="os-scene-live-dot"></span><span>zuzu.os</span><span class="os-scene-bottom-divider"></span><span id="os-scene-state">PERSONAL DESKTOP</span></div>
     `;
     desktop.appendChild(scene);
-    const shortcuts = $('os-scene-shortcuts');
-    shortcuts.innerHTML = shortcutApps.map(([id,name,icon]) =>
-      '<button class="os-scene-shortcut" type="button" data-os-launch="' + id + '" title="' + esc(name) + '"><span class="os-scene-shortcut-icon">' + icon + '</span><span>' + esc(name) + '</span></button>'
-    ).join('');
+    // Desktop shortcuts intentionally disabled in Studio mode.
     const taskbar = desktop.querySelector('.taskbar');
     if (taskbar) {
       const moreApps = [['browser','◉','Browser'],['cinehub','▣','Cine Hub'],['music','♫','Music'],['paint','✎','Paint']];

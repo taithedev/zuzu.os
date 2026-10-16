@@ -794,7 +794,7 @@
         desktop.style.backgroundAttachment = '';
       }
     } else {
-      const image = 'url("assets/wallpapers/' + wallpaper + '.svg")';
+      const image = 'url("assets/backgrounds/photos/' + wallpaper + '.svg")';
       document.body.style.backgroundImage = image;
       document.body.style.backgroundSize = 'cover';
       document.body.style.backgroundAttachment = 'fixed';

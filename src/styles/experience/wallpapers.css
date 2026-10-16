@@ -1,0 +1,319 @@
+/* ZuzuOS wallpaper library and picker.
+   Wallpaper visuals are separate from app windows and UI chrome. */
+#desktop.zu-scene .zu-background{
+  position:absolute;
+  z-index:0;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  isolation:isolate;
+  background:#020304;
+}
+#desktop.zu-scene .zu-background::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:5;
+  background:
+    linear-gradient(180deg,#0000002e 0%,transparent 18%,transparent 66%,#00000068 100%),
+    radial-gradient(ellipse 65% 80% at 50% 42%,transparent 20%,#0000004d 100%);
+  pointer-events:none;
+}
+.zu-bg-media{
+  position:absolute;
+  inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  opacity:.76;
+  filter:saturate(.8) contrast(1.05) brightness(.75);
+}
+.zu-bg-gradients,
+.zu-bg-rings,
+.zu-bg-lines,
+.zu-bg-grain{
+  position:absolute;inset:-10%;
+  transform:translateZ(0);
+}
+.zu-bg-gradients{
+  background:
+    radial-gradient(ellipse 45% 48% at 50% 45%,#819db924,transparent 84%),
+    radial-gradient(ellipse 48% 58% at 86% 15%,#51769e1d,transparent 80%),
+    radial-gradient(ellipse 44% 53% at 14% 86%,#72558c17,transparent 77%);
+  animation:zu-ambient-drift 25s ease-in-out infinite alternate;
+}
+.zu-bg-rings{
+  inset:-28%;
+  opacity:.53;
+  background:repeating-radial-gradient(ellipse at 50% 49%,transparent 0 71px,#cfdae512 73px 74px,transparent 76px 111px);
+  filter:blur(.6px);
+  animation:zu-ring-drift 28s ease-in-out infinite alternate;
+}
+.zu-bg-lines{
+  inset:-24%;
+  opacity:.58;
+  background:
+    linear-gradient(126deg,transparent 0 44%,#e1e8f20b 44.05% 44.15%,transparent 44.3%),
+    linear-gradient(52deg,transparent 0 55%,#dce6ff08 55.1% 55.23%,transparent 55.4%);
+  animation:zu-line-shift 35s ease-in-out infinite alternate;
+}
+.zu-bg-grain{
+  inset:0;
+  opacity:.14;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.23' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px;
+  mix-blend-mode:screen;
+}
+.zu-background[data-variant="motion-tide"] .zu-bg-gradients{
+  background:
+    radial-gradient(ellipse 55% 47% at 26% 39%,#3b6b8d3c,transparent 78%),
+    radial-gradient(ellipse 55% 55% at 76% 66%,#83649c27,transparent 78%),
+    #020406;
+}
+.zu-background[data-variant="motion-tide"] .zu-bg-rings{
+  background:repeating-radial-gradient(ellipse at 30% 72%,transparent 0 60px,#83adc91c 62px 63px,transparent 65px 92px);
+  transform:rotate(-24deg);
+}
+.zu-background[data-variant="motion-ember"] .zu-bg-gradients{
+  background:
+    radial-gradient(ellipse 52% 45% at 68% 61%,#c0844e31,transparent 77%),
+    radial-gradient(ellipse 47% 45% at 26% 32%,#81545827,transparent 75%),
+    #050303;
+}
+.zu-background[data-variant="motion-ember"] .zu-bg-rings{
+  background:repeating-radial-gradient(ellipse at 64% 33%,transparent 0 69px,#daa58a16 70px 72px,transparent 73px 104px);
+}
+.zu-background[data-variant="motion-void"] .zu-bg-gradients{
+  background:radial-gradient(ellipse 45% 52% at 51% 49%,#aebdce16,transparent 76%),#010102;
+}
+.zu-background[data-variant="motion-void"] .zu-bg-rings{opacity:.2}
+.zu-background[data-type="photo"] .zu-bg-gradients,
+.zu-background[data-type="photo"] .zu-bg-rings,
+.zu-background[data-type="photo"] .zu-bg-lines,
+.zu-background[data-type="video"] .zu-bg-gradients,
+.zu-background[data-type="video"] .zu-bg-rings,
+.zu-background[data-type="video"] .zu-bg-lines{display:none}
+@keyframes zu-ambient-drift{
+  from{transform:translate3d(-3%,-1%,0) scale(1.02)}
+  to{transform:translate3d(4%,3%,0) scale(1.09)}
+}
+@keyframes zu-ring-drift{
+  from{transform:translate3d(-1.5%,-2%,0) rotate(-6deg) scale(.98)}
+  to{transform:translate3d(2%,3%,0) rotate(6deg) scale(1.07)}
+}
+@keyframes zu-line-shift{
+  from{transform:translate3d(2%,0,0) rotate(-1deg)}
+  to{transform:translate3d(-2%,0,0) rotate(1deg)}
+}
+/* Standalone picker with cards, keyboard focus and clear selection */
+#desktop.zu-scene .zu-wallpaper-dialog[hidden]{display:none!important}
+#desktop.zu-scene .zu-wallpaper-dialog{
+  position:fixed;
+  z-index:175!important;
+  inset:0;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:#000b;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.zu-wallpaper-sheet{
+  display:flex;
+  flex-direction:column;
+  width:min(780px,100%);
+  max-height:min(730px,calc(100dvh - 40px));
+  background:#101216;
+  border:1px solid #ffffff35;
+  border-radius:16px;
+  box-shadow:0 30px 110px #000f;
+  overflow:hidden;
+  color:#ebeef2;
+}
+.zu-wallpaper-head{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  align-items:flex-start;
+  padding:25px 26px 21px;
+  border-bottom:1px solid #ffffff16;
+}
+.zu-wallpaper-head h2{
+  margin:8px 0 6px;
+  font-size:24px;
+  font-weight:680;
+  letter-spacing:-.035em;
+}
+.zu-wallpaper-head p{
+  margin:0;
+  font-size:11px;
+  color:#a3aab4;
+  line-height:1.5;
+}
+.zu-wallpaper-dismiss{
+  width:33px;height:33px;
+  display:grid;place-items:center;
+  border:1px solid #ffffff28;
+  border-radius:8px;
+  background:#1d2025;
+  color:#dce0e6;
+  cursor:pointer;
+}
+.zu-wallpaper-dismiss:hover{background:#2a2d33}
+.zu-wallpaper-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:23px 26px 26px;
+  scrollbar-color:#4d5562 transparent;
+}
+.zu-wallpaper-group{margin-bottom:24px}
+.zu-wallpaper-group:last-child{margin-bottom:0}
+.zu-wallpaper-group-title{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:space-between;
+  margin:0 0 12px;
+}
+.zu-wallpaper-group-title strong{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.01em;
+}
+.zu-wallpaper-group-title small{
+  color:#818994;
+  font-size:9px;
+  font-family:Consolas,ui-monospace,monospace;
+}
+.zu-wallpaper-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:11px;
+}
+.zu-wallpaper-option{
+  display:grid;
+  min-width:0;
+  gap:9px;
+  padding:8px;
+  border:1px solid #ffffff1e;
+  border-radius:11px;
+  background:#191b21;
+  color:#dfe3e8;
+  text-align:left;
+  cursor:pointer;
+  transition:background .17s ease,border-color .17s ease,transform .17s ease;
+}
+.zu-wallpaper-option:hover{
+  border-color:#ffffff4a;
+  background:#242830;
+  transform:translateY(-2px);
+}
+.zu-wallpaper-option[aria-pressed="true"]{
+  border-color:#b8cadb;
+  box-shadow:0 0 0 1px #a8c1db5c;
+}
+.zu-wallpaper-preview{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  border:1px solid #ffffff16;
+  border-radius:7px;
+  background:
+    radial-gradient(circle at 50% 45%,#899ba43a,transparent 40%),
+    radial-gradient(circle at 72% 34%,#41587847,transparent 43%),
+    #030405;
+}
+.zu-wallpaper-preview[data-variant="motion-tide"]{
+  background:radial-gradient(circle at 24% 35%,#598da17f,transparent 52%),radial-gradient(circle at 75% 74%,#69577969,transparent 59%),#050508;
+}
+.zu-wallpaper-preview[data-variant="motion-ember"]{
+  background:radial-gradient(circle at 72% 59%,#a7643c81,transparent 55%),radial-gradient(circle at 16% 20%,#67374a62,transparent 55%),#070506;
+}
+.zu-wallpaper-preview[data-variant="motion-void"]{
+  background:radial-gradient(circle at center,#707b8a27,transparent 53%),#010102;
+}
+.zu-wallpaper-preview[data-type="photo"],
+.zu-wallpaper-preview[data-type="video"]{
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:cover;
+}
+.zu-wallpaper-preview[data-type="motion"]::after{
+  content:"";
+  position:absolute;inset:-10%;
+  border:1px solid #ffffff21;
+  border-radius:45%;
+  transform:rotate(-14deg) scale(.8);
+  animation:zu-preview-orbit 10s linear infinite;
+}
+@keyframes zu-preview-orbit{to{transform:rotate(346deg) scale(.8)}}
+.zu-wallpaper-meta{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:space-between;
+  padding:1px 3px 3px;
+  min-width:0;
+}
+.zu-wallpaper-meta strong{
+  font-size:11px;
+  font-weight:650;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.zu-wallpaper-state{
+  display:grid;place-items:center;
+  width:17px;height:17px;
+  color:#d4e9ff;
+}
+.zu-wallpaper-state .zu-icon{width:16px;height:16px}
+.zu-wallpaper-foot{
+  padding:15px 26px;
+  border-top:1px solid #ffffff19;
+  display:flex;align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  color:#89929f;
+  font:10px/1.5 Consolas,ui-monospace,monospace;
+}
+.zu-wallpaper-foot button{
+  min-height:32px;
+  padding:6px 12px;
+  border:1px solid #ffffff28;
+  border-radius:8px;
+  background:#20242a;
+  color:#e8edf4;
+  cursor:pointer;
+}
+.zu-wallpaper-foot button:hover{background:#2f343c}
+.zu-wallpaper-setting-link{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin:12px 0;
+  padding:9px 13px;
+  border:1px solid #ffffff27;
+  border-radius:9px;
+  background:#171d25;
+  color:#e1e6ef;
+  cursor:pointer;
+  font-size:11px;
+}
+.zu-wallpaper-setting-link:hover{background:#28303a}
+@media(max-width:680px){
+  .zu-wallpaper-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .zu-wallpaper-body{padding:16px}
+  .zu-wallpaper-head{padding:19px 18px}
+  .zu-wallpaper-head h2{font-size:21px}
+  .zu-wallpaper-foot{padding:11px 18px}
+}
+@media(max-width:390px){
+  .zu-wallpaper-grid{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  .zu-bg-gradients,.zu-bg-rings,.zu-bg-lines,
+  .zu-wallpaper-preview[data-type="motion"]::after{animation:none!important}
+  .zu-wallpaper-option{transition:none!important}
+}

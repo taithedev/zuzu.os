@@ -17,7 +17,7 @@ function restoreDesktopWallpaper(){
  const custom=localStorage.getItem('zuzu:os-wallpaper');
  let image='';
  if(custom) image='url("'+custom+'")';
- else if(['silent-shore','aurora','obsidian','afterglow'].includes(wallpaper)) image='url("assets/wallpapers/'+wallpaper+'.svg")';
+ else if(['silent-shore','aurora','obsidian','afterglow'].includes(wallpaper)) image='url("assets/backgrounds/photos/'+wallpaper+'.svg")';
  if(image){
   const composed='linear-gradient(180deg,#07111b22 0%,#07111b05 40%,#03070d45 100%),'+image;
   document.body.style.backgroundImage=composed;
@@ -38,7 +38,6 @@ function init(){
  const menu=el('section','os-start-menu hidden','<div class="os-start-head"><div><span class="os-start-mark">z.</span><div><strong>ZuzuOS</strong><small>Arctic workspace</small></div></div><button id="os-start-close" aria-label="Close Start">×</button></div><label class="os-search"><span>⌕</span><input id="os-search-input" placeholder="Search apps…" autocomplete="off"></label><div class="os-start-section"><strong>All apps</strong><span>YOUR WORKSPACE</span></div><div class="os-launch-grid" id="os-launch-grid"></div><div class="os-start-bottom"><span><i></i> Browser session active</span><button id="os-signout">⏻ Sign out</button></div>');
  menu.id='os-start-menu';desktop.appendChild(menu);
  menu.querySelector('#os-launch-grid').innerHTML=apps.map(a=>'<button class="os-launch-item" data-os-launch="'+a[0]+'"><span>'+a[2]+'</span><span><strong>'+esc(a[1])+'</strong><small>'+esc(a[3])+'</small></span></button>').join('');
- const shortcuts=el('div','os-desktop-shortcuts',apps.slice(0,5).map(a=>'<button class="os-shortcut" data-os-launch="'+a[0]+'"><span>'+a[2]+'</span><small>'+esc(a[1])+'</small></button>').join(''));desktop.appendChild(shortcuts);
  const layer=el('div','os-window-layer');layer.id='os-window-layer';desktop.appendChild(layer);
  start.onclick=()=>menu.classList.toggle('hidden');menu.querySelector('#os-start-close').onclick=()=>menu.classList.add('hidden');
  menu.querySelector('#os-signout').onclick=()=>document.getElementById('sign-out')?.click();

@@ -1,0 +1,99 @@
+/* Small component finishing rules shared by the unified Studio shell. */
+#desktop.zu-scene .zu-ident{
+  appearance:none;
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+  cursor:pointer;
+  pointer-events:auto;
+  text-align:left;
+  box-shadow:none!important;
+}
+#desktop.zu-scene .zu-ident:hover .zu-ident-mark{
+  background:#2d3541bd;
+  border-color:#ffffff48;
+}
+#desktop.zu-scene .zu-ident:focus-visible{
+  border-radius:8px;
+  outline:2px solid #c5d7e8;
+  outline-offset:5px;
+}
+#desktop.zu-scene .taskbar .task-app[hidden]{display:none!important}
+#desktop.zu-scene #os-start-menu .os-start-mark{background:#dce7f4;color:#0a0c11}
+#desktop.zu-scene .os-window-content .os-toolbar button,
+#desktop.zu-scene .os-window-content .os-action,
+#desktop.zu-scene .window-body .setting-row button{
+  border:1px solid #ffffff24;
+  background:#1b1e24;
+  color:#e0e5ed;
+  font-size:11px;
+  cursor:pointer;
+}
+#desktop.zu-scene .os-window-content .os-toolbar button:hover,
+#desktop.zu-scene .window-body .setting-row button:hover{
+  background:#2a303a;
+}
+#desktop.zu-scene .os-window .os-path,
+#desktop.zu-scene .os-window .os-editor,
+#desktop.zu-scene .os-window .os-calc output{
+  background:#090b0e;
+  border-color:#ffffff1f;
+}
+#desktop.zu-scene .os-window .os-file-row:hover{background:#ffffff0a}
+#desktop.zu-scene .os-window .os-file-delete:hover{background:#b5354230}
+#desktop.zu-scene .os-window h2,
+#desktop.zu-scene .window-body h2{
+  letter-spacing:-.025em;
+}
+#desktop.zu-scene .window-body .settings-nav button,
+#desktop.zu-scene .window-body .settings-sidebar button{
+  border-radius:8px;
+}
+#desktop.zu-scene .window-body .setting-row{
+  border-bottom-color:#ffffff17;
+}
+#desktop.zu-scene .app-window .primary{
+  background:#e0e8f2;
+  color:#101318;
+  border-color:#ffffff22;
+}
+#desktop.zu-scene .app-window .primary:hover{background:#fff}
+#desktop.zu-scene .os-start-menu #os-launch-grid button:focus-visible,
+#desktop.zu-scene .zu-rail button:focus-visible{
+  outline:2px solid #c1d5ec;
+  outline-offset:2px;
+}
+#desktop.zu-scene #os-start-menu .os-start-bottom button{
+  border-radius:8px;
+}
+#desktop.zu-scene .account-menu{
+  right:22px;
+  top:62px;
+  bottom:auto;
+  position:absolute;
+  padding:9px;
+}
+#desktop.zu-scene .account-menu .account-menu-head{
+  padding:10px;
+}
+#desktop.zu-scene .account-menu button{
+  border-radius:8px;
+}
+#desktop.zu-scene .zu-stage .zu-foot-right{
+  pointer-events:none;
+}
+@media(max-width:720px){
+  #desktop.zu-scene .account-menu{right:12px}
+  #desktop.zu-scene .taskbar{max-width:calc(100vw - 16px)!important}
+}
+/* Saved settings and dialogs must always outrank legacy desktop widgets. */
+#desktop.zu-scene .zu-wallpaper-dialog{isolation:isolate}
+#desktop.zu-scene .zu-wallpaper-dialog .zu-wallpaper-sheet{background:#101216}
+
+@media(max-width:720px){
+  .zu-rail{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:470px){
+  .zu-rail{grid-template-columns:repeat(2,minmax(0,1fr));bottom:80px}
+  .zu-panel{min-height:39px;padding:7px}
+}

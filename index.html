@@ -3,35 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
-  <meta name="description" content="zuzu.os — a personal web desktop.">
-  <title>zuzu.os</title>
-  <link rel="icon" href="assets/zuzu.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="zuzu-refresh.css">
-  <link rel="stylesheet" href="os-shell.css">
-  <link rel="stylesheet" href="os-team.css">
-  <link rel="stylesheet" href="os-desktop.css">
-  <link rel="stylesheet" href="os-immersive.css">
-  <link rel="stylesheet" href="zuzu-cinema.css">
-  <link rel="stylesheet" href="zuzu-browser.css">
-  <link rel="stylesheet" href="os-connect.css">
-  <link rel="stylesheet" href="zuzu-product.css">
-  <link rel="stylesheet" href="zuzu-windows-remake.css">
-  <link rel="stylesheet" href="zuzu-motion.css">
-  <link rel="stylesheet" href="yuki-inspired.css">
-  <link rel="stylesheet" href="zuzu-owner-polish.css">\n  <link rel="stylesheet" href="cine-reference.css">\n  <link rel="stylesheet" href="background-system.css">
+  <meta name="theme-color" content="#030405">
+  <meta name="description" content="ZuzuOS — a custom browser desktop with apps, files, and moving wallpapers.">
+  <title>ZuzuOS · Web Desktop</title>
+  <link rel="icon" href="/assets/zuzu.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/graphics/helix-z.svg" as="image" type="image/svg+xml">
+  <!-- Foundations, app components, then the unified desktop experience. -->
+  <link rel="stylesheet" href="/src/styles/base/styles.css">
+  <link rel="stylesheet" href="/src/styles/base/zuzu-refresh.css">
+  <link rel="stylesheet" href="/src/styles/shell/os-shell.css">
+  <link rel="stylesheet" href="/src/styles/shell/os-team.css">
+  <link rel="stylesheet" href="/src/styles/shell/os-desktop.css">
+  <link rel="stylesheet" href="/src/styles/shell/os-immersive.css">
+  <link rel="stylesheet" href="/src/styles/apps/zuzu-cinema.css">
+  <link rel="stylesheet" href="/src/styles/apps/zuzu-browser.css">
+  <link rel="stylesheet" href="/src/styles/apps/os-connect.css">
+  <link rel="stylesheet" href="/src/styles/themes/zuzu-product.css">
+  <link rel="stylesheet" href="/src/styles/themes/zuzu-windows-remake.css">
+  <link rel="stylesheet" href="/src/styles/themes/zuzu-motion.css">
+  <link rel="stylesheet" href="/src/styles/themes/yuki-inspired.css">
+  <link rel="stylesheet" href="/src/styles/experience/studio.css">
+  <link rel="stylesheet" href="/src/styles/experience/wallpapers.css">
+  <link rel="stylesheet" href="/src/styles/experience/controls.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
-  <script src="app.js" defer></script>
-  <script src="os-shell.js" defer></script>
-  <script src="os-team.js" defer></script>
-  <script src="os-desktop.js" defer></script>
-  <script src="os-immersive.js" defer></script>
-  <script src="os-icons.js" defer></script>
-  <script src="zuzu-browser.js" defer></script>
-  <script src="os-connect.js" defer></script>
-  <script src="zuzu-cloud-sync.js" defer></script>
-  <script src="zuzu-motion.js" defer></script>\n  <script src="cine-reference.js" defer></script>\n  <script src="background-system.js" defer></script>
+  <!-- Preserve the original script order: legacy modules use deferred globals. -->
+  <script src="/src/scripts/core/app.js" defer></script>
+  <script src="/src/scripts/core/os-shell.js" defer></script>
+  <script src="/src/scripts/features/os-team.js" defer></script>
+  <script src="/src/scripts/core/os-desktop.js" defer></script>
+  <script src="/src/scripts/core/os-immersive.js" defer></script>
+  <script src="/src/scripts/core/os-icons.js" defer></script>
+  <script src="/src/scripts/features/zuzu-browser.js" defer></script>
+  <script src="/src/scripts/features/os-connect.js" defer></script>
+  <script src="/src/scripts/features/zuzu-cloud-sync.js" defer></script>
+  <script src="/src/scripts/features/zuzu-motion.js" defer></script>
+  <script src="/src/scripts/experience/background-library.js" defer></script>
+  <script src="/src/scripts/experience/studio-shell.js" defer></script>
 </head>
 <body>
   <div class="ambient" aria-hidden="true"></div>

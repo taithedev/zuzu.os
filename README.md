@@ -1,58 +1,59 @@
-# zuzu.os
+# ZuzuOS
 
-A Windows-inspired personal web desktop with Supabase authentication, profile settings, local-first notes, and private account sync. Built as a static site so it can be deployed to GitHub Pages now and Vercel later.
+A browser desktop built around a custom dark shell, real app windows, a launcher, and a local wallpaper library.
 
-## Current features
+**Production:** https://zuzuos.lol/  
+**Source:** https://github.com/taithedev/zuzu.os
 
-- ZuzuOS-branded account system backed by Supabase Auth: email/password sign-up, sign-in, sign-out, password reset, and password changes. No Microsoft sign-in is used.
-- Profile creation on registration, editable display name and username, email-change confirmation, and password updates.
-- User-scoped database storage protected by row-level security (RLS).
-- Private file upload, listing, download, and deletion in the user's own storage folder (10 MB limit per file).
-- Account data export and a confirmed account deletion flow backed by a server-side Edge Function.
-- Persistent local accent-color and wallpaper preferences.
-- Quick note saved locally and synchronized to the signed-in user's account.
-- Settings window, theme accent selector, file/profile export, and external-link launcher.
-- Cine Hub discovery links, local audio playback, sketch canvas with PNG export, safe simulated terminal, local CIRI helper, and App Store catalog.
-- Responsive desktop shell, taskbar, account menu, and cookie/preferences notice.
+## Project structure
 
-## Supabase project
-
-The frontend uses the public publishable key only. It never uses a service-role key.
-
-- Project URL: https://wfqudstuncdldsvxqveu.supabase.co
-- Schema: [supabase/schema.sql](supabase/schema.sql)
-- Tables: `profiles`, `user_data`
-- Private Storage bucket: `zuzu-user-files`
-
-The schema has already been applied to the connected `zuzu.os` project. The `delete-account` Edge Function is deployed with JWT verification enabled and deletes the signed-in user's private uploads before deleting the account. If deploying to a different Supabase project, run `supabase/schema.sql` in the SQL Editor, then update `SUPABASE_URL` and `SUPABASE_KEY` at the top of `app.js` with that project's URL and publishable key.
-
-### Auth dashboard settings
-
-In Supabase Dashboard → Authentication → URL Configuration, set the Site URL to your deployed URL. Add each local or production URL under Redirect URLs if you use password reset or email confirmation. Email confirmation may be enabled; when it is enabled, new users must verify their email before signing in.
-
-## Run locally
-
-Serve this directory over HTTP; do not open `index.html` as a `file://` URL.
-
-```bash
-python -m http.server 8080
+```text
+index.html                       Main document; keeps stable UI IDs for the app
+src/
+  scripts/
+    core/                        Auth, desktop lifecycle, window manager, icons
+    features/                    Browser, community, sync, motion controls
+    experience/                  Studio desktop and unified wallpaper library
+  styles/
+    base/                        Foundation and existing component primitives
+    shell/                       Window, tray and desktop support styles
+    apps/                        Styles for individual applications
+    themes/                      Original theme and layout compatibility
+    experience/                  One coherent shell design + wallpaper picker
+assets/
+  backgrounds/
+    photos/                      Still wallpapers (SVG, JPG, PNG, WebP)
+    motion/                      Animated SVG and motion theme assets
+    videos/                      Future looping MP4/WebM files
+    manifest.json                Registered built-in wallpapers
+  graphics/                      Original ZuzuOS hero artwork
+  icons/                         Unified UI icon sprite
+supabase/                        Database migrations and account edge functions
+docs/                            Project and wallpaper documentation
+tests/                           Zero-dependency static checks
 ```
 
-Open http://localhost:8080.
+## Development
 
-## GitHub Pages
+This is a static HTML/CSS/JavaScript project. No bundler is required.
 
-The workflow in `.github/workflows/deploy.yml` deploys the root directory when code is pushed to `main`. In GitHub, open Settings → Pages and choose **GitHub Actions** as the build and deployment source. The public frontend key is intentionally present in client code; Supabase RLS is the access-control boundary. Never put a service-role key, database password, or AI provider secret in this repository.
+1. Clone the repository.
+2. Serve its root with any static HTTP server, e.g. `python3 -m http.server 3000`.
+3. Open `http://localhost:3000`.
+4. Run `npm run check` for a static integrity and JavaScript syntax check.
 
-## Vercel later
+Auth and online account features need the existing Supabase configuration and a reachable Supabase instance. The core app is not a replacement for an actual operating system.
 
-Import this repository into Vercel and use the repository root as the project root. No build command is required for this static version. The same Supabase URL and publishable key can be used in the browser; make sure the Vercel production and preview URLs are added to Supabase Auth's Redirect URLs.
+## Desktop behavior
 
-## Important security notes
+The Studio shell does not show desktop shortcuts. Apps launch from Start and the bottom dock. The top-left ZuzuOS label opens the account menu. The right rail includes quick access to recent apps, music, wallpaper choices and Settings. Use **Alt+W** to open the wallpaper library; use **Ctrl/Cmd+K** for the existing Start search.
 
-- Database policies restrict profile and saved-data rows to the authenticated owner.
-- The private Storage bucket policies require uploads to be placed under a folder named with the signed-in user's UUID.
-- The Files app supports private uploads, listing, downloads, and deletion. Drag-and-drop upload and in-app document previews are not implemented yet.
-- Music plays files locally in the browser; it does not stream a music catalog. Cine Hub opens discovery links instead of hosting movies.
-- This project intentionally uses ZuzuOS-branded email/password accounts; no Microsoft identity provider or Microsoft sign-in button is part of the design.
-- Do not treat client-side UI visibility as authorization. Enforce privileged actions in Supabase RLS or trusted server-side functions.
+Built-in motion wallpapers are CSS animated, not large background videos. They respect reduced-motion settings. Photo and video choices are listed in `assets/backgrounds/manifest.json`; see [wallpaper documentation](docs/BACKGROUNDS.md).
+
+## Working on the code
+
+The older application logic remains intentionally compatible to avoid breaking account sessions, Supabase queries, notes, files or app windows. It is now grouped by responsibility under `src/` instead of at the repository root. The final visual layer is owned by `src/styles/experience/`; avoid adding competing root-level overrides.
+
+GitHub runs validation on push. The production site is deployed through the existing Vercel project named `zuzu.os`, with the public domain `zuzuos.lol`.
+
+See [architecture](docs/ARCHITECTURE.md) and [release notes](CHANGELOG.md).
