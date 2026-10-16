@@ -158,7 +158,11 @@
     brand.dataset.zuAction = 'account';
     brand.title = 'Account and sign out';
     brand.setAttribute('aria-label','Account and sign out');
-    const monogram = node('span','zu-ident-mark','z.');
+    const monogram = node('span','zu-ident-mark');
+    const logo = document.createElement('img');
+    logo.src = '/assets/zuzifylogo.png';
+    logo.alt = '';
+    monogram.appendChild(logo);
     const title = node('span',null,'zuzu.os');
     const edition = node('small',null,'WEB DESKTOP');
     brand.append(monogram,title,edition);
