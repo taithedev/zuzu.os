@@ -150,6 +150,7 @@
     area.append(info,grid);
     announce('0 / 8 pairs · 0 turns');
   }
+  window.ZuzuArcade = {open,close};
   function init(){insertLaunchers();makeOverlay();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
