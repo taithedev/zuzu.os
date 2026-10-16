@@ -4,7 +4,8 @@
   const KEYS = [
     'zuzu:theme-preset', 'zuzu:wallpaper','zuzu:accent','zuzu:shell-style',
     'zuzu:desktop-ui:v1','zuzu:os-vfs:v1','zuzu:windows-remake-v1',
-    'zuzu:os-label','zuzu:os-welcome','zuzu:background:selected:v2'
+    'zuzu:os-label','zuzu:os-welcome','zuzu:background:selected:v2',
+    'zuzu:setup-complete','zuzu:recent-app'
   ];
   const META_KEY='zuzu:desktop-sync:pending';
   const client=()=>window.zuzuOSAuth?.client || null;
@@ -30,7 +31,7 @@
     dirty=true;
     try{localStorage.setItem(META_KEY,'1')}catch{}
     clearTimeout(timer);
-    timer=setTimeout(()=>{void push()},700);
+    timer=setTimeout(()=>{void push()},900);
   }
   async function push(){
     const id=userId,epoch=generation,db=client();
@@ -54,6 +55,7 @@
       dirty=true;
       console.warn('ZuzuOS desktop preferences sync:',error?.message||error);
       markStatus('Offline changes','Saved on this device; cloud sync will retry.');
+      if(navigator.onLine){clearTimeout(timer);timer=setTimeout(()=>{void push()},15000);}
     });
     await inflight;
   }
@@ -74,7 +76,10 @@
       window.zuzuApplySyncedDesktop({style,theme,wallpaper,accent});
     }
     const chosen=read('zuzu:background:selected:v2');
-    if(chosen&&window.ZuzuBackgrounds?.select)window.ZuzuBackgrounds.select(chosen);
+    if(chosen){
+      const applied=window.ZuzuBackgrounds?.select?.(chosen);
+      if(!applied)document.dispatchEvent(new CustomEvent('zuzu:cloud-wallpaper-restored',{detail:{id:chosen}}));
+    }
     const name=read('zuzu:os-label');
     if(name&&document.querySelector('.top-brand'))document.querySelector('.top-brand').dataset.syncName='1';
   }
