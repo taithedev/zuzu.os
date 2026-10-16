@@ -25,6 +25,11 @@
   let host = null;
   let dialog = null;
   let lastFocus = null;
+  let personal = [];
+  let personalUrls = new Map();
+  const BUCKET='zuzu-wallpapers';
+  const maxUpload=50*1024*1024;
+  const client=()=>window.zuzuOSAuth?.client||null;
   const canPlay = () => !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function storageRead(key) {
@@ -35,7 +40,7 @@
   }
   function allowedSource(value) {
     if (typeof value !== 'string') return false;
-    return /^\/assets\/backgrounds\/(?:photos|videos|motion)\/[a-zA-Z0-9._/-]+$/.test(value)
+    return /^\/assets\/backgrounds\/(?:photos|videos|motion)\/[a-zA-Z0-9._/%()-]+$/.test(value)
       && !value.includes('..');
   }
   function isRecord(item) {
@@ -58,7 +63,7 @@
       console.warn('ZuzuOS background manifest unavailable; using built-in defaults.', err);
       backgrounds = defaultItems;
     }
-    if (!backgrounds.some(item => item.id === selectedId)) selectedId = defaultId;
+    if (!backgrounds.some(item => item.id === selectedId) && !personal.some(item=>item.id===selectedId) && !selectedId.startsWith('my-')) selectedId = defaultId;
     renderOptions();
     applySelected();
   }
@@ -134,19 +139,17 @@
     if (allowedSource(item.poster)) video.poster = item.poster;
     const source = document.createElement('source');
     source.src = item.source;
-    source.type = /\.webm$/i.test(item.source) ? 'video/webm' : 'video/mp4';
+    source.type = /\.webm$/i.test(item.source) ? 'video/webm' : /\.mov$/i.test(item.source) ? 'video/quicktime' : 'video/mp4';
     video.appendChild(source);
     host.appendChild(video);
-    video.addEventListener('error', () => select(defaultId), {once:true});
+    video.addEventListener('error', () => { showStatus('This video format cannot play in your browser. MP4 (H.264) is recommended.'); select(defaultId); }, {once:true});
     if (canPlay() && !document.hidden) {
-      video.play().catch(() => {
-        // Some browsers prevent autoplay; remain on the wallpaper poster.
-      });
+      video.play().catch(() => { showStatus('Video could not autoplay. Try MP4 (H.264) for better compatibility.'); });
     }
   }
   function applySelected() {
     if (!ensureHost()) return;
-    const item = backgrounds.find(bg => bg.id === selectedId) || backgrounds[0];
+    const item = [...backgrounds,...personal].find(bg => bg.id === selectedId) || backgrounds[0];
     if (!item) return;
     clearMedia();
     host.dataset.variant = item.id;
@@ -160,7 +163,7 @@
     document.dispatchEvent(new CustomEvent('zuzu:wallpaper-changed',{detail:{id:item.id,type:item.type}}));
   }
   function select(id) {
-    if (!backgrounds.some(item => item.id === id)) return false;
+    if (![...backgrounds,...personal].some(item => item.id === id)) return false;
     if (selectedId === id && host && host.childElementCount) return true;
     selectedId = id;
     applySelected();
@@ -210,7 +213,7 @@
       {type:'video',label:'Video backgrounds'}
     ];
     groups.forEach(group => {
-      const items = backgrounds.filter(item => item.type === group.type);
+      const items = [...backgrounds,...personal].filter(item => item.type === group.type);
       if (!items.length) return;
       const section = document.createElement('section');
       section.className = 'zu-wallpaper-group';
@@ -235,7 +238,7 @@
       button.setAttribute('aria-pressed',String(button.dataset.zuSelect === selectedId));
     });
     const selectedLabel = dialog.querySelector('#zu-wallpaper-current');
-    const item = backgrounds.find(bg => bg.id === selectedId);
+    const item = [...backgrounds,...personal].find(bg => bg.id === selectedId);
     if (selectedLabel) selectedLabel.textContent = item ? 'Current: ' + item.name : '';
   }
   function ensurePicker() {
@@ -250,7 +253,7 @@
       '<header class="zu-wallpaper-head"><div><span class="zu-overline">APPEARANCE / BACKGROUNDS</span>' +
       '<h2 id="zu-wallpaper-title">Wallpaper library</h2><p>Choose a background. Changes save to this browser.</p></div>' +
       '<button class="zu-wallpaper-dismiss" type="button" data-zu-close aria-label="Close wallpaper library">×</button></header>' +
-      '<div class="zu-wallpaper-body" id="zu-wallpaper-groups"></div>' +
+      '<div class="zu-wallpaper-body"><section class="zu-wallpaper-upload"><strong>My wallpapers</strong><p>Private to your account. PNG, JPG, JPEG, GIF, MP4, MOV and WebM up to 50 MB.</p><label class="zu-wallpaper-upload-btn">Upload wallpaper <input id="zu-wallpaper-file" type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.mp4,.mov,.webm,image/png,image/jpeg,image/gif,video/mp4,video/quicktime,video/webm" /></label><span id="zu-upload-status" role="status" aria-live="polite"></span></section><div id="zu-wallpaper-groups"></div></div>' +
       '<footer class="zu-wallpaper-foot"><span id="zu-wallpaper-current">Current: Signal</span><button type="button" data-zu-close>Done</button></footer></section>';
     desktop.appendChild(dialog);
     dialog.addEventListener('click', event => {
@@ -261,6 +264,7 @@
       const option = event.target.closest('[data-zu-select]');
       if (option) select(option.dataset.zuSelect);
     });
+    dialog.querySelector('#zu-wallpaper-file')?.addEventListener('change',async e=>{const file=e.target.files?.[0];if(file)await uploadPersonal(file);e.target.value='';});
     renderOptions();
   }
   function open() {
@@ -269,6 +273,7 @@
     lastFocus = document.activeElement;
     dialog.hidden = false;
     dialog.querySelector('.zu-wallpaper-sheet')?.focus();
+    void refreshPersonal();
   }
   function close() {
     if (!dialog) return;
@@ -288,13 +293,64 @@
     button.addEventListener('click',open);
     section.appendChild(button);
   }
+
+  function showStatus(message) {
+    const element=$('zu-upload-status');
+    if(element)element.textContent=message;
+  }
+  function personalSource(item){
+    const ext=item.name.split('.').pop().toLowerCase();
+    return ['mov','mp4','webm'].includes(ext)?'video':'photo';
+  }
+  async function refreshPersonal(){
+    const db=client();
+    if(!db)return;
+    const {data:{user}}=await db.auth.getUser();
+    if(!user){personal=[];personalUrls.clear();showStatus('Sign in to upload and see your own wallpapers.');renderOptions();return;}
+    const {data,error}=await db.storage.from(BUCKET).list(user.id,{limit:100,sortBy:{column:'created_at',order:'desc'}});
+    if(error){showStatus('Could not load uploads: '+error.message);return;}
+    const items=[];
+    for(const file of data||[]){
+      if(!/\\.(png|jpe?g|gif|webp|mp4|mov|webm)$/i.test(file.name))continue;
+      const path=user.id+'/'+file.name;
+      const signed=await db.storage.from(BUCKET).createSignedUrl(path,3600);
+      if(signed.error||!signed.data?.signedUrl)continue;
+      const id='my-'+encodeURIComponent(file.name);
+      const type=personalSource(file);
+      items.push({id,name:file.name.replace(/\\.[^.]+$/,'').replace(/[_-]/g,' ').slice(0,64),type,source:signed.data.signedUrl,personal:true});
+    }
+    personal=items;
+    renderOptions();
+    if(personal.some(x=>x.id===selectedId))applySelected();
+    showStatus(items.length+' personal wallpaper'+(items.length===1?'':'s')+' available.');
+  }
+  async function uploadPersonal(file){
+    const db=client();
+    if(!db){showStatus('Account service unavailable.');return;}
+    const {data:{user}}=await db.auth.getUser();
+    if(!user){showStatus('Sign in before uploading a wallpaper.');return;}
+    const extension=file.name.split('.').pop().toLowerCase();
+    const typeMap={png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',gif:'image/gif',webp:'image/webp',mov:'video/quicktime',mp4:'video/mp4',webm:'video/webm'};
+    if(!Object.hasOwn(typeMap,extension)){showStatus('Unsupported file type.');return;}
+    if(!file.size||file.size>maxUpload){showStatus('File must be under 50 MB.');return;}
+    const name=crypto.randomUUID()+'.'+extension;
+    showStatus('Uploading '+file.name+'…');
+    const {error}=await db.storage.from(BUCKET).upload(user.id+'/'+name,file,{contentType:typeMap[extension],upsert:false});
+    if(error){showStatus('Upload failed: '+error.message);return;}
+    await refreshPersonal();
+    const choice=personal.find(item=>item.id==='my-'+encodeURIComponent(name));
+    if(choice){select(choice.id);showStatus('Uploaded. Your wallpaper is private to your account.');}
+  }
+
   function init() {
     if (!$('desktop')) return;
     ensureHost();
     ensurePicker();
     selectedId = restoreSelection();
-    if (!select(selectedId)) select(defaultId);
+    if (!select(selectedId) && !selectedId.startsWith('my-')) select(defaultId);
     readManifest();
+    const db=client();
+    db?.auth.onAuthStateChange(()=>setTimeout(()=>{personal=[];personalUrls.clear();renderOptions();void refreshPersonal()},0));
     const winBody = $('window-body');
     if (winBody) new MutationObserver(updateSettingsLink).observe(winBody,{childList:true,subtree:true});
     updateSettingsLink();
@@ -321,14 +377,14 @@
   window.ZuzuBackgrounds = {
     open,close,select,
     current:() => selectedId,
-    list:() => backgrounds.slice(),
+    list:() => [...backgrounds,...personal],
     setMotion:() => select(defaultId),
     setPhoto:source => {
-      const match = backgrounds.find(item => item.type === 'photo' && item.source === source);
+      const match = [...backgrounds,...personal].find(item => item.type === 'photo' && item.source === source);
       return match ? select(match.id) : false;
     },
     setVideo:source => {
-      const match = backgrounds.find(item => item.type === 'video' && item.source === source);
+      const match = [...backgrounds,...personal].find(item => item.type === 'video' && item.source === source);
       return match ? select(match.id) : false;
     }
   };

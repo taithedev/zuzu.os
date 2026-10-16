@@ -317,3 +317,11 @@
   .zu-wallpaper-preview[data-type="motion"]::after{animation:none!important}
   .zu-wallpaper-option{transition:none!important}
 }
+.zu-wallpaper-upload{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:13px 14px;margin-bottom:17px;border:1px solid #ffffff1d;border-radius:10px;background:#181c23}
+.zu-wallpaper-upload strong{font-size:12px}
+.zu-wallpaper-upload p{width:100%;margin:0;font-size:10px;color:#a0a9b7}
+.zu-wallpaper-upload-btn{position:relative;display:inline-flex;align-items:center;padding:8px 12px;border-radius:8px;background:#dce6f1;color:#111720;font-size:11px;font-weight:700;cursor:pointer}
+.zu-wallpaper-upload-btn:focus-within{outline:2px solid #9cc8ff}
+.zu-wallpaper-upload-btn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+#zu-upload-status{font-size:10px;color:#b6c3d1;line-height:1.4}
+.zu-wallpaper-preview[data-type="video"]::after{content:"▶";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:28px;height:28px;border-radius:100%;background:#0c1019b9;color:#fff}

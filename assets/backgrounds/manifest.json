@@ -58,6 +58,98 @@
       "type": "photo",
       "category": "photo",
       "source": "/assets/backgrounds/photos/silent-shore.svg"
+    },
+    {
+      "id": "github-photo-img-2054-a7397e",
+      "name": "IMG 2054",
+      "type": "photo",
+      "category": "photo",
+      "source": "/assets/backgrounds/photos/IMG_2054.png"
+    },
+    {
+      "id": "github-photo-img-2063-a03fff",
+      "name": "IMG 2063",
+      "type": "photo",
+      "category": "photo",
+      "source": "/assets/backgrounds/photos/IMG_2063.png"
+    },
+    {
+      "id": "github-photo-img-2064-b811e7",
+      "name": "IMG 2064",
+      "type": "photo",
+      "category": "photo",
+      "source": "/assets/backgrounds/photos/IMG_2064.png"
+    },
+    {
+      "id": "github-photo-img-2065-ef8a2b",
+      "name": "IMG 2065",
+      "type": "photo",
+      "category": "photo",
+      "source": "/assets/backgrounds/photos/IMG_2065.png"
+    },
+    {
+      "id": "github-photo-img-2066-9a18ff",
+      "name": "IMG 2066",
+      "type": "photo",
+      "category": "photo",
+      "source": "/assets/backgrounds/photos/IMG_2066.png"
+    },
+    {
+      "id": "github-photo-img-2552-b08e47",
+      "name": "IMG 2552",
+      "type": "photo",
+      "category": "photo",
+      "source": "/assets/backgrounds/photos/IMG_2552.png"
+    },
+    {
+      "id": "github-video-copy-64f875c7-bd6e-45a5-9c41-147d830f275d-eb26f9",
+      "name": "copy 64F875C7 BD6E 45A5 9C41 147D830F275D",
+      "type": "video",
+      "category": "video",
+      "source": "/assets/backgrounds/videos/copy_64F875C7-BD6E-45A5-9C41-147D830F275D.mov"
+    },
+    {
+      "id": "github-video-copy-9c0c1f3f-0868-44ae-837a-2cc2578e5119-1-bd4d07",
+      "name": "copy 9C0C1F3F 0868 44AE 837A 2CC2578E5119(1)",
+      "type": "video",
+      "category": "video",
+      "source": "/assets/backgrounds/videos/copy_9C0C1F3F-0868-44AE-837A-2CC2578E5119(1).mov"
+    },
+    {
+      "id": "github-video-gojo-vs-sukuna-3840x2160-c9154c",
+      "name": "gojo vs sukuna.3840x2160",
+      "type": "video",
+      "category": "video",
+      "source": "/assets/backgrounds/videos/gojo-vs-sukuna.3840x2160.mov"
+    },
+    {
+      "id": "github-video-heroes-of-jujutsu-kaisen-3840x2160-60f6fc",
+      "name": "heroes of jujutsu kaisen.3840x2160",
+      "type": "video",
+      "category": "video",
+      "source": "/assets/backgrounds/videos/heroes-of-jujutsu-kaisen.3840x2160.mov"
+    },
+    {
+      "id": "github-video-hunt-showdown-skull-guns-1920x1080-71098b",
+      "name": "hunt showdown skull guns.1920x1080",
+      "type": "video",
+      "category": "video",
+      "source": "/assets/backgrounds/videos/hunt-showdown-skull-guns.1920x1080.mov"
+    },
+    {
+      "id": "github-video-minecraft-snowy-campfire-1920x1080-4bb567",
+      "name": "minecraft snowy campfire.1920x1080",
+      "type": "video",
+      "category": "video",
+      "source": "/assets/backgrounds/videos/minecraft-snowy-campfire.1920x1080.mov"
+    },
+    {
+      "id": "github-video-sukuna-fire-arrow-1920x1080-5b4d23",
+      "name": "sukuna fire arrow.1920x1080",
+      "type": "video",
+      "category": "video",
+      "source": "/assets/backgrounds/videos/sukuna-fire-arrow.1920x1080.mov"
     }
-  ]
+  ],
+  "generated_at": "2026-10-16T01:58:10.501Z"
 }
