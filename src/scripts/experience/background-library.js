@@ -65,7 +65,7 @@
     }
     if (!backgrounds.some(item => item.id === selectedId) && !personal.some(item=>item.id===selectedId) && !selectedId.startsWith('my-')) selectedId = defaultId;
     renderOptions();
-    applySelected();
+    if(!(selectedId.startsWith('my-') && !personal.some(item=>item.id===selectedId))) applySelected();
   }
   function restoreSelection() {
     const own = storageRead(STORAGE);
@@ -349,6 +349,7 @@
     selectedId = restoreSelection();
     if (!select(selectedId) && !selectedId.startsWith('my-')) select(defaultId);
     readManifest();
+    void refreshPersonal();
     const db=client();
     db?.auth.onAuthStateChange(()=>setTimeout(()=>{personal=[];personalUrls.clear();renderOptions();void refreshPersonal()},0));
     const winBody = $('window-body');
