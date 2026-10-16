@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "default": "motion-darkflow",
+  "backgrounds": [
+    {
+      "id": "motion-darkflow",
+      "name": "Dark Flow",
+      "type": "motion",
+      "source": "css",
+      "className": "bg-motion-darkflow",
+      "default": true
+    },
+    {
+      "id": "aurora",
+      "name": "Aurora",
+      "type": "photo",
+      "source": "assets/backgrounds/photos/aurora.svg"
+    },
+    {
+      "id": "obsidian",
+      "name": "Obsidian",
+      "type": "photo",
+      "source": "assets/backgrounds/photos/obsidian.svg"
+    },
+    {
+      "id": "afterglow",
+      "name": "Afterglow",
+      "type": "photo",
+      "source": "assets/backgrounds/photos/afterglow.svg"
+    },
+    {
+      "id": "silent-shore",
+      "name": "Silent Shore",
+      "type": "photo",
+      "source": "assets/backgrounds/photos/silent-shore.svg"
+    }
+  ]
+}
