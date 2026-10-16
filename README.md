@@ -46,6 +46,8 @@ Auth and online account features need the existing Supabase configuration and a 
 
 ## Desktop behavior
 
+Arcade includes two original offline games: 2048 and Memory, available from the Start menu and dock.
+
 The Studio shell does not show desktop shortcuts. Apps launch from Start and the bottom dock. The top-left ZuzuOS label opens the account menu. The right rail includes quick access to recent apps, music, wallpaper choices and Settings. Use **Alt+W** to open the wallpaper library; use **Ctrl/Cmd+K** for the existing Start search.
 
 Built-in motion wallpapers are CSS animated, not large background videos. They respect reduced-motion settings. Photo and video choices are listed in `assets/backgrounds/manifest.json`; see [wallpaper documentation](docs/BACKGROUNDS.md).

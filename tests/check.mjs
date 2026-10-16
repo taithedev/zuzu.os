@@ -50,7 +50,7 @@ for (const file of scripts) {
   const result = spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
   if (result.status !== 0) errors.push('JavaScript syntax error: ' + relative(root,file) + '\n' + result.stderr);
 }
-for (const file of ['src/styles/experience/studio.css','src/styles/experience/wallpapers.css','src/styles/experience/controls.css','assets/icons/ui.svg','assets/graphics/helix-z.svg','vercel.json']) {
+for (const file of ['src/scripts/experience/arcade.js','src/styles/experience/arcade.css','src/styles/experience/finishing.css','src/styles/experience/studio.css','src/styles/experience/wallpapers.css','src/styles/experience/controls.css','assets/icons/ui.svg','assets/graphics/helix-z.svg','vercel.json']) {
   check(existsSync(pathOf(file)),'Missing required asset: ' + file);
 }
 if (errors.length) {

@@ -1,161 +1,155 @@
-/* Account-scoped desktop sync. Only user_data rows owned by the signed-in user are written. */
+/* ZuzuOS private, account-scoped desktop preference sync. */
 (() => {
   'use strict';
   const KEYS = [
-    'zuzu:theme-preset', 'zuzu:wallpaper', 'zuzu:accent', 'zuzu:shell-style',
-    'zuzu:desktop-ui:v1', 'zuzu:os-vfs:v1', 'zuzu:windows-remake-v1',
-    'zuzu:os-label', 'zuzu:os-welcome'
+    'zuzu:theme-preset', 'zuzu:wallpaper','zuzu:accent','zuzu:shell-style',
+    'zuzu:desktop-ui:v1','zuzu:os-vfs:v1','zuzu:windows-remake-v1',
+    'zuzu:os-label','zuzu:os-welcome','zuzu:background:selected:v2'
   ];
-  const client = () => window.zuzuOSAuth?.client || null;
-  let userId = null;
-  let ready = false;
-  let restoring = false;
-  let saveTimer = 0;
-  let chain = Promise.resolve();
+  const META_KEY='zuzu:desktop-sync:pending';
+  const client=()=>window.zuzuOSAuth?.client || null;
+  let userId=null,ready=false,restoring=false,dirty=false;
+  let generation=0,lastCloudAt='',timer=0,inflight=Promise.resolve(),pulling=false;
 
-  function snapshot() {
-    const out = {};
-    for (const key of KEYS) {
-      const value = localStorage.getItem(key);
-      if (value !== null) out[key] = value;
-    }
-    return out;
+  const read = key => {try{return localStorage.getItem(key)}catch{return null}};
+  function markStatus(state,details) {
+    const title=document.getElementById('sync-title');
+    const desc=document.getElementById('sync-description');
+    const connection=document.getElementById('connection-label');
+    if(title)title.textContent=state;
+    if(desc)desc.textContent=details;
+    if(connection)connection.textContent=state;
   }
-  function notify(message) {
-    const node = document.getElementById('sync-description');
-    if (node) node.textContent = message;
-    const title = document.getElementById('sync-title');
-    if (title) title.textContent = message.includes('failed') ? 'Sync needs attention' : 'Desktop sync';
-    const label = document.getElementById('connection-label');
-    if (label) label.textContent = message.includes('failed') ? 'Sync issue' : 'Cloud sync';
+  function snapshot(){
+    const state={};
+    for(const key of KEYS){const v=read(key);if(v!==null)state[key]=v;}
+    return state;
   }
-  async function persist(id) {
-    const db = client();
-    if (!db || !id || id !== userId || !ready) return;
-    const value = snapshot();
-    chain = chain.then(async () => {
-      const { error } = await db.from('user_data').upsert({
-        user_id: id, namespace: 'desktop', item_key: 'state', value,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,namespace,item_key' });
-      if (error) throw error;
-    }).catch(error => {
-      console.warn('ZuzuOS desktop sync failed:', error?.message || error);
-      notify('Some desktop changes could not sync. Check your connection.');
+  function schedule() {
+    if(!ready||!userId||restoring)return;
+    dirty=true;
+    try{localStorage.setItem(META_KEY,'1')}catch{}
+    clearTimeout(timer);
+    timer=setTimeout(()=>{void push()},700);
+  }
+  async function push(){
+    const id=userId,epoch=generation,db=client();
+    if(!ready||!id||!db||restoring||!dirty)return;
+    const values=snapshot();
+    dirty=false;
+    inflight=inflight.then(async()=>{
+      if(id!==userId||epoch!==generation)return;
+      markStatus('Syncing','Saving workspace changes…');
+      const {data,error}=await db.from('user_data').upsert({
+        user_id:id,namespace:'desktop',item_key:'state',value:values,
+        updated_at:new Date().toISOString()
+      },{onConflict:'user_id,namespace,item_key'}).select('updated_at').single();
+      if(error)throw error;
+      if(id!==userId||epoch!==generation)return;
+      lastCloudAt=data?.updated_at||lastCloudAt;
+      try{localStorage.removeItem(META_KEY)}catch{}
+      markStatus('Synced','Workspace saved to your account.');
+    }).catch(error=>{
+      if(id!==userId||epoch!==generation)return;
+      dirty=true;
+      console.warn('ZuzuOS desktop preferences sync:',error?.message||error);
+      markStatus('Offline changes','Saved on this device; cloud sync will retry.');
     });
-    await chain;
-    if (id === userId) notify('Desktop preferences synced to your account.');
+    await inflight;
   }
-  async function syncUser(user) {
-    const db = client();
-    if (!db || !user?.id) return;
-    userId = user.id;
-    ready = false;
-    try {
-      const { data, error } = await db.from('user_data').select('value')
-        .eq('user_id', user.id).eq('namespace', 'desktop').eq('item_key', 'state').maybeSingle();
-      if (error) throw error;
-      if (userId !== user.id) return;
-      const cloud = data?.value;
-      if (cloud && typeof cloud === 'object' && !Array.isArray(cloud)) {
-        restoring = true;
-        for (const key of KEYS) {
-          if (typeof cloud[key] === 'string') localStorage.setItem(key, cloud[key]);
-          else localStorage.removeItem(key);
-        }
-        restoring = false;
-        // One-time migration to the requested Windows desktop layout.
-        if (localStorage.getItem('zuzu:windows-remake-v1') !== 'true') {
-          restoring = true;
-          localStorage.setItem('zuzu:shell-style', JSON.stringify('windows'));
-          localStorage.setItem('zuzu:windows-remake-v1', 'true');
-          restoring = false;
-        }
-        // Re-apply settings that are read by the UI scripts after login.
-        const style = JSON.parse(localStorage.getItem('zuzu:shell-style') || '"windows"');
-        document.getElementById('desktop')?.setAttribute('data-shell-style', style);
-        document.documentElement.dataset.shellStyle = style;
-        document.body.dataset.shellStyle = style;
-        const theme = JSON.parse(localStorage.getItem('zuzu:theme-preset') || '"cine"');
-        const wallpaper = JSON.parse(localStorage.getItem('zuzu:wallpaper') || '"none"');
-        document.documentElement.dataset.themePreset = theme;
-        document.body.dataset.themePreset = theme;
-        const accents = JSON.parse(localStorage.getItem('zuzu:accent') || 'null');
-        if (accents) document.documentElement.style.setProperty('--accent', accents);
-        if (typeof window.zuzuApplySyncedDesktop === 'function') window.zuzuApplySyncedDesktop({style, theme, wallpaper, accent:accents});
-      } else {
-        ready = true;
-        await persist(user.id);
+  function applyRemote(state){
+    if(!state||typeof state!=='object'||Array.isArray(state))return;
+    restoring=true;
+    try{
+      for(const key of KEYS){
+        if(typeof state[key]==='string')localStorage.setItem(key,state[key]);
       }
-      ready = true;
-      notify('Desktop preferences synced to your account.');
-    } catch (error) {
-      restoring = false;
-      console.warn('ZuzuOS desktop sync unavailable:', error?.message || error);
-      ready = true;
-      notify('Desktop sync unavailable. Local changes are still saved.');
+    }finally{restoring=false;}
+    let style='cine',theme='cine',wallpaper='none',accent=null;
+    try{style=JSON.parse(read('zuzu:shell-style')||'"cine"')}catch{}
+    try{theme=JSON.parse(read('zuzu:theme-preset')||'"cine"')}catch{}
+    try{wallpaper=JSON.parse(read('zuzu:wallpaper')||'"none"')}catch{}
+    try{accent=JSON.parse(read('zuzu:accent')||'null')}catch{}
+    if(typeof window.zuzuApplySyncedDesktop==='function'){
+      window.zuzuApplySyncedDesktop({style,theme,wallpaper,accent});
     }
+    const chosen=read('zuzu:background:selected:v2');
+    if(chosen&&window.ZuzuBackgrounds?.select)window.ZuzuBackgrounds.select(chosen);
+    const name=read('zuzu:os-label');
+    if(name&&document.querySelector('.top-brand'))document.querySelector('.top-brand').dataset.syncName='1';
   }
-  window.zuzuApplySyncedDesktop = function({style, theme, wallpaper, accent} = {}) {
-    const safeStyle = ['cine','windows','macos'].includes(style) ? style : 'windows';
-    document.getElementById('desktop')?.setAttribute('data-shell-style', safeStyle);
-    document.documentElement.dataset.shellStyle = safeStyle;
-    document.body.dataset.shellStyle = safeStyle;
-    const startMark = document.querySelector('#os-start-button .os-start-mark');
-    if (startMark) {
-      startMark.classList.toggle('os-windows-logo', safeStyle === 'windows');
-      startMark.innerHTML = safeStyle === 'windows' ? '<i></i><i></i><i></i><i></i>' : 'z.';
-    }
-    const palettes = {
-      cine: {bg:'#07080b', panel:'#111319', accent:'#9bc4ff'},
-      oled: {bg:'#000000', panel:'#090909', accent:'#ffffff'},
-      graphite: {bg:'#0c0d0f', panel:'#17191d', accent:'#a7b0bf'},
-      crimson: {bg:'#090607', panel:'#171012', accent:'#e58b98'},
-      midnight: {bg:'#060910', panel:'#101725', accent:'#8cb8ff'}
-    };
-    const palette = palettes[theme] || palettes.cine;
-    document.documentElement.dataset.themePreset = theme in palettes ? theme : 'cine';
-    document.body.dataset.themePreset = document.documentElement.dataset.themePreset;
-    document.documentElement.style.setProperty('--bg', palette.bg);
-    document.documentElement.style.setProperty('--panel-solid', palette.panel);
-    document.documentElement.style.setProperty('--accent', accent || palette.accent);
-    document.documentElement.style.setProperty('--accent-strong', accent || palette.accent);
-    const desk = document.getElementById('desktop');
-    const wallpaperName = ['silent-shore','aurora','obsidian','afterglow'].includes(wallpaper) ? wallpaper : 'none';
-    if (desk && wallpaperName !== 'none') {
-      const img = 'url("assets/wallpapers/' + wallpaperName + '.svg")';
-      desk.style.backgroundImage = 'linear-gradient(180deg,#07111b22 0%,#07111b05 40%,#03070d45 100%),' + img;
-      desk.style.backgroundSize = 'cover';
-      desk.style.backgroundAttachment = 'fixed';
-    }
-  };
-  const originalSetItem = Storage.prototype.setItem;
-  Storage.prototype.setItem = function(key, value) {
-    originalSetItem.call(this, key, value);
-    if (this !== localStorage || restoring || !KEYS.includes(String(key)) || !ready || !userId) return;
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => { void persist(userId); }, 450);
-  };
-  const originalRemoveItem = Storage.prototype.removeItem;
-  Storage.prototype.removeItem = function(key) {
-    originalRemoveItem.call(this, key);
-    if (this !== localStorage || restoring || !KEYS.includes(String(key)) || !ready || !userId) return;
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => { void persist(userId); }, 450);
-  };
-  function start() {
-    const db = client();
-    if (!db) return;
-    db.auth.onAuthStateChange((event, session) => {
-      setTimeout(() => {
-        if (session?.user) void syncUser(session.user);
-        else { userId = null; ready = false; }
-      }, 0);
-    });
-    db.auth.getSession().then(({data}) => {
-      if (data?.session?.user) void syncUser(data.session.user);
-    }).catch(() => {});
+  async function pull(id,epoch,initial=false){
+    const db=client();
+    if(!db||pulling)return;
+    pulling=true;
+    try{
+      const {data,error}=await db.from('user_data').select('value,updated_at')
+        .eq('user_id',id).eq('namespace','desktop').eq('item_key','state').maybeSingle();
+      if(error)throw error;
+      if(id!==userId||epoch!==generation)return;
+      if(data?.updated_at&&data.updated_at!==lastCloudAt&&!dirty&&!read(META_KEY)){
+        applyRemote(data.value);
+        lastCloudAt=data.updated_at;
+      }else if(initial&&!data){
+        dirty=true;
+        await push();
+      }
+      if(!dirty)markStatus('Synced','Workspace synced with your account.');
+    }catch(error){
+      if(id!==userId||epoch!==generation)return;
+      console.warn('ZuzuOS desktop sync unavailable:',error?.message||error);
+      markStatus('Offline changes','Working locally; sync will retry when connected.');
+    }finally{pulling=false;}
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
-  else start();
+  async function setUser(user) {
+    const next=user?.id||null;
+    if(next===userId&&ready)return;
+    ++generation;
+    clearTimeout(timer);
+    userId=next;ready=false;dirty=false;lastCloudAt='';
+    if(!next){markStatus('Not signed in','Sign in to sync desktop preferences.');return;}
+    markStatus('Connecting','Loading your desktop settings…');
+    ready=true;
+    if(read(META_KEY)==='1')dirty=true;
+    await pull(next,generation,true);
+    if(dirty)await push();
+  }
+  window.zuzuApplySyncedDesktop=function({style,theme,wallpaper,accent}={}){
+    if(['cine','windows','macos'].includes(style)){
+      const el=document.getElementById('desktop');
+      if(el)el.dataset.shellStyle=style;
+      document.documentElement.dataset.shellStyle=style;
+      document.body.dataset.shellStyle=style;
+      const select=document.getElementById('shell-layout-choice');
+      if(select)select.value=style;
+    }
+    if(typeof theme==='string'){
+      document.documentElement.dataset.themePreset=theme;
+      document.body.dataset.themePreset=theme;
+    }
+    if(typeof accent==='string'&&/^#[0-9a-fA-F]{3,8}$/.test(accent))
+      document.documentElement.style.setProperty('--accent',accent);
+    const bgIds={aurora:'photo-aurora',obsidian:'photo-obsidian',afterglow:'photo-afterglow','silent-shore':'photo-shore'};
+    if(bgIds[wallpaper])window.ZuzuBackgrounds?.select(bgIds[wallpaper]);
+  };
+  const originalSet=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(key,value){
+    originalSet.call(this,key,value);
+    if(this===localStorage&&KEYS.includes(String(key))&&!restoring)schedule();
+  };
+  const originalRemove=Storage.prototype.removeItem;
+  Storage.prototype.removeItem=function(key){
+    originalRemove.call(this,key);
+    if(this===localStorage&&KEYS.includes(String(key))&&!restoring)schedule();
+  };
+  function init(){
+    const db=client();
+    if(!db)return;
+    db.auth.onAuthStateChange((_event,session)=>setTimeout(()=>{void setUser(session?.user)},0));
+    db.auth.getSession().then(({data})=>setUser(data?.session?.user)).catch(e=>console.warn('ZuzuOS session sync:',e));
+    window.addEventListener('online',()=>{if(userId&&dirty)void push();else if(userId)void pull(userId,generation)});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden&&userId&&!dirty)void pull(userId,generation)});
+  }
+  window.zuzuCloudSync={save:()=>{dirty=true;return push()},refresh:()=>userId?pull(userId,generation):Promise.resolve(),get status(){return {signedIn:Boolean(userId),dirty,ready}}};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();

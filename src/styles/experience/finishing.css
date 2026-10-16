@@ -1,0 +1,35 @@
+/* Consistent desktop typography and dock icon surfaces. */
+:root{--zu-font:"Manrope","Segoe UI Variable","Segoe UI",system-ui,sans-serif}
+body,.auth-screen,.setup-screen,#desktop.zu-scene,.zu-arcade-window{
+ font-family:var(--zu-font)!important;font-feature-settings:"ss01" on;
+ -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+#desktop.zu-scene .zu-weekday{font-family:var(--zu-font)!important;font-weight:350;letter-spacing:.19em}
+#desktop.zu-scene .zu-ident{font-family:var(--zu-font)!important}
+#desktop.zu-scene .os-start-menu,#desktop.zu-scene .os-window,#desktop.zu-scene #app-window,#desktop.zu-scene .zu-panel{font-family:var(--zu-font)!important}
+#desktop.zu-scene .taskbar{gap:5px!important;background:rgba(9,11,15,.91)!important;border-radius:15px!important}
+#desktop.zu-scene .taskbar .task-app{
+ width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+ flex-basis:42px!important;border-radius:10px!important;
+ border:1px solid #ffffff0e!important;background:#ffffff06!important;
+ transition:background .16s ease,transform .16s cubic-bezier(.2,.7,.2,1),border-color .16s ease;
+}
+#desktop.zu-scene .taskbar .task-app:hover{
+ background:#ffffff16!important;border-color:#ffffff25!important;transform:translateY(-3px);
+}
+#desktop.zu-scene .taskbar .task-app:active{transform:scale(.95)}
+#desktop.zu-scene .taskbar .task-app[data-app="music"],
+#desktop.zu-scene .taskbar .task-app[data-os-dock="music"]{color:#54db91!important;background:#0c2017!important}
+#desktop.zu-scene .taskbar .task-app[data-app="browser"],
+#desktop.zu-scene .taskbar .task-app[data-os-dock="browser"]{color:#7ec5ff!important;background:#10202f!important}
+#desktop.zu-scene .taskbar .task-app[data-app="settings"]{color:#b8bec7!important;background:#1a1e24!important}
+#desktop.zu-scene .taskbar .task-app[data-app="cinehub"],
+#desktop.zu-scene .taskbar .task-app[data-os-dock="cinehub"]{color:#e38b90!important;background:#29171d!important}
+#desktop.zu-scene .taskbar .task-app[data-app="files"]{color:#e5c574!important;background:#252114!important}
+#desktop.zu-scene .taskbar .task-app[data-app="notes"]{color:#c2acff!important;background:#211b30!important}
+#desktop.zu-scene .taskbar .zu-arcade-dock{color:#9fcbff!important;background:#11233a!important}
+#desktop.zu-scene .os-window,#desktop.zu-scene #app-window{transition:box-shadow .15s ease,border-color .15s ease}
+#desktop.zu-scene .zu-panel{border-radius:11px!important}
+@media(max-width:540px){#desktop.zu-scene .taskbar{gap:1px!important}
+ #desktop.zu-scene .taskbar .task-app{width:34px!important;min-width:34px!important;flex-basis:34px!important}}
+@media(prefers-reduced-motion:reduce){#desktop.zu-scene .taskbar .task-app{transition:none!important}}

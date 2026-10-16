@@ -1,0 +1,23 @@
+/* Arcade: original offline mini-games inspired by YukiOS's game library concept. */
+#desktop .zu-arcade-overlay[hidden]{display:none!important}
+#desktop .zu-arcade-overlay{position:fixed!important;inset:0;z-index:240!important;display:grid;place-items:center;padding:15px;background:#000b;backdrop-filter:blur(10px)}
+.zu-arcade-window{width:min(480px,100%);max-height:calc(100dvh - 30px);display:flex;flex-direction:column;overflow:hidden;border:1px solid #ffffff2a;border-radius:14px;background:#101216;color:#e7ebf0;box-shadow:0 35px 100px #000e;font-family:"Segoe UI Variable","Segoe UI",system-ui,sans-serif}
+.zu-arcade-head,.zu-game-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 17px;border-bottom:1px solid #ffffff16}
+.zu-arcade-brand{display:flex;align-items:center;gap:10px}.zu-arcade-brand>div{display:grid;gap:3px}.zu-arcade-brand strong{font-size:13px}.zu-arcade-brand small{font:600 9px Consolas,monospace;color:#888f9a;letter-spacing:.12em}
+.zu-arcade-icon{width:33px;height:33px;border:1px solid #ffffff18;display:grid;place-items:center;border-radius:9px;background:#232a35;color:#afc9e7}
+.zu-game-close,.zu-game-footer button{border:1px solid #ffffff29;border-radius:8px;background:#20242b;color:#dbe4f0;cursor:pointer;padding:7px 11px}
+.zu-game-close{font-size:22px;line-height:22px}.zu-game-close:hover,.zu-game-footer button:hover{background:#333b46}
+.zu-arcade-tabs{display:flex;gap:6px;padding:12px 17px;border-bottom:1px solid #ffffff16}
+.zu-arcade-tabs button{flex:1;padding:10px;border:1px solid #ffffff16;border-radius:8px;background:#191c22;color:#929da9;cursor:pointer;font-weight:650}
+.zu-arcade-tabs button[aria-pressed=true]{background:#293341;color:#e7f0ff;border-color:#7894b355}
+.zu-game-area{overflow:auto;padding:17px;display:grid;gap:13px;justify-items:center}
+.zu-tiles-stats{display:flex;gap:8px;width:min(360px,100%)}.zu-tiles-stats>div{flex:1;padding:9px 13px;display:grid;gap:5px;border:1px solid #ffffff16;background:#1a1e25;border-radius:8px}.zu-tiles-stats small{font:600 9px Consolas,monospace;color:#9ba7b6}.zu-tiles-stats strong{font-size:20px}
+.zu-tiles-grid,.zu-memory-grid{width:min(360px,100%);aspect-ratio:1;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:9px;background:#1c2027;border-radius:10px;border:1px solid #ffffff17}
+.zu-tile{display:grid;place-items:center;background:#2b3039;border-radius:6px;font-weight:760;font-size:clamp(15px,4vw,26px);color:#f4f7fa}.zu-tile.n0{background:#ffffff0a}.zu-tile.n2{background:#394554}.zu-tile.n4{background:#435568}.zu-tile.n8{background:#4a6179}.zu-tile.n16,.zu-tile.n32{background:#546c82}.zu-tile.n64,.zu-tile.n128{background:#74879e}.zu-tile.n256,.zu-tile.n512,.zu-tile.n1024,.zu-tile.n2048{background:#abbfd1;color:#111922}
+.zu-game-hint{font-size:11px;color:#939eac;margin:0;text-align:center;line-height:1.55}
+.zu-game-pad{display:flex;gap:8px}.zu-game-pad button{width:45px;height:35px;background:#222831;color:#dce6f0;border:1px solid #ffffff2a;border-radius:8px;cursor:pointer}.zu-game-pad button:hover{background:#364456}
+.zu-memory-card{display:grid;place-items:center;font-size:clamp(18px,5vw,29px);border:1px solid #ffffff20;border-radius:6px;background:#2b313b;color:#e5edf6;cursor:pointer}.zu-memory-card.faceup{background:#3b536b}.zu-memory-card.matched{background:#3d635c}
+.zu-game-footer{border-bottom:0;border-top:1px solid #ffffff16;font-size:10px;color:#939eac}
+#desktop .taskbar .zu-arcade-dock svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#desktop .taskbar .zu-arcade-dock{display:grid!important}
+@media(max-width:420px){.zu-game-area{padding:10px}.zu-arcade-head{padding:11px}}
