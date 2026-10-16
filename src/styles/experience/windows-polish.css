@@ -1,0 +1,28 @@
+/* ZuzuOS Windows-style shell refinement: layered after existing styles. */
+#desktop.zu-scene{font-family:"Segoe UI Variable","Segoe UI",system-ui,sans-serif!important}
+#desktop.zu-scene .zu-time-head{top:28px;opacity:.85}
+#desktop.zu-scene .zu-rail{top:105px}
+#desktop.zu-scene .taskbar{bottom:0!important;left:0!important;right:0!important;transform:none!important;width:100%!important;max-width:100%!important;height:56px!important;min-height:56px!important;border-radius:0!important;border:0!important;border-top:1px solid #ffffff23!important;background:rgba(19,24,34,.88)!important;justify-content:center!important;gap:5px!important}
+#desktop.zu-scene .taskbar .task-app,#desktop.zu-scene #os-start-button{width:44px!important;height:42px!important;flex-basis:44px!important;border-radius:7px!important}
+#desktop.zu-scene #os-start-button{background:transparent!important;color:#e5f2ff!important}
+#desktop.zu-scene #os-start-button .zu-icon{display:none!important}
+#desktop.zu-scene #os-start-button::before{content:"";width:26px;height:26px;display:block;background:linear-gradient(90deg,#35a0f6 48%,transparent 48% 52%,#35a0f6 52%),linear-gradient(#35a0f6 48%,transparent 48% 52%,#35a0f6 52%);background-blend-mode:normal;clip-path:polygon(0 7%,100% 0,100% 100%,0 93%);border-radius:1px}
+#desktop.zu-scene #os-start-menu{bottom:68px!important;width:min(620px,calc(100vw - 22px))!important;padding:30px 30px 12px!important;border-radius:12px!important;background:rgba(29,35,48,.97)!important;border:1px solid #ffffff24!important;box-shadow:0 18px 70px #000b!important}
+#desktop.zu-scene .os-search{background:#202939!important;border:1px solid #ffffff28!important;border-bottom:2px solid #5caaf1!important;border-radius:6px!important}
+#desktop.zu-scene .os-launch-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:8px!important;max-height:40vh!important;overflow:auto}
+#desktop.zu-scene .os-launch-item{min-height:87px!important;padding:8px 3px!important;display:flex;flex-direction:column!important;align-items:center;justify-content:center;text-align:center;gap:5px!important}
+#desktop.zu-scene .os-launch-item>span:first-child{background:transparent!important;width:36px;height:36px;display:grid;place-items:center;color:#e4eefc!important}
+#desktop.zu-scene .os-launch-item>span:first-child svg{width:30px!important;height:30px!important}
+#desktop.zu-scene .os-launch-item strong{font-size:11px!important;font-weight:500}
+#desktop.zu-scene .os-launch-item small{display:none!important}
+#desktop.zu-scene .os-start-bottom{margin-top:16px!important;background:#171d29!important;padding:12px!important;border-radius:0 0 8px 8px}
+#desktop.zu-scene .taskbar .zuzu-icon,#desktop.zu-scene .taskbar .zu-icon{width:25px!important;height:25px!important}
+#desktop.zu-scene .taskbar .task-app[data-app]{color:#cbdfff!important}
+#desktop.zu-scene .zu-desktop-shortcuts{position:absolute;z-index:8;top:100px;left:20px;display:grid;grid-auto-flow:column;grid-template-rows:repeat(6,92px);gap:8px;pointer-events:auto}
+#desktop.zu-scene .zu-desktop-shortcut{width:80px;height:88px;background:transparent!important;border:1px solid transparent!important;border-radius:5px;color:#f4f7ff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:9px 5px;gap:7px;text-shadow:0 1px 4px #000}
+#desktop.zu-scene .zu-desktop-shortcut:hover,#desktop.zu-scene .zu-desktop-shortcut:focus-visible{background:#ffffff23!important;border-color:#ffffff40!important}
+#desktop.zu-scene .zu-desktop-shortcut svg{width:36px;height:36px;flex:none}
+#desktop.zu-scene .zu-desktop-shortcut span{font-size:11px;text-align:center;line-height:1.25}
+#desktop.zu-scene .zu-app-icon svg{width:100%;height:100%;display:block}
+@media(max-width:850px){#desktop.zu-scene .zu-desktop-shortcuts{top:95px;grid-template-rows:repeat(4,82px)}#desktop.zu-scene .zu-rail{display:none!important}#desktop.zu-scene .os-launch-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}#desktop.zu-scene #os-start-menu{padding:16px!important}}
+@media(prefers-reduced-motion:reduce){#desktop.zu-scene .taskbar button,#desktop.zu-scene #os-start-menu{animation:none!important;transition:none!important}}
