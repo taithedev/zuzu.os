@@ -84,3 +84,124 @@ body,.auth-screen,.setup-screen,#desktop.zu-scene,.zu-arcade-window{
 @media(prefers-reduced-motion:reduce){
   #desktop.zu-scene .zu-panel{transition:none!important}
 }
+
+
+/* Brighter Yuki/Cine-inspired gaming desktop, without obscuring wallpapers. */
+:root{--zu-surface:#171e29;--zu-elevated:#202a39;--zu-secondary:#c1cbd8;--zu-subtle:#9ba9b9}
+#desktop.zu-scene .taskbar{
+ background:rgba(21,29,42,.89)!important;
+ border-color:rgba(201,220,246,.32)!important;
+ box-shadow:0 14px 48px #0009,inset 0 1px rgba(255,255,255,.16)!important;
+}
+#desktop.zu-scene .taskbar .task-app{
+ border-color:rgba(209,224,245,.17)!important;
+ box-shadow:inset 0 1px rgba(255,255,255,.07)!important;
+}
+#desktop.zu-scene .taskbar .task-app:hover{
+ background:#ffffff26!important;
+ border-color:rgba(212,231,255,.45)!important;
+ box-shadow:0 5px 19px #0008!important;
+}
+#desktop.zu-scene .zu-panel{
+ background:linear-gradient(125deg,rgba(36,48,66,.88),rgba(20,27,39,.85))!important;
+ border-color:rgba(208,229,255,.28)!important;
+ box-shadow:0 10px 35px #0008,inset 0 1px rgba(255,255,255,.11)!important;
+}
+#desktop.zu-scene .zu-panel:hover{border-color:#ffffff7a!important;background:rgba(44,59,80,.96)!important}
+#desktop.zu-scene .zu-panel-mark{background:#1e3049;border-color:#ffffff2a}
+#desktop.zu-scene .zu-panel-text strong{color:#f5f8fd}
+#desktop.zu-scene .zu-panel-text small{color:#c5d3e4}
+#desktop.zu-scene .zu-overline{color:#d0dceb}
+#desktop.zu-scene .zu-date{color:#e0e8f5}
+#desktop.zu-scene .zu-weekday{color:#fff;text-shadow:0 2px 20px #000}
+#desktop.zu-scene .zu-settings-active{padding:0!important;background:#111924;color:#eff5ff;max-height:calc(82vh - 49px)!important;min-height:280px;overflow:hidden!important}
+#desktop.zu-scene #app-window:has(.zu-settings-active){
+ width:min(985px,calc(100vw - 32px))!important;
+ max-height:min(85vh,840px)!important;
+ top:7%!important;
+ border-color:#a1bfe14f!important;
+ background:#111927!important;
+ box-shadow:0 24px 96px #000c,0 0 0 1px #d4e7ff08!important;
+}
+#desktop.zu-scene .zu-settings-active>.zuzu-settings-hero{
+ margin:0;padding:18px 24px 13px!important;background:#172338;border-bottom:1px solid #dcecff1e;
+}
+#desktop.zu-scene .zu-settings-active>.zuzu-settings-hero h2{font-size:19px!important;color:#f7fbff}
+#desktop.zu-scene .zu-settings-active>.zuzu-settings-hero p{color:#b4c4d5!important}
+#desktop.zu-scene .zu-settings-layout{display:grid;grid-template-columns:238px minmax(0,1fr);min-height:350px;height:min(67vh,620px)}
+#desktop.zu-scene .zu-settings-sidebar{
+ display:flex;flex-direction:column;gap:7px;padding:17px 11px;
+ background:linear-gradient(170deg,#1d2b3d,#141d2a);
+ border-right:1px solid #dceeff23;overflow:auto;
+}
+#desktop.zu-scene .zu-settings-nav{
+ appearance:none;display:flex;width:100%;gap:12px;align-items:center;
+ text-align:left;padding:12px 11px;border:1px solid transparent;border-radius:10px;
+ color:#c0cede;background:transparent;cursor:pointer;
+ transition:background .16s,border-color .16s,transform .16s;
+}
+#desktop.zu-scene .zu-settings-nav:hover{color:#fff;background:#ffffff13}
+#desktop.zu-scene .zu-settings-nav.active,
+#desktop.zu-scene .zu-settings-nav[aria-pressed="true"]{
+ color:#fff;border-color:#8abcf860;
+ background:linear-gradient(100deg,#35608a7c,#213e6177);
+ box-shadow:inset 3px 0 #95cfff;
+}
+#desktop.zu-scene .zu-settings-nav-icon{
+ width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;
+ border:1px solid #dceaff27;background:#8aa9d21a;border-radius:9px;
+ font-size:19px;color:#bcd8ff;
+}
+#desktop.zu-scene .zu-settings-nav-label{display:grid;gap:3px;min-width:0}
+#desktop.zu-scene .zu-settings-nav-label strong{font-size:12px;font-weight:760}
+#desktop.zu-scene .zu-settings-nav-label small{font-size:9px;color:#adbdcf;line-height:1.35}
+#desktop.zu-scene .zu-settings-sidebar>.app-actions{margin-top:auto;padding:15px 5px 4px;border-top:1px solid #ffffff1b}
+#desktop.zu-scene .zu-settings-main{overflow:auto;padding:20px 26px 32px;scrollbar-color:#7085a3 #151e2b}
+#desktop.zu-scene .zu-settings-page[hidden]{display:none!important}
+#desktop.zu-scene .zu-settings-page-heading{padding-bottom:17px;border-bottom:1px solid #d7e7ff20}
+#desktop.zu-scene .zu-settings-page-heading>span{font:700 10px Consolas,monospace;letter-spacing:.12em;color:#8fbdf4}
+#desktop.zu-scene .zu-settings-page-heading h3{margin:6px 0;font-size:24px;font-weight:730;letter-spacing:-.035em;color:#f7faff}
+#desktop.zu-scene .zu-settings-page-heading p{margin:0;font-size:11px;color:#b9c9d9}
+#desktop.zu-scene .zu-settings-page>.setting-section{margin:12px 0;padding:17px 0;border-bottom:1px solid #d2e5ff18}
+#desktop.zu-scene .zu-settings-page>.setting-section:last-child{border-bottom:0}
+#desktop.zu-scene .zu-settings-page .setting-section h3{font-size:13px;color:#e9f2ff}
+#desktop.zu-scene .zu-settings-page .setting-row{padding:10px 13px;margin:7px 0;background:#22304785;border:1px solid #c5ddfa20;border-radius:10px;gap:14px}
+#desktop.zu-scene .zu-settings-page .setting-row strong{font-size:12px;color:#f4f9ff}
+#desktop.zu-scene .zu-settings-page .setting-row p{color:#adbdcf;font-size:10px}
+#desktop.zu-scene .zu-settings-page input:not([type="range"]),
+#desktop.zu-scene .zu-settings-page select,
+#desktop.zu-scene .zu-settings-page textarea{
+ border-radius:8px!important;border:1px solid #9fbee456!important;
+ background:#121c2a!important;color:#f5f9ff!important;
+ min-height:37px;padding:9px 11px!important;outline:0;
+}
+#desktop.zu-scene .zu-settings-page input:focus,
+#desktop.zu-scene .zu-settings-page select:focus,
+#desktop.zu-scene .zu-settings-page textarea:focus{border-color:#91c6ff!important;box-shadow:0 0 0 3px #83baff22!important}
+#desktop.zu-scene .zu-settings-page .app-form{gap:11px}
+#desktop.zu-scene .zu-settings-page .app-form label{color:#cedbea}
+#desktop.zu-scene .zu-settings-page button.primary{background:#c4e1ff!important;color:#0b1b2e!important;border-color:#dcecff88!important;font-weight:700}
+#desktop.zu-scene .zu-settings-page button.primary:hover{background:#e9f5ff!important}
+#desktop.zu-scene .zu-settings-page button.secondary{border:1px solid #c3def448!important;background:#273b54!important;color:#edf6ff!important}
+#desktop.zu-scene .zu-settings-page .muted{color:#b0c0d1}
+#desktop.zu-scene .zu-settings-page .zuzu-motion-settings{background:#1a2941;border:1px solid #c4dafa24;border-radius:12px;padding:12px;margin-top:14px}
+#desktop.zu-scene .zu-settings-page .setting-row label{width:min(190px,43%);flex-shrink:0}
+#desktop.zu-scene .zu-settings-page .setting-row label input,
+#desktop.zu-scene .zu-settings-page .setting-row label select{width:100%}
+#desktop.zu-scene #os-start-menu{background:rgba(22,32,49,.97)!important;border-color:#dbe9fb4c!important}
+#desktop.zu-scene #os-start-menu .os-launch-item:hover{background:#a8cffa23!important}
+#desktop.zu-scene .os-window,#desktop.zu-scene #app-window{border-color:#b7d6f850!important}
+#desktop.zu-scene .os-window-bar,#desktop.zu-scene .window-bar{background:#24334a!important}
+@media(max-width:730px){
+ #desktop.zu-scene .zu-settings-layout{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);height:69vh}
+ #desktop.zu-scene .zu-settings-sidebar{flex-direction:row;flex-wrap:wrap;padding:9px;gap:5px;border-right:0;border-bottom:1px solid #dceeff23;overflow:visible}
+ #desktop.zu-scene .zu-settings-nav{width:auto;flex:1 1 85px;min-width:85px;padding:8px;justify-content:center;gap:6px}
+ #desktop.zu-scene .zu-settings-nav-icon{display:none}
+ #desktop.zu-scene .zu-settings-nav-label small{display:none}
+ #desktop.zu-scene .zu-settings-sidebar>.app-actions{display:none}
+ #desktop.zu-scene .zu-settings-main{padding:15px 14px}
+ #desktop.zu-scene .zu-settings-active>.zuzu-settings-hero{padding:12px 15px!important}
+ #desktop.zu-scene .zu-settings-page .setting-row{flex-wrap:wrap}
+ #desktop.zu-scene .zu-settings-page .setting-row label{width:100%}
+}
+@media(prefers-reduced-motion:reduce){#desktop.zu-scene .zu-settings-nav{transition:none}}
