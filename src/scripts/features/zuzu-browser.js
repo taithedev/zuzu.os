@@ -232,6 +232,20 @@
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='t') { e.preventDefault(); createTab(); $('zb-address-input')?.focus(); }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='w') { e.preventDefault(); if(tabs.length>1) closeTab(current().id); }
   });
+  window.ZuzuBrowser = { open: async (address) => {
+    const button = document.querySelector('#desktop [data-app="browser"]');
+    if (!button) return false;
+    button.click();
+    // The browser widget restores cloud bookmarks asynchronously before rendering.
+    for (let i=0;i<25;i++) {
+      await new Promise(resolve=>setTimeout(resolve,100));
+      if ($('zb-address-form') && !$('app-window')?.classList.contains('hidden')) {
+        go(address);
+        return true;
+      }
+    }
+    return false;
+  }};
   // The first click handler runs after the existing app renderer; this also supports Start-menu launches.
   document.addEventListener('click', e => {
     const target=e.target.closest('[data-app="browser"],[data-os-launch="browser"],[data-install="browser"]');
