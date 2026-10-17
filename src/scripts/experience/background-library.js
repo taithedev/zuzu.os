@@ -29,7 +29,7 @@
   let personalUrls = new Map();
   let wallpaperEpoch = 0;
   let refreshSequence = 0;
-  const BUCKET='zuzu-wallpapers';
+  const BUCKET='zuzuos_wallpapers';
   const maxUpload=50*1024*1024;
   const client=()=>window.zuzuOSAuth?.client||null;
   const canPlay = () => !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
