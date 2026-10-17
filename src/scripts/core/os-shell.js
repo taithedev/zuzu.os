@@ -39,7 +39,22 @@ function init(){
  menu.id='os-start-menu';desktop.appendChild(menu);
  menu.querySelector('#os-launch-grid').innerHTML=apps.map(a=>'<button class="os-launch-item" data-os-launch="'+a[0]+'"><span>'+a[2]+'</span><span><strong>'+esc(a[1])+'</strong><small>'+esc(a[3])+'</small></span></button>').join('');
  const layer=el('div','os-window-layer');layer.id='os-window-layer';desktop.appendChild(layer);
- start.onclick=()=>menu.classList.toggle('hidden');menu.querySelector('#os-start-close').onclick=()=>menu.classList.add('hidden');
+ start.onclick=()=>{
+  const opening=menu.classList.contains('hidden');
+  menu.classList.toggle('hidden');
+  start.setAttribute('aria-expanded',String(opening));
+ };
+ start.setAttribute('aria-controls','os-start-menu');
+ start.setAttribute('aria-expanded','false');
+ menu.querySelector('#os-start-close').onclick=()=>{
+  menu.classList.add('hidden');start.setAttribute('aria-expanded','false');
+ };
+ document.addEventListener('pointerdown',event=>{
+  if(menu.classList.contains('hidden'))return;
+  if(event.target.closest('#os-start-menu,#os-start-button'))return;
+  menu.classList.add('hidden');
+  start.setAttribute('aria-expanded','false');
+ });
  menu.querySelector('#os-signout').onclick=()=>document.getElementById('sign-out')?.click();
  menu.querySelector('#os-search-input').oninput=e=>{
   const search=e.target.value.trim().toLocaleLowerCase();
