@@ -14,7 +14,7 @@
     try {
       const { data: { user }, error: authError } = await client.auth.getUser();
       if (authError || !user) return;
-      const { error } = await client.from('user_data').upsert({
+      const { error } = await client.from('zuzuos_user_data').upsert({
         user_id: user.id, namespace: 'browser', item_key: itemKey, value
       }, { onConflict: 'user_id,namespace,item_key' });
       if (error) console.warn('Browser cloud sync:', error.message);
@@ -28,7 +28,7 @@
     try {
       const { data: { user }, error: authError } = await client.auth.getUser();
       if (authError || !user) return;
-      const { data, error } = await client.from('user_data')
+      const { data, error } = await client.from('zuzuos_user_data')
         .select('item_key,value')
         .eq('user_id', user.id)
         .eq('namespace', 'browser')
