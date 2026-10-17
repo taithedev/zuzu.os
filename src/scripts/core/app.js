@@ -35,11 +35,16 @@
     toast.timer = setTimeout(() => el.classList.add('hidden'), 2800);
   }
   function showAuth() {
+    // Close overlays from the previous account before displaying login.
     $('reset-password-screen')?.classList.add('hidden');
-    $('auth-screen').classList.remove('hidden');
+    $('setup-screen')?.classList.add('hidden');
+    $('zu-pin-screen')?.classList.add('hidden');
     $('desktop').classList.add('hidden');
     $('account-menu').classList.add('hidden');
     $('app-window').classList.add('hidden');
+    if ($('password')) $('password').value = '';
+    if ($('zu-confirm-password')) $('zu-confirm-password').value = '';
+    $('auth-screen').classList.remove('hidden');
   }
 
   function showPasswordRecovery() {
