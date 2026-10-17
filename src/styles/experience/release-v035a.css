@@ -103,7 +103,7 @@ html:not([data-zu-wallpaper="motion-signal"]) #desktop.zu-scene .zu-reference-mo
 #auth-screen .zu-password-toggle{position:absolute;top:30px;right:9px;display:grid;place-items:center;height:27px;min-width:34px;border:0;border-radius:5px;background:#ffffff13;color:#eff5ff;font-size:10px;cursor:pointer}
 #auth-screen .zu-auth-account-note{font-size:10px;color:#aebbd1;text-align:center;line-height:1.5}
 #auth-screen[data-zu-auth-mode="signup"]{padding-top:42px!important}
-#auth-screen[data-zu-auth-mode="signup"] .auth-card{width:min(500px,100%)!important;max-height:calc(100dvh - 85px);overflow-y:auto;scrollbar-width:thin;border:1px solid #ffffff2c!important;background:rgba(8,14,24,.78)!important;border-radius:18px!important;box-shadow:0 23px 67px #0009!important;backdrop-filter:blur(19px)!important}
+#auth-screen[data-zu-auth-mode="signup"] .auth-card{width:min(500px,100%)!important;max-height:calc(100dvh - 85px)!important;overflow-y:auto!important;scrollbar-width:thin;border:1px solid #ffffff2c!important;background:rgba(8,14,24,.78)!important;border-radius:18px!important;box-shadow:0 23px 67px #0009!important;backdrop-filter:blur(19px)!important}
 #auth-screen[data-zu-auth-mode="signup"] .zu-auth-avatar{height:70px;width:70px;font-size:29px;margin:4px auto}
 #auth-screen[data-zu-auth-mode="signup"] .zu-login-clock{display:none}
 #auth-screen[data-zu-auth-mode="signup"] #auth-form{margin-top:10px!important;gap:9px!important}
