@@ -134,14 +134,14 @@
     mark.appendChild(icon(ic));
     const details = node('span','zu-panel-text');
     const strong = node('strong',null,title);
-    if (label === 'CONTINUE') strong.id='zu-recent-title';
+    if (label === 'JUMP BACK IN') strong.id='zu-recent-title';
     const small = node('small',null,subtitle);
-    if (label === 'CONTINUE') small.id='zu-recent-caption';
+    if (label === 'JUMP BACK IN') small.id='zu-recent-caption';
     details.append(strong,small);
     const end = node('span','zu-panel-end');
     end.appendChild(icon('chevron'));
     button.append(mark,details,end);
-    if (label === 'CONTINUE') button.id = 'zu-resume';
+    if (label === 'JUMP BACK IN') button.id = 'zu-resume';
     section.appendChild(button);
     return section;
   }
@@ -174,11 +174,9 @@
     time.append(day,date);
     const rail = node('aside','zu-rail');
     rail.setAttribute('aria-label','Desktop quick actions');
-    rail.appendChild(panel('PLAY',null,'start','is-cyan','Arcade','2048 · Memory','arcade'));
-    rail.appendChild(panel('CONTINUE','browser','browser','is-cyan','Nothing open yet','Open an app to get started'));
+    rail.appendChild(panel('JUMP BACK IN','browser','browser','is-cyan','Nothing open yet','Your recent apps'));
     rail.appendChild(panel('QUICK PLAY','music','music','is-green','Music','Your audio player'));
-    rail.appendChild(panel('APPEARANCE',null,'motion','is-violet','Wallpapers','Motion, images and video','wallpaper'));
-    rail.appendChild(panel('SETTINGS','settings','settings','','Settings','Desktop and account'));
+    rail.appendChild(panel('SYSTEM STATUS',null,'status','','Update Log','View latest patches','updates'));
     const fps = node('span','zu-badge-fps','-- FPS');
     fps.id = 'zu-fps';
     const footer = node('div','zu-foot-left');
