@@ -211,7 +211,7 @@
     const caption = document.querySelector('#auth-screen .auth-caption');
     if (authTitle && authTitle.textContent.trim() === 'Welcome back.') authTitle.textContent='Sign in to ZuzuOS';
     if (authSubtitle) authSubtitle.textContent='Your account, apps, and workspace.';
-    if (caption) caption.textContent='ZUZU.OS   /   WEB DESKTOP   /   v2';
+    if (caption) caption.textContent='ZUZU.OS   /   WEB DESKTOP   /   v0.3.5a';
     const topMeta = document.querySelector('meta[name="theme-color"]');
     if (topMeta) topMeta.content='#030405';
   }
