@@ -532,7 +532,7 @@
       button.disabled = true;
       $('license-activate-status').textContent = 'Validating product key…';
       try {
-        const { data, error } = await db.rpc('os_activate_license', { p_license_key: key });
+        const { data, error } = await db.rpc('zuzuos_activate_license', { p_license_key: key });
         if (error) throw error;
         const entitlement = Array.isArray(data) ? data[0] : data;
         $('license-activate-form').reset();
@@ -555,7 +555,7 @@
         const max = Number($('license-max-activations').value);
         const date = $('license-expires').value;
         const expires = date ? new Date(date + 'T23:59:59.999Z').toISOString() : null;
-        const { data, error } = await db.rpc('os_generate_license_key', {
+        const { data, error } = await db.rpc('zuzuos_generate_license_key', {
           p_plan: plan, p_version: version, p_max_activations: max, p_expires_at: expires
         });
         if (error) throw error;
@@ -586,7 +586,7 @@
       if (!window.confirm('Revoke this license key? Existing activations will no longer be valid for new activations.')) return;
       button.disabled = true;
       try {
-        const { error } = await db.rpc('os_owner_revoke_license', { p_license_id: button.dataset.revokeLicense });
+        const { error } = await db.rpc('zuzuos_owner_revoke_license', { p_license_id: button.dataset.revokeLicense });
         if (error) throw error;
         await loadOwnerLicenseList();
         toast('License key revoked.');
@@ -616,7 +616,7 @@
     $('license-current-plan').textContent = 'Checking edition…';
     try {
       const [{ data: entitlementData, error: entitlementError }, { data: roleData, error: roleError }] = await Promise.all([
-        db.rpc('os_my_entitlement'),
+        db.rpc('zuzuos_my_entitlement'),
         db.from('zuzuos_roles').select('role').eq('user_id', state.user.id).maybeSingle()
       ]);
       if (entitlementError) throw entitlementError;
@@ -642,7 +642,7 @@
     if (!list || !$('license-owner-tools') || $('license-owner-tools').classList.contains('hidden')) return;
     list.textContent = 'Loading issued keys…';
     try {
-      const { data, error } = await db.rpc('os_owner_list_licenses');
+      const { data, error } = await db.rpc('zuzuos_owner_list_licenses');
       if (error) throw error;
       const rows = Array.isArray(data) ? data : [];
       if (!rows.length) { list.textContent = 'No license keys have been generated yet.'; return; }
