@@ -45,12 +45,33 @@ for (const item of manifest.backgrounds || []) {
   }
 }
 check(found.has(manifest.default),'Default wallpaper does not exist in manifest');
+
+check(html.includes('/src/styles/experience/release-v035a.css'),'Missing current desktop stylesheet');
+check(html.includes('/src/scripts/experience/release-v035a.js'),'Missing current desktop controller');
+check(html.includes('id="auth-form"'),'Missing sign-in form');
+check(html.includes('id="os-start-button"') || html.includes('src/scripts/core/os-shell.js'),'Start launcher is unavailable');
+const shell=readFileSync(pathOf('src/scripts/experience/studio-shell.js'),'utf8');
+check(shell.includes("v0.3.5a"),'Version label missing');
+check(!shell.includes("requestAnimationFrame(frame)") && !shell.includes("zu-fps"),'Obsolete FPS sampler was reintroduced');
+const iconManifest=JSON.parse(readFileSync(pathOf('assets/icons/icon-manifest.json'),'utf8'));
+check(iconManifest.version === 1,'Unknown ZuzuOS icon manifest version');
+for (const category of ['apps','windows']) {
+  check(iconManifest[category] && typeof iconManifest[category]==='object','Invalid icon manifest section: '+category);
+  for (const [name,src] of Object.entries(iconManifest[category]||{})) {
+    check(/^[a-z0-9_-]+$/.test(name),'Unsafe registered icon name');
+    check(typeof src==='string' && /^\/assets\/icons\/[a-zA-Z0-9_%./-]+\.png$/.test(src) && !src.includes('..'),'Unsafe icon path: '+src);
+    if (typeof src==='string' && src.startsWith('/assets/icons/')) {
+      check(existsSync(pathOf(decodeURIComponent(src))),'Registered icon file is missing: '+src);
+    }
+  }
+}
+
 scan(pathOf('src/scripts'));
 for (const file of scripts) {
   const result = spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
   if (result.status !== 0) errors.push('JavaScript syntax error: ' + relative(root,file) + '\n' + result.stderr);
 }
-for (const file of ['src/scripts/experience/arcade.js','src/styles/experience/arcade.css','src/styles/experience/finishing.css','src/styles/experience/studio.css','src/styles/experience/wallpapers.css','src/styles/experience/controls.css','assets/icons/ui.svg','assets/graphics/helix-z.svg','vercel.json']) {
+for (const file of ['assets/icons/icon-manifest.json','src/scripts/experience/release-v035a.js','src/styles/experience/release-v035a.css','src/scripts/experience/arcade.js','src/styles/experience/arcade.css','src/styles/experience/finishing.css','src/styles/experience/studio.css','src/styles/experience/wallpapers.css','src/styles/experience/controls.css','assets/icons/ui.svg','assets/graphics/helix-z.svg','vercel.json']) {
   check(existsSync(pathOf(file)),'Missing required asset: ' + file);
 }
 if (errors.length) {
