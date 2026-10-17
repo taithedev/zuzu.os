@@ -192,7 +192,7 @@
   function iconFallback(button,kind,id) {
     if(button.dataset.zuIconChecked)return;
     button.dataset.zuIconChecked='1';
-    const src='/assets/icons/'+kind+'/'+id+'.png';
+    const src='/assets/icons/'+(kind==='windows'?'windows%20icon':kind)+'/'+id+'.png';
     const img=new Image();img.alt='';img.className='zu-custom-app-icon';
     img.onload=()=>{const old=button.querySelector('svg'); if(old && old.isConnected)old.replaceWith(img);};
     img.src=src;
