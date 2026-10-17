@@ -5,7 +5,7 @@
     'zuzu:theme-preset', 'zuzu:wallpaper','zuzu:accent','zuzu:shell-style',
     'zuzu:desktop-ui:v1','zuzu:os-vfs:v1','zuzu:windows-remake-v1',
     'zuzu:os-label','zuzu:os-welcome','zuzu:background:selected:v2',
-    'zuzu:setup-complete','zuzu:recent-app'
+    'zuzu:setup-complete','zuzu:recent-app','zuzu:taskbar-align','zuzu:start-menu-layout'
   ];
   const META_KEY='zuzu:desktop-sync:pending';
   const client=()=>window.zuzuOSAuth?.client || null;
@@ -41,7 +41,7 @@
     inflight=inflight.then(async()=>{
       if(id!==userId||epoch!==generation)return;
       markStatus('Syncing','Saving workspace changes…');
-      const {data,error}=await db.from('user_data').upsert({
+      const {data,error}=await db.from('zuzuos_user_data').upsert({
         user_id:id,namespace:'desktop',item_key:'state',value:values,
         updated_at:new Date().toISOString()
       },{onConflict:'user_id,namespace,item_key'}).select('updated_at').single();
@@ -88,7 +88,7 @@
     if(!db||pulling)return;
     pulling=true;
     try{
-      const {data,error}=await db.from('user_data').select('value,updated_at')
+      const {data,error}=await db.from('zuzuos_user_data').select('value,updated_at')
         .eq('user_id',id).eq('namespace','desktop').eq('item_key','state').maybeSingle();
       if(error)throw error;
       if(id!==userId||epoch!==generation)return;
