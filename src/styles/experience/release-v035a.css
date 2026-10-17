@@ -152,3 +152,98 @@ html:not([data-zu-wallpaper="motion-signal"]) #desktop.zu-scene .zu-reference-mo
  #auth-screen .auth-caption{display:none!important}
 }
 @media(prefers-reduced-motion:reduce){#desktop.zu-scene .zu-panel,#desktop.zu-scene .zu-ident,#desktop.zu-scene .taskbar .task-app{transition:none!important}}
+
+
+/* v0.3.5a stability pass: responsive windows, legible inputs, reliable overlays. */
+#desktop.zu-scene #os-start-menu .os-launch-grid{
+  overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;
+  scrollbar-color:#6470828c transparent;scrollbar-width:thin;
+  min-height:0!important;
+}
+#desktop.zu-scene #os-start-menu .os-launch-item{
+  min-width:0;max-width:100%;overflow:hidden;
+}
+#desktop.zu-scene #os-start-menu .os-launch-item strong,
+#desktop.zu-scene #os-start-menu .os-launch-item small{
+  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
+}
+#desktop.zu-scene .os-start-menu .os-start-bottom{flex-shrink:0}
+#desktop.zu-scene .zu-created-app .zu-created-symbol{
+  width:32px;height:32px;border-radius:8px;
+  display:grid;place-items:center;flex:0 0 32px;
+}
+#desktop.zu-scene .account-menu{
+  position:absolute!important;z-index:170!important;
+  top:59px!important;left:21px!important;right:auto!important;bottom:auto!important;
+  max-width:calc(100vw - 24px)!important;
+  background:rgba(18,20,26,.97)!important;border:1px solid #ffffff2c!important;
+  border-radius:13px!important;box-shadow:0 25px 70px #000b!important;
+  backdrop-filter:blur(20px)!important;
+}
+#desktop.zu-scene #app-window,
+#desktop.zu-scene .os-window{max-width:calc(100vw - 24px)!important;max-height:calc(100dvh - 110px)!important}
+#desktop.zu-scene #app-window .window-body,
+#desktop.zu-scene .os-window .os-window-content{
+  max-height:calc(100dvh - 166px)!important;min-height:0!important;
+  overflow-y:auto!important;overscroll-behavior:contain;
+  scrollbar-color:#5b6474 transparent;scrollbar-width:thin;
+}
+#desktop.zu-scene .window-bar,
+#desktop.zu-scene .os-window-bar{cursor:grab;user-select:none;touch-action:none}
+#desktop.zu-scene .window-bar:active,
+#desktop.zu-scene .os-window-bar:active{cursor:grabbing}
+#desktop.zu-scene .window-bar button,
+#desktop.zu-scene .os-window-bar button{cursor:pointer}
+#desktop.zu-scene .os-window .os-resize-grip{touch-action:none}
+#desktop.zu-scene .zu-panel:focus-visible,
+#desktop.zu-scene #os-start-menu button:focus-visible,
+#desktop.zu-scene .taskbar button:focus-visible,
+#auth-screen button:focus-visible,
+#auth-screen input:focus-visible,
+.zu-studio-modal input:focus-visible,.zu-studio-modal button:focus-visible{
+ outline:2px solid #a8cbff!important;outline-offset:3px!important;
+}
+#auth-screen .zu-password-field-wrap input{padding-right:59px!important}
+#auth-screen #zu-toggle-password{z-index:3}
+#auth-screen .zu-account-picker{scrollbar-width:thin;overscroll-behavior:contain}
+#auth-screen #auth-message{white-space:normal;overflow-wrap:anywhere}
+#desktop.zu-scene .os-window input,#desktop.zu-scene .os-window textarea,
+#desktop.zu-scene #app-window input,#desktop.zu-scene #app-window textarea{
+ max-width:100%;box-sizing:border-box;
+}
+@media(max-width:790px){
+ #desktop.zu-scene .os-window,
+ #desktop.zu-scene #app-window{
+   width:calc(100vw - 20px)!important;
+   left:10px!important;right:10px!important;top:67px!important;
+   transform:none!important;
+   max-height:calc(100dvh - 142px)!important;
+ }
+ #desktop.zu-scene .os-window .os-window-content,
+ #desktop.zu-scene #app-window .window-body{
+   max-height:calc(100dvh - 205px)!important;
+ }
+ #desktop.zu-scene #os-start-menu{
+  padding:14px 12px 10px!important;width:calc(100vw - 24px)!important;
+  max-height:calc(100dvh - 118px)!important;
+ }
+ #desktop.zu-scene #os-start-menu .os-launch-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  max-height:calc(100dvh - 325px)!important;
+ }
+ #desktop.zu-scene .account-menu{left:12px!important;top:55px!important}
+}
+@media(max-width:420px){
+ #desktop.zu-scene #os-start-menu .os-launch-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  max-height:calc(100dvh - 325px)!important;
+ }
+ #desktop.zu-scene .taskbar{min-width:0!important;overflow-x:auto!important;scrollbar-width:none}
+ #desktop.zu-scene .taskbar::-webkit-scrollbar{display:none}
+ #auth-screen .zu-login-clock{font-size:38px!important}
+ #auth-screen .auth-card{width:100%!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #desktop.zu-scene #os-start-menu:not(.hidden){animation:none!important}
+ #desktop.zu-scene .taskbar button,#desktop.zu-scene .zu-panel{transition:none!important}
+}
