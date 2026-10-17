@@ -107,8 +107,10 @@
     $('setup-screen').classList.add('hidden');
     toast('Welcome to ZuzuOS. Your desktop is ready.');
   }
-  function showDesktop() {
+  async function showDesktop() {
     $('auth-screen').classList.add('hidden');
+    $('desktop').classList.add('hidden');
+    if (state.user && window.ZuzuGate && !(await window.ZuzuGate.beforeDesktop(state.user))) return;
     $('desktop').classList.remove('hidden');
     renderProfile();
     loadQuickNote();
@@ -138,7 +140,7 @@
   }
   async function fetchProfile() {
     if (!db || !state.user) return;
-    const { data, error } = await db.from('profiles').select('id,username,display_name,avatar_url,created_at').eq('id', state.user.id).maybeSingle();
+    const { data, error } = await db.from('zuzuos_profiles').select('id,username,display_name,avatar_url,created_at').eq('id', state.user.id).maybeSingle();
     if (error) {
       console.warn('Profile read:', error.message);
       return;
@@ -146,7 +148,7 @@
     state.profile = data;
     if (!data) {
       const displayName = state.user.user_metadata?.display_name || state.user.email?.split('@')[0] || 'Zuzu User';
-      const result = await db.from('profiles').upsert({ id: state.user.id, display_name: displayName }, { onConflict: 'id' }).select().maybeSingle();
+      const result = await db.from('zuzuos_profiles').upsert({ id: state.user.id, display_name: displayName }, { onConflict: 'id' }).select().maybeSingle();
       if (!result.error) state.profile = result.data;
     }
   }
@@ -223,13 +225,13 @@
   }
   async function readUserData(namespace, key) {
     if (!db || !state.user) return null;
-    const { data, error } = await db.from('user_data').select('value').eq('user_id', state.user.id).eq('namespace', namespace).eq('item_key', key).maybeSingle();
+    const { data, error } = await db.from('zuzuos_user_data').select('value').eq('user_id', state.user.id).eq('namespace', namespace).eq('item_key', key).maybeSingle();
     if (error) { console.warn('Cloud data read:', error.message); return null; }
     return data?.value ?? null;
   }
   async function writeUserData(namespace, key, value) {
     if (!db || !state.user) return { error: new Error('Sign in to sync your data.') };
-    return db.from('user_data').upsert({
+    return db.from('zuzuos_user_data').upsert({
       user_id: state.user.id, namespace, item_key: key, value, updated_at: new Date().toISOString()
     }, { onConflict: 'user_id,namespace,item_key' });
   }
@@ -265,7 +267,7 @@
     const displayName = $('profile-display-name').value.trim();
     const username = $('profile-username').value.trim().toLowerCase() || null;
     if (!displayName) return toast('Enter a display name.');
-    const { data, error } = await db.from('profiles').upsert({
+    const { data, error } = await db.from('zuzuos_profiles').upsert({
       id: state.user.id, display_name: displayName, username, updated_at: new Date().toISOString()
     }, { onConflict: 'id' }).select().single();
     if (error) return toast(error.message);
@@ -615,7 +617,7 @@
     try {
       const [{ data: entitlementData, error: entitlementError }, { data: roleData, error: roleError }] = await Promise.all([
         db.rpc('os_my_entitlement'),
-        db.from('os_roles').select('role').eq('user_id', state.user.id).maybeSingle()
+        db.from('zuzuos_roles').select('role').eq('user_id', state.user.id).maybeSingle()
       ]);
       if (entitlementError) throw entitlementError;
       const entitlement = Array.isArray(entitlementData) ? entitlementData[0] : entitlementData;
@@ -697,7 +699,7 @@
     const safeName = file.name.normalize('NFKD').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(-120) || 'upload';
     const path = state.user.id + '/' + Date.now() + '-' + safeName;
     try {
-      const { error } = await db.storage.from('zuzu-user-files').upload(path, file, {
+      const { error } = await db.storage.from('zuzuos_user_files').upload(path, file, {
         cacheControl: '3600', upsert: false, contentType: file.type
       });
       if (error) throw error;
@@ -717,7 +719,7 @@
     if (!list) return;
     if (!db || !state.user) { list.textContent = 'Sign in to view your private files.'; return; }
     list.textContent = 'Loading…';
-    const { data, error } = await db.storage.from('zuzu-user-files').list(state.user.id, {
+    const { data, error } = await db.storage.from('zuzuos_user_files').list(state.user.id, {
       limit: 100, sortBy: { column: 'created_at', order: 'desc' }
     });
     if (error) { list.textContent = 'Could not load files: ' + error.message; return; }
@@ -749,7 +751,7 @@
       download.addEventListener('click', async () => {
         download.disabled = true;
         try {
-          const { data, error } = await db.storage.from('zuzu-user-files').download(path);
+          const { data, error } = await db.storage.from('zuzuos_user_files').download(path);
           if (error) throw error;
           const url = URL.createObjectURL(data);
           const a = document.createElement('a'); a.href = url; a.download = file.name; a.click();
@@ -763,7 +765,7 @@
       remove.addEventListener('click', async () => {
         if (!window.confirm('Delete "' + file.name + '" from your ZuzuOS account? This cannot be undone.')) return;
         remove.disabled = true;
-        const { error } = await db.storage.from('zuzu-user-files').remove([path]);
+        const { error } = await db.storage.from('zuzuos_user_files').remove([path]);
         if (error) { toast(error.message || 'Could not delete file.'); remove.disabled = false; return; }
         toast('File deleted.');
         await listPrivateFiles();
