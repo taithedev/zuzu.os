@@ -45,12 +45,50 @@ function init(){
  desktop.addEventListener('click',e=>{const b=e.target.closest('[data-os-launch]');if(b){menu.classList.add('hidden');launch(b.dataset.osLaunch)}});
  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();menu.classList.remove('hidden');menu.querySelector('#os-search-input').focus()}if(e.key==='Escape')menu.classList.add('hidden')});
  const aw=document.getElementById('app-window'),head=aw?.querySelector('.window-bar');
- if(aw&&head){head.addEventListener('pointerdown',e=>{if(e.target.closest('button')||aw.classList.contains('os-maximized'))return;const r=aw.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;const move=v=>{aw.style.left=Math.max(0,r.left+v.clientX-sx)+'px';aw.style.top=Math.max(65,r.top+v.clientY-sy)+'px';aw.style.transform='none'};const up=()=>{head.removeEventListener('pointermove',move);head.removeEventListener('pointerup',up)};head.addEventListener('pointermove',move);head.addEventListener('pointerup',up,{once:true})})}
+ if(aw&&head)installWindowDrag(aw,head);
  document.getElementById('close-window')?.insertAdjacentHTML('beforebegin','<button class="window-control" id="os-existing-min" title="Minimize">−</button><button class="window-control" id="os-existing-max" title="Maximize">□</button>');
  document.getElementById('os-existing-min')?.addEventListener('click',()=>aw.classList.add('hidden'));
  document.getElementById('os-existing-max')?.addEventListener('click',()=>aw.classList.toggle('os-maximized'));
  restoreDesktopWallpaper();
  const greeting=localStorage.getItem('zuzu:os-welcome');if(greeting){const p=document.querySelector('.welcome-row .muted');if(p)p.textContent=greeting}
+}
+// Use document-level pointer capture so windows remain draggable when the pointer
+// leaves the titlebar. This also clamps windows to the visible viewport.
+function windowPointerInteraction(target,start,move) {
+ const onDown=e=>{
+  if(e.button!==0||start(e)===false)return;
+  e.preventDefault();
+  const box=target.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;
+  const onMove=v=>move(box,v.clientX-sx,v.clientY-sy);
+  const onEnd=()=>{
+   document.removeEventListener('pointermove',onMove);
+   document.removeEventListener('pointerup',onEnd);
+   document.removeEventListener('pointercancel',onEnd);
+  };
+  document.addEventListener('pointermove',onMove);
+  document.addEventListener('pointerup',onEnd,{once:true});
+  document.addEventListener('pointercancel',onEnd,{once:true});
+ };
+ return onDown;
+}
+function installWindowDrag(windowEl,handle){
+ handle.addEventListener('pointerdown',windowPointerInteraction(windowEl,e=>{
+  return !(e.target.closest('button,input,textarea,select,a')||windowEl.classList.contains('os-maximized'));
+ },(rect,dx,dy)=>{
+  const maxX=Math.max(0,innerWidth-80);
+  const maxY=Math.max(50,innerHeight-90);
+  windowEl.style.left=Math.max(0,Math.min(maxX,rect.left+dx))+'px';
+  windowEl.style.top=Math.max(50,Math.min(maxY,rect.top+dy))+'px';
+  windowEl.style.transform='none';
+ }));
+}
+function installWindowResize(windowEl,grip){
+ grip.addEventListener('pointerdown',windowPointerInteraction(windowEl,()=>{
+  return !windowEl.classList.contains('os-maximized');
+ },(rect,dx,dy)=>{
+  windowEl.style.width=Math.max(290,Math.min(innerWidth-16,rect.width+dx))+'px';
+  windowEl.style.height=Math.max(260,Math.min(innerHeight-80,rect.height+dy))+'px';
+ }));
 }
 function launch(id){
  const existing=['notes','settings','browser','cinehub','music','paint','terminal','ciri','store'];
@@ -71,8 +109,8 @@ function launch(id){
  win.querySelector('[data-min]').onclick=()=>win.classList.add('os-minimized');
  win.querySelector('[data-max]').onclick=()=>win.classList.toggle('os-maximized');
  const head=win.querySelector('.os-window-bar');
- head.addEventListener('pointerdown',e=>{if(e.target.closest('button')||win.classList.contains('os-maximized'))return;const r=win.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;const move=v=>{win.style.left=Math.max(0,Math.min(innerWidth-r.width,r.left+v.clientX-sx))+'px';win.style.top=Math.max(65,Math.min(innerHeight-r.height-60,r.top+v.clientY-sy))+'px';win.style.transform='none'};const up=()=>{head.removeEventListener('pointermove',move);head.removeEventListener('pointerup',up)};head.addEventListener('pointermove',move);head.addEventListener('pointerup',up,{once:true})});
- const grip=win.querySelector('.os-resize-grip');grip.addEventListener('pointerdown',e=>{e.preventDefault();const r=win.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;const move=v=>{win.style.width=Math.max(320,r.width+v.clientX-sx)+'px';win.style.height=Math.max(260,r.height+v.clientY-sy)+'px'};const up=()=>{grip.removeEventListener('pointermove',move);grip.removeEventListener('pointerup',up)};grip.addEventListener('pointermove',move);grip.addEventListener('pointerup',up,{once:true});});
+ installWindowDrag(win,head);
+ const grip=win.querySelector('.os-resize-grip');if(grip)installWindowResize(win,grip);
  if(id==='files')wireFiles(win);if(id==='editor')wireEditor(win);if(id==='calc')wireCalc(win);if(id==='system')fillSystem(win);if(id==='studio')wireStudio(win);
 }
 function pathJoin(base,name){return (base==='/'?'':base)+'/'+name.replace(/[\\/]/g,'').trim()}
