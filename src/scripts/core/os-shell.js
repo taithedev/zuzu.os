@@ -41,7 +41,12 @@ function init(){
  const layer=el('div','os-window-layer');layer.id='os-window-layer';desktop.appendChild(layer);
  start.onclick=()=>menu.classList.toggle('hidden');menu.querySelector('#os-start-close').onclick=()=>menu.classList.add('hidden');
  menu.querySelector('#os-signout').onclick=()=>document.getElementById('sign-out')?.click();
- menu.querySelector('#os-search-input').oninput=e=>menu.querySelectorAll('[data-os-launch]').forEach(b=>b.classList.toggle('hidden',!b.textContent.toLowerCase().includes(e.target.value.toLowerCase())));
+ menu.querySelector('#os-search-input').oninput=e=>{
+  const search=e.target.value.trim().toLocaleLowerCase();
+  menu.querySelectorAll('#os-launch-grid .os-launch-item').forEach(item=>{
+   item.classList.toggle('hidden',!!search && !item.textContent.toLocaleLowerCase().includes(search));
+  });
+ };
  desktop.addEventListener('click',e=>{const b=e.target.closest('[data-os-launch]');if(b){menu.classList.add('hidden');launch(b.dataset.osLaunch)}});
  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();menu.classList.remove('hidden');menu.querySelector('#os-search-input').focus()}if(e.key==='Escape')menu.classList.add('hidden')});
  const aw=document.getElementById('app-window'),head=aw?.querySelector('.window-bar');
