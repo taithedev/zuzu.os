@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.5a — Cinematic desktop and Windows account experience
+
+- Replaced the simulated FPS display with an explicit ZuzuOS version badge; removed frame sampling.
+- Rebalanced the Cine-style desktop against the provided reference: clean wallpaper-first canvas, centered weekday, compact glass taskbar and three grouped right-hand widgets.
+- Added a Windows-inspired full-screen sign-in design, a local account picker, optional server-verified PIN screen and password confirmation on account creation.
+- Added optional desktop icon visibility in Settings and retained Windows/macOS-style launch menu and left/center taskbar options.
+- Left existing apps, Supabase tables, and user storage in place. This release does not change other projects' data.
+
+The exact artwork in the reference screenshot is not bundled; it can be selected via the existing Wallpaper Library or added under `assets/backgrounds/`.
+
 ## Studio Shell / Build 02 · 2026-10-15
 
 - Reorganized root scripts and styles into `src/scripts/` and `src/styles/` by responsibility.
