@@ -6,7 +6,7 @@ html,body{min-height:100%;background:#020304}
 /* Reference-style desktop: restrained chrome, dominant wallpaper, compact dock. */
 #desktop.zu-scene{background:#020203!important;background-image:none!important}
 #desktop.zu-scene .zu-stage{z-index:5!important}
-#desktop.zu-scene .zu-reference-motif{position:absolute;pointer-events:none;left:50%;top:48%;width:min(79vw,960px);height:min(83vh,820px);transform:translate(-50%,-50%);z-index:-1;opacity:.82;filter:drop-shadow(0 0 46px #a9c4dc20)}
+#desktop.zu-scene .zu-reference-motif{position:absolute;pointer-events:none;left:50%;top:48%;width:min(79vw,960px);height:min(83vh,820px);transform:translate(-50%,-50%);z-index:0;opacity:.82;filter:drop-shadow(0 0 46px #a9c4dc20)}
 #desktop.zu-scene .zu-reference-motif img{width:100%;height:100%;object-fit:contain;opacity:.76;filter:contrast(1.45) grayscale(1)}
 #desktop.zu-scene .zu-reference-motif:after{content:"";position:absolute;inset:6%;background:radial-gradient(ellipse,transparent 38%,#000 77%);pointer-events:none}
 html:not([data-zu-wallpaper="motion-signal"]) #desktop.zu-scene .zu-reference-motif{display:none}
@@ -43,8 +43,8 @@ html:not([data-zu-wallpaper="motion-signal"]) #desktop.zu-scene .zu-reference-mo
 #desktop.zu-scene #os-start-button{display:flex!important;align-items:center!important;justify-content:center!important;flex:0 0 41px!important;width:41px!important;min-width:41px!important;height:41px!important;min-height:41px!important;border:0!important;border-radius:9px!important;background:transparent!important;box-shadow:none!important;color:#eef2fa!important}
 #desktop.zu-scene .taskbar .task-app[hidden]{display:none!important}
 #desktop.zu-scene #os-start-button::before{display:none!important;content:none!important}
-#desktop.zu-scene #os-start-button .zu-icon,
-#desktop.zu-scene #os-start-button .zu-custom-app-icon{display:block!important}
+#desktop.zu-scene .taskbar #os-start-button .zu-icon,
+#desktop.zu-scene .taskbar #os-start-button .zu-custom-app-icon{display:block!important}
 #desktop.zu-scene .taskbar .task-app:hover,
 #desktop.zu-scene #os-start-button:hover{background:#ffffff1f!important;transform:translateY(-2px)!important}
 #desktop.zu-scene .taskbar .task-app svg{width:25px!important;height:25px!important}
