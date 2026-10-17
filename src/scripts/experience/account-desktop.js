@@ -29,14 +29,19 @@
     return label;
   }
   function pick(email) {
+    const changed = selectedEmail && selectedEmail !== email;
     selectedEmail = email;
     $('email').value = email;
+    // Do not carry a password across different local account tiles.
+    if (changed && $('password')) $('password').value = '';
     $('zu-email-field')?.classList.add('hidden');
     $('zu-account-tiles')?.querySelectorAll('button[data-email]').forEach(b=>b.classList.toggle('selected',b.dataset.email===email));
     $('password')?.focus();
   }
   function showEmail() {
     selectedEmail = '';
+    $('email').value = '';
+    if ($('password')) $('password').value = '';
     $('zu-email-field')?.classList.remove('hidden');
     $('zu-account-tiles')?.querySelectorAll('button.selected').forEach(b=>b.classList.remove('selected'));
     $('email')?.focus();
@@ -189,12 +194,39 @@
     });
     applyLayout();
   }
+  let iconCatalog = {windows:{},apps:{}};
+  async function loadIconCatalog() {
+    try {
+      const res=await fetch('/assets/icons/icon-manifest.json',{cache:'no-store'});
+      if (!res.ok) return;
+      const data=await res.json();
+      if (!data || data.version!==1) return;
+      for (const kind of ['windows','apps']) {
+        if (!data[kind] || typeof data[kind]!=='object') continue;
+        for (const [name,source] of Object.entries(data[kind])) {
+          if (!/^[a-z0-9_-]+$/.test(name)) continue;
+          // Never load arbitrary external URLs, scripts or SVG uploads as icons.
+          if (typeof source!=='string' || !/^\/assets\/icons\/[a-zA-Z0-9_%./-]+\.png$/.test(source) || source.includes('..')) continue;
+          iconCatalog[kind][name]=source;
+        }
+      }
+      updateIcons();
+    } catch (error) {
+      console.warn('Optional ZuzuOS icon manifest unavailable:',error?.message||error);
+    }
+  }
   function iconFallback(button,kind,id) {
-    if(button.dataset.zuIconChecked)return;
+    if (!button || button.dataset.zuIconChecked) return;
+    const src=iconCatalog[kind]?.[id];
+    if (!src) return; // Use the working SVG. Missing PNGs must not produce 404s.
     button.dataset.zuIconChecked='1';
-    const src='/assets/icons/'+(kind==='windows'?'windows%20icon':kind)+'/'+id+'.png';
     const img=new Image();img.alt='';img.className='zu-custom-app-icon';
-    img.onload=()=>{const old=button.querySelector('svg'); if(old && old.isConnected)old.replaceWith(img);};
+    img.onload=()=>{
+      if (!button.isConnected) return;
+      const old=button.querySelector('svg');
+      if(old) old.replaceWith(img);
+    };
+    img.onerror=()=>{delete button.dataset.zuIconChecked;};
     img.src=src;
   }
   function updateIcons() {
@@ -266,7 +298,7 @@
       if(e.target.closest('#os-start-button'))setTimeout(()=>{updateIcons();loadApps();},0);
       if(e.target.closest('[data-app="settings"],[data-os-launch="settings"]'))setTimeout(mountSettings,10);
     });
-    updateIcons();setTimeout(updateIcons,1000);
+    void loadIconCatalog();
     document.addEventListener('keydown',e=>{
       if(e.key==='Escape')$('zu-app-studio')?.classList.add('hidden');
     });
