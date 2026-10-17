@@ -121,7 +121,7 @@
   }
 
   async function loadPeople() {
-    const { data, error } = await db.from('profiles').select('id, username, display_name, avatar_url').neq('id', user.id).order('display_name').limit(100);
+    const { data, error } = await db.from('zuzuos_profiles').select('id, username, display_name, avatar_url').neq('id', user.id).order('display_name').limit(100);
     if (error) throw new Error('Could not load accounts: ' + error.message);
     people = data || [];
     const select = $('zuzu-contact');
@@ -149,7 +149,7 @@
     const list = $('zuzu-chat-messages');
     if (!list || !db || !user) return;
     if (!selected) { list.innerHTML = '<div class="zuzu-chat-empty">Select a person to see your conversation.</div>'; return; }
-    const { data, error } = await db.from('os_messages').select('id,sender_id,recipient_id,body,created_at').or('and(sender_id.eq.' + user.id + ',recipient_id.eq.' + selected + '),and(sender_id.eq.' + selected + ',recipient_id.eq.' + user.id + ')').order('created_at',{ascending:true}).limit(150);
+    const { data, error } = await db.from('zuzuos_messages').select('id,sender_id,recipient_id,body,created_at').or('and(sender_id.eq.' + user.id + ',recipient_id.eq.' + selected + '),and(sender_id.eq.' + selected + ',recipient_id.eq.' + user.id + ')').order('created_at',{ascending:true}).limit(150);
     if (error) { list.innerHTML = '<div class="zuzu-chat-empty">Could not load messages. ' + esc(error.message) + '</div>'; return; }
     list.innerHTML = (data || []).map(m => '<article class="zuzu-message ' + (m.sender_id === user.id ? 'mine' : 'theirs') + '"><p>' + esc(m.body) + '</p><time>' + esc(new Date(m.created_at).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})) + '</time></article>').join('') || '<div class="zuzu-chat-empty">No messages yet. Say hello.</div>';
     list.scrollTop = list.scrollHeight;
@@ -160,7 +160,7 @@
     const input = $('zuzu-chat-input'), body = input.value.trim();
     if (!body || !selected || !user) return;
     $('zuzu-send').disabled = true;
-    const { error } = await db.from('os_messages').insert({sender_id:user.id, recipient_id:selected, body});
+    const { error } = await db.from('zuzuos_messages').insert({sender_id:user.id, recipient_id:selected, body});
     $('zuzu-send').disabled = false;
     if (error) return setStatus('Message not sent: ' + error.message, true);
     input.value = '';
@@ -171,17 +171,17 @@
   function subscribeRealtime() {
     if (channel) db.removeChannel(channel);
     channel = db.channel('zuzu-connect-' + user.id)
-      .on('postgres_changes',{event:'INSERT',schema:'public',table:'os_messages'},payload => {
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'zuzuos_messages'},payload => {
         const m = payload.new;
         if (m && (m.sender_id === user.id || m.recipient_id === user.id) && (m.sender_id === selected || m.recipient_id === selected)) loadMessages();
       })
-      .on('postgres_changes',{event:'INSERT',schema:'public',table:'os_call_signals'},payload => handleSignal(payload.new).catch(err => setStatus(err.message || 'Call signal failed.',true)))
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'zuzuos_call_signals'},payload => handleSignal(payload.new).catch(err => setStatus(err.message || 'Call signal failed.',true)))
       .subscribe();
   }
 
   async function writeSignal(kind, payload = {}) {
     if (!activeCall) return;
-    const { error } = await db.from('os_call_signals').insert({
+    const { error } = await db.from('zuzuos_call_signals').insert({
       call_id: activeCall.id, caller_id: activeCall.callerId, callee_id: activeCall.calleeId,
       sender_id: user.id, kind, payload
     });
