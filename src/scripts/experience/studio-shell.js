@@ -18,10 +18,6 @@
     system:'System Monitor',studio:'Workspace Studio'
   };
   let stage;
-  let lastSampleAt = 0;
-  let frameCount = 0;
-  let fpsHandle = null;
-
   function icon(name) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('aria-hidden','true');
@@ -76,19 +72,6 @@
     if (date) date.textContent = new Intl.DateTimeFormat(undefined,{month:'long',day:'numeric',year:'numeric'}).format(now).toUpperCase();
     const systemDate = $('zu-system-date');
     if (systemDate) systemDate.textContent = new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(now);
-  }
-  function frame(time) {
-    if (!stage || !stage.isConnected) return;
-    if (!lastSampleAt) lastSampleAt = time;
-    frameCount++;
-    if (time-lastSampleAt >= 1800) {
-      const output = $('zu-fps');
-      const fps = Math.round(frameCount*1000/(time-lastSampleAt));
-      if (output && !document.hidden) output.textContent = fps + ' FPS';
-      lastSampleAt = time;
-      frameCount = 0;
-    }
-    fpsHandle = requestAnimationFrame(frame);
   }
   function installDock() {
     const bar = document.querySelector('#desktop .taskbar');
@@ -154,6 +137,7 @@
     stage.id = 'zu-stage';
     stage.setAttribute('aria-label','ZuzuOS desktop');
     const brand = node('button','zu-ident');
+    desktop.dataset.zuRelease = '0.3.5a';
     brand.type = 'button';
     brand.dataset.zuAction = 'account';
     brand.title = 'Account and sign out';
@@ -177,15 +161,16 @@
     rail.appendChild(panel('JUMP BACK IN','browser','browser','is-cyan','Nothing open yet','Your recent apps'));
     rail.appendChild(panel('QUICK PLAY','music','music','is-green','Music','Your audio player'));
     rail.appendChild(panel('SYSTEM STATUS',null,'status','','Update Log','View latest patches','updates'));
-    const fps = node('span','zu-badge-fps','-- FPS');
-    fps.id = 'zu-fps';
+    const version = node('span','zu-badge-fps','v0.3.5a');
+    version.id = 'zu-version';
+    version.title = 'ZuzuOS version 0.3.5 alpha';
     const footer = node('div','zu-foot-left');
     footer.append(node('span','zu-led'),node('span',null,'ZUZU.OS'),node('em',null,'GAMING DESKTOP'));
     const right = node('div','zu-foot-right');
     const systemDate = node('span',null,'');
     systemDate.id='zu-system-date';
     right.append(systemDate,document.createTextNode('  /  ARCADE EDITION'));
-    stage.append(brand,time,rail,fps,footer,right);
+    stage.append(brand,time,rail,version,footer,right);
     desktop.appendChild(stage);
     updateTime();
     updateRecent();
@@ -215,17 +200,6 @@
         window.ZuzuBackgrounds?.open();
       }
     });
-    document.addEventListener('visibilitychange',() => {
-      if (document.hidden) {
-        if (fpsHandle != null) cancelAnimationFrame(fpsHandle);
-        fpsHandle = null;
-      } else if (fpsHandle == null) {
-        lastSampleAt = 0;
-        frameCount = 0;
-        fpsHandle = requestAnimationFrame(frame);
-      }
-    });
-    if (typeof requestAnimationFrame === 'function') fpsHandle = requestAnimationFrame(frame);
     setInterval(updateTime, 30000);
     const shortcuts = desktop.querySelectorAll('.os-desktop-shortcuts,#os-scene-shortcuts,#os-team-shortcut');
     shortcuts.forEach(shortcut => shortcut.remove());
