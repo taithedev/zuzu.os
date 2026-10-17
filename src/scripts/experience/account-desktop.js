@@ -261,29 +261,62 @@
       if(!error){$('zu-studio-form').reset();await loadApps();setTimeout(()=>modal.classList.add('hidden'),700);}
     });
   }
-  async function loadApps() {
-    const grid=$('os-launch-grid');if(!grid||!db())return;
-    const {data:{user}}=await db().auth.getUser();
-    if(!user)return;
-    const {data,error}=await db().from('zuzuos_custom_apps').select('id,title,description,url').eq('owner_id',user.id).order('created_at',{ascending:false}).limit(40);
-    if(error){console.warn('ZuzuOS apps:',error.message);return;}
-    grid.querySelectorAll('[data-zu-created]').forEach(x=>x.remove());
-    (data||[]).forEach(app=>{
-      const item=document.createElement('button');item.type='button';item.className='os-launch-item zu-created-app';item.dataset.zuCreated=app.id;
-      const ico=document.createElement('span');ico.className='zu-created-symbol';ico.textContent=(app.title||'A').slice(0,1).toUpperCase();
-      const details=document.createElement('span'),title=document.createElement('strong'),sub=document.createElement('small');
-      title.textContent=app.title;sub.textContent=app.description||new URL(app.url).hostname;details.append(title,sub);item.append(ico,details);
-      item.addEventListener('click',()=>{ $('os-start-menu')?.classList.add('hidden');window.ZuzuBrowser?.open?.(app.url);});
-      grid.append(item);
-    });
-    let studio=grid.querySelector('[data-zu-app-studio]');
-    if(!studio){
-      studio=document.createElement('button');studio.type='button';studio.className='os-launch-item zu-created-app';studio.dataset.zuAppStudio='true';
+  let appListRequest = null;
+  function loadApps() {
+    // Coalesce repeated calls from auth, Start, and cloud restore.
+    if (appListRequest) return appListRequest;
+    appListRequest = loadAppsInternal().finally(()=>{appListRequest=null;});
+    return appListRequest;
+  }
+  async function loadAppsInternal() {
+    const grid=$('os-launch-grid'),client=db();
+    if (!grid||!client) return;
+    try {
+      const {data:auth,error:authError}=await client.auth.getUser();
+      if (authError||!auth?.user) return;
+      const {data,error}=await client.from('zuzuos_custom_apps')
+        .select('id,title,description,url')
+        .eq('owner_id',auth.user.id).order('created_at',{ascending:false}).limit(40);
+      if (error) throw error;
+      if (!grid.isConnected) return;
+      grid.querySelectorAll('[data-zu-created],[data-zu-app-studio]').forEach(item=>item.remove());
+      for (const app of data||[]) {
+        let url;
+        try {
+          url=new URL(app.url);
+          if(url.protocol!=='https:') continue;
+        } catch { continue; }
+        const item=document.createElement('button');
+        item.type='button';
+        item.className='os-launch-item zu-created-app';
+        item.dataset.zuCreated=app.id;
+        const ico=document.createElement('span');
+        ico.className='zu-created-symbol';
+        ico.textContent=(app.title||'A').slice(0,1).toUpperCase();
+        const details=document.createElement('span'),title=document.createElement('strong'),sub=document.createElement('small');
+        title.textContent=app.title;
+        sub.textContent=app.description||url.hostname;
+        details.append(title,sub);item.append(ico,details);
+        item.addEventListener('click',()=>{
+          $('os-start-menu')?.classList.add('hidden');
+          if (!window.ZuzuBrowser?.open) return;
+          void window.ZuzuBrowser.open(url.href);
+        });
+        grid.append(item);
+      }
+      const studio=document.createElement('button');
+      studio.type='button';studio.className='os-launch-item zu-created-app';
+      studio.dataset.zuAppStudio='true';
       studio.innerHTML='<span class="zu-created-symbol">＋</span><span><strong>Create app</strong><small>App Studio</small></span>';
-      studio.onclick=()=>{ $('os-start-menu')?.classList.add('hidden');showStudio(); };
+      studio.addEventListener('click',()=>{
+        $('os-start-menu')?.classList.add('hidden');
+        showStudio();
+      });
       grid.append(studio);
+      loadedFor=auth.user.id;
+    } catch(error) {
+      console.warn('ZuzuOS custom app loading unavailable:',error?.message||error);
     }
-    loadedFor=user.id;
   }
   function boot() {
     initAccounts();lockUI();applyLayout();setupStudio();
