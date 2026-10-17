@@ -5,7 +5,8 @@
     'zuzu:theme-preset', 'zuzu:wallpaper','zuzu:accent','zuzu:shell-style',
     'zuzu:desktop-ui:v1','zuzu:os-vfs:v1','zuzu:windows-remake-v1',
     'zuzu:os-label','zuzu:os-welcome','zuzu:background:selected:v2',
-    'zuzu:setup-complete','zuzu:recent-app','zuzu:taskbar-align','zuzu:start-menu-layout'
+    'zuzu:setup-complete','zuzu:recent-app','zuzu:taskbar-align','zuzu:start-menu-layout',
+    'zuzu:quick-note','zuzu:browser:bookmarks:v1','zuzu:browser:history:v1'
   ];
   const META_KEY='zuzu:desktop-sync:pending';
   const client=()=>window.zuzuOSAuth?.client || null;
@@ -106,9 +107,36 @@
       markStatus('Offline changes','Working locally; sync will retry when connected.');
     }finally{pulling=false;}
   }
+  // Each signed-in ZuzuOS account gets a separate local workspace cache.
+  // Never copy another account's local desktop into a new account's cloud state.
+  const ownerKey='zuzu:desktop-sync:local-owner';
+  function isolateWorkspace(next){
+    const previous=read(ownerKey);
+    if(!next||next===previous)return false;
+    if(previous){
+      try{localStorage.setItem('zuzu:desktop-sync:cache:'+previous,JSON.stringify(snapshot()));}catch{}
+    }
+    restoring=true;
+    try{
+      for(const key of KEYS) localStorage.removeItem(key);
+      localStorage.removeItem(META_KEY);
+      let saved=null;
+      try{saved=JSON.parse(read('zuzu:desktop-sync:cache:'+next)||'null');}catch{}
+      if(saved&&typeof saved==='object'){
+        for(const key of KEYS) if(typeof saved[key]==='string')localStorage.setItem(key,saved[key]);
+      }
+      localStorage.setItem(ownerKey,next);
+    }finally{restoring=false;}
+    return Boolean(previous&&previous!==next);
+  }
   async function setUser(user) {
     const next=user?.id||null;
     if(next===userId&&ready)return;
+    if(isolateWorkspace(next)){
+      // In-memory virtual files are loaded at boot; reload on account switches.
+      location.reload();
+      return;
+    }
     ++generation;
     clearTimeout(timer);
     userId=next;ready=false;dirty=false;lastCloudAt='';
