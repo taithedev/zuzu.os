@@ -21,7 +21,7 @@
     if (!db) return currentRole = 'user';
     const { data: auth } = await db.auth.getUser();
     if (!auth?.user) return currentRole = 'user';
-    const { data, error } = await db.from('os_roles').select('role').eq('user_id', auth.user.id).maybeSingle();
+    const { data, error } = await db.from('zuzuos_roles').select('role').eq('user_id', auth.user.id).maybeSingle();
     if (error) {
       console.warn('ZuzuOS role lookup:', error.message);
       return currentRole = 'user';
@@ -157,7 +157,7 @@
       if (!db || !['owner','developer'].includes(currentRole)) return toast('Developer or owner role required.');
       const button = $('os-update-form').querySelector('button[type="submit"]');
       button.disabled = true;
-      const { error } = await db.from('os_updates').insert({
+      const { error } = await db.from('zuzuos_updates').insert({
         title: $('os-update-title').value.trim(),
         description: $('os-update-description').value.trim(),
         category: $('os-update-category').value
@@ -174,7 +174,7 @@
       const db = client();
       const button = $('os-role-form').querySelector('button[type="submit"]');
       button.disabled = true;
-      const { data, error } = await db.rpc('owner_set_os_role', {
+      const { data, error } = await db.rpc('zuzuos_owner_set_role', {
         target_email: $('os-role-email').value.trim(),
         target_role: $('os-role-select').value
       });
@@ -208,12 +208,12 @@
     const box = $('os-role-list');
     if (!db || !box) return;
     box.innerHTML = '<p class="os-team-loading">Loading team…</p>';
-    const { data: roles, error } = await db.from('os_roles').select('user_id,role,created_at').order('created_at', {ascending:true});
+    const { data: roles, error } = await db.from('zuzuos_roles').select('user_id,role,created_at').order('created_at', {ascending:true});
     if (error) { box.innerHTML = '<p class="os-team-error">' + esc(error.message) + '</p>'; return; }
     const ids = (roles || []).map(row => row.user_id);
     let profiles = [];
     if (ids.length) {
-      const result = await db.from('profiles').select('id,display_name,username').in('id', ids);
+      const result = await db.from('zuzuos_profiles').select('id,display_name,username').in('id', ids);
       if (!result.error) profiles = result.data || [];
     }
     const names = new Map(profiles.map(profile => [profile.id, profile.display_name || profile.username || 'Zuzu member']));
@@ -225,7 +225,7 @@
     if (!list) return;
     if (!db) { list.innerHTML = '<p class="os-team-error">Supabase is not connected.</p>'; return; }
     list.innerHTML = '<p class="os-team-loading">Loading updates…</p>';
-    const { data, error } = await db.from('os_updates').select('id,title,description,category,status,created_by,created_at,updated_at').order('created_at', {ascending:false}).limit(50);
+    const { data, error } = await db.from('zuzuos_updates').select('id,title,description,category,status,created_by,created_at,updated_at').order('created_at', {ascending:false}).limit(50);
     if (error) { list.innerHTML = '<p class="os-team-error">' + esc(error.message) + '</p>'; return; }
     if (!data?.length) { list.innerHTML = '<div class="os-update-empty"><span>✧</span><strong>The roadmap starts here</strong><p>Proposed features and shipped changes will appear in this space.</p></div>'; return; }
     list.innerHTML = data.map(item => {
@@ -235,13 +235,13 @@
     list.querySelectorAll('[data-status]').forEach(select => {
       if (select.tagName !== 'SELECT') return;
       select.onchange = async () => {
-        const { error: updateError } = await db.from('os_updates').update({status:select.value}).eq('id',select.dataset.status);
+        const { error: updateError } = await db.from('zuzuos_updates').update({status:select.value}).eq('id',select.dataset.status);
         if (updateError) toast(updateError.message); else { toast('Roadmap status updated.'); await loadUpdates(win); }
       };
     });
     list.querySelectorAll('[data-delete]').forEach(button => button.onclick = async () => {
       if (!confirm('Delete this roadmap item?')) return;
-      const { error: deleteError } = await db.from('os_updates').delete().eq('id',button.dataset.delete);
+      const { error: deleteError } = await db.from('zuzuos_updates').delete().eq('id',button.dataset.delete);
       if (deleteError) toast(deleteError.message); else { toast('Roadmap item deleted.'); await loadUpdates(win); }
     });
   }
