@@ -60,8 +60,11 @@
     if (taskbar && !$('zuzu-chat-task')) {
       const btn = document.createElement('button');
       btn.id = 'zuzu-chat-task';
-      btn.className = 'task-app';
-      btn.textContent = '↗ Chat';
+      btn.className = 'task-app zuzu-chat-dock';
+      btn.type = 'button';
+      btn.title = 'Messages & Calls';
+      btn.setAttribute('aria-label','Open messages and calls');
+      btn.innerHTML = '<svg class="zu-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/icons/ui.svg#headphones"></use></svg>';
       btn.addEventListener('click', openWindow);
       const spacer = taskbar.querySelector('.taskbar-spacer');
       taskbar.insertBefore(btn, spacer || null);
