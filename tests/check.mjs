@@ -53,6 +53,22 @@ check(html.includes('id="os-start-button"') || html.includes('src/scripts/core/o
 const shell=readFileSync(pathOf('src/scripts/experience/studio-shell.js'),'utf8');
 check(shell.includes("v0.3.5a"),'Version label missing');
 check(!shell.includes("requestAnimationFrame(frame)") && !shell.includes("zu-fps"),'Obsolete FPS sampler was reintroduced');
+
+const authCore=readFileSync(pathOf('src/scripts/core/app.js'),'utf8');
+const accountUI=readFileSync(pathOf('src/scripts/experience/account-desktop.js'),'utf8');
+const taskbarUI=readFileSync(pathOf('src/scripts/experience/taskbar-manager.js'),'utf8');
+const taskbarCSS=readFileSync(pathOf('src/styles/experience/taskbar-no-overlap.css'),'utf8');
+check(authCore.includes('persistSession: false'),'ZuzuOS must request a password on each new visit');
+check(authCore.includes('passwordEnteredThisVisit'),'Email confirmation must not silently unlock the desktop');
+check(authCore.includes('zuzuos_pin_required'),'Signup must preserve optional PIN intent');
+check(accountUI.includes("Find an account on this device"),'Account chooser search missing');
+check(accountUI.includes("auth-form')?.classList.add('hidden')"),'Account selection must happen before password entry');
+check(accountUI.includes("value=\"none\"") && accountUI.includes("value=\"pin\""),'Signup PIN/No PIN choice missing');
+check(accountUI.includes('{4,6}'),'PIN inputs must support 4–6 digits');
+check(taskbarUI.includes('scrollIntoView'),'Taskbar keyboard navigation is missing');
+check(taskbarCSS.includes('overflow-x:auto!important'),'Taskbar icons must not overlap in narrow screens');
+check(html.includes('taskbar-manager.js') && html.includes('taskbar-no-overlap.css'),'Taskbar controller/styles are not loaded');
+
 const iconManifest=JSON.parse(readFileSync(pathOf('assets/icons/icon-manifest.json'),'utf8'));
 check(iconManifest.version === 1,'Unknown ZuzuOS icon manifest version');
 for (const category of ['apps','windows']) {
@@ -71,7 +87,7 @@ for (const file of scripts) {
   const result = spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
   if (result.status !== 0) errors.push('JavaScript syntax error: ' + relative(root,file) + '\n' + result.stderr);
 }
-for (const file of ['assets/icons/icon-manifest.json','src/scripts/experience/release-v035a.js','src/styles/experience/release-v035a.css','src/scripts/experience/arcade.js','src/styles/experience/arcade.css','src/styles/experience/finishing.css','src/styles/experience/studio.css','src/styles/experience/wallpapers.css','src/styles/experience/controls.css','assets/icons/ui.svg','assets/graphics/helix-z.svg','vercel.json']) {
+for (const file of ['assets/icons/icon-manifest.json','src/scripts/experience/release-v035a.js','src/scripts/experience/taskbar-manager.js','src/styles/experience/release-v035a.css','src/styles/experience/taskbar-no-overlap.css','src/scripts/experience/arcade.js','src/styles/experience/arcade.css','src/styles/experience/finishing.css','src/styles/experience/studio.css','src/styles/experience/wallpapers.css','src/styles/experience/controls.css','assets/icons/ui.svg','assets/graphics/helix-z.svg','vercel.json']) {
   check(existsSync(pathOf(file)),'Missing required asset: ' + file);
 }
 if (errors.length) {
