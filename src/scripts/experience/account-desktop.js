@@ -4,6 +4,7 @@
   const $ = id => document.getElementById(id);
   const db = () => window.zuzuOSAuth?.client;
   const ACCOUNTS_KEY = 'zuzuos:known-accounts:v1';
+  const validPin = pin => /^[0-9]{4,6}$/.test(pin);
   const ALIGN_KEY = 'zuzu:taskbar-align';
   const MENU_KEY = 'zuzu:start-menu-layout';
   let approved = null, unlockPromise = null, unlockResolve = null, unlockUser = null;
@@ -29,7 +30,7 @@
     return label;
   }
   function pick(email) {
-    const changed = selectedEmail && selectedEmail !== email;
+    const changed = selectedEmail !== email;
     selectedEmail = email;
     $('email').value = email;
     // Do not carry a password across different local account tiles.
@@ -52,7 +53,10 @@
     const signingUp = !$('name-field')?.classList.contains('hidden');
     const list = accounts();
     picker.classList.toggle('hidden',signingUp || list.length===0);
-    if (signingUp || list.length===0) { $('zu-email-field')?.classList.remove('hidden'); return; }
+    if (signingUp || list.length===0) {
+      $('zu-email-field')?.classList.remove('hidden');
+      return;
+    }
     tiles.replaceChildren();
     list.forEach(a => {
       const button = document.createElement('button');
@@ -64,8 +68,17 @@
       button.addEventListener('click',()=>pick(a.email));
       tiles.append(button);
     });
+    const search=$('zu-account-search');
+    if (search) search.value='';
+    // Never choose the first stored account automatically.
+    // Users select a tile, search locally, or enter another email.
     if (selectedEmail && list.some(a=>a.email===selectedEmail)) pick(selectedEmail);
-    else pick(list[0].email);
+    else {
+      selectedEmail='';
+      $('email').value='';
+      if($('password'))$('password').value='';
+      $('zu-email-field')?.classList.add('hidden');
+    }
   }
   function initAccounts() {
     if (accountsRendered) return;
@@ -73,11 +86,22 @@
     accountsRendered=true;
     const wrap=document.createElement('section');wrap.id='zu-account-picker';wrap.className='zu-account-picker hidden';
     const label=document.createElement('p');label.textContent='Choose an account';label.className='zu-picker-caption';
+    const search=document.createElement('input');
+    search.id='zu-account-search';search.type='search';search.className='zu-account-search';
+    search.autocomplete='off';search.placeholder='Find an account on this device';
+    search.setAttribute('aria-label','Find a previously used account on this device');
     const tiles=document.createElement('div');tiles.id='zu-account-tiles';
+    search.addEventListener('input',()=>{
+      const q=search.value.trim().toLocaleLowerCase();
+      tiles.querySelectorAll('button[data-email]').forEach(btn=>{
+        const entry=accounts().find(a=>a.email===btn.dataset.email);
+        btn.classList.toggle('hidden',!!q && !((entry?.email||'')+' '+(entry?.name||'')).toLocaleLowerCase().includes(q));
+      });
+    });
     const other=document.createElement('button');other.type='button';other.id='zu-other-account';other.textContent='Use another account';
     other.className='zu-other-account';
     other.addEventListener('click',showEmail);
-    wrap.append(label,tiles,other);
+    wrap.append(label,search,tiles,other);
     form.before(wrap);
     const email=$('email');
     const row=email?.closest('label');
@@ -87,23 +111,70 @@
     if(title)new MutationObserver(renderAccounts).observe(title,{childList:true});
     renderAccounts();
   }
+  function readSignupPin() {
+    const form=$('zu-signup-pin-choice');
+    if(!form)return {mode:'none',pin:null};
+    const mode=form.querySelector('input[name="zuzu-pin-choice"]:checked')?.value||'';
+    if (mode!=='pin' && mode!=='none') throw Error('Choose a PIN or select No PIN.');
+    if (mode==='none') return {mode,pin:null};
+    const pin=$('zu-signup-pin')?.value||'';
+    const confirm=$('zu-signup-pin-confirm')?.value||'';
+    if(!validPin(pin))throw Error('Choose a PIN of 4 to 6 digits.');
+    if(pin!==confirm)throw Error('PIN entries do not match.');
+    return {mode,pin};
+  }
+  function initSignupPin() {
+    const form=$('auth-form');
+    if(!form||$('zu-signup-pin-choice'))return;
+    const fieldset=document.createElement('fieldset');
+    fieldset.id='zu-signup-pin-choice';fieldset.className='zu-signup-pin-choice hidden';
+    fieldset.innerHTML='<legend>Set up your account PIN</legend><p>Optional: use a 4–6 digit PIN after your password. Your PIN stays separate from your account password.</p><div class="zu-pin-options"><label><input type="radio" name="zuzu-pin-choice" value="pin"> Use a PIN</label><label><input type="radio" name="zuzu-pin-choice" value="none"> No PIN</label></div><div class="zu-signup-pin-fields hidden" id="zu-signup-pin-fields"><label class="field">Choose PIN<input id="zu-signup-pin" type="password" inputmode="numeric" autocomplete="off" pattern="[0-9]{4,6}" minlength="4" maxlength="6" placeholder="4–6 digits"></label><label class="field">Confirm PIN<input id="zu-signup-pin-confirm" type="password" inputmode="numeric" autocomplete="off" pattern="[0-9]{4,6}" minlength="4" maxlength="6" placeholder="Enter PIN again"></label></div><p class="zu-pin-disclaimer">If email confirmation is required, you will enter your chosen PIN again after confirming your account. PINs are never stored in browser storage.</p>';
+    form.querySelector('#auth-submit')?.before(fieldset);
+    fieldset.addEventListener('change',event=>{
+      if(!event.target.matches('input[name="zuzu-pin-choice"]'))return;
+      const withPin=event.target.value==='pin';
+      $('zu-signup-pin-fields').classList.toggle('hidden',!withPin);
+      for(const id of ['zu-signup-pin','zu-signup-pin-confirm']){
+        $(id).required=withPin;
+        if(!withPin)$(id).value='';
+      }
+    });
+    const sync=()=>{
+      const signup=!$('name-field')?.classList.contains('hidden');
+      fieldset.classList.toggle('hidden',!signup);
+      if(!signup){
+        for(const id of ['zu-signup-pin','zu-signup-pin-confirm']){$(id).required=false;$(id).value='';}
+        fieldset.querySelectorAll('input[type="radio"]').forEach(el=>{el.checked=false;});
+        $('zu-signup-pin-fields').classList.add('hidden');
+      }
+    };
+    $('switch-mode')?.addEventListener('click',()=>setTimeout(sync,0));
+    new MutationObserver(sync).observe($('auth-title'),{childList:true});
+    sync();
+  }
   function lockUI() {
     if ($('zu-pin-screen')) return;
     const wrap=document.createElement('section');
     wrap.id='zu-pin-screen';wrap.className='zu-pin-screen hidden';
     wrap.setAttribute('role','dialog');wrap.setAttribute('aria-modal','true');wrap.setAttribute('aria-labelledby','zu-pin-heading');
-    wrap.innerHTML='<div class="zu-lock-time" id="zu-lock-time"></div><div class="zu-lock-card"><div class="zu-lock-avatar" id="zu-lock-avatar">Z</div><h1 id="zu-pin-heading">Welcome back</h1><p class="zu-lock-subtitle">Enter your six-digit ZuzuOS PIN to unlock this desktop.</p><form id="zu-pin-form"><label for="zu-pin-input">Account PIN</label><input id="zu-pin-input" type="password" inputmode="numeric" autocomplete="off" pattern="[0-9]{6}" minlength="6" maxlength="6" required placeholder="••••••"><button type="submit">Unlock desktop →</button></form><p id="zu-pin-error" role="alert" aria-live="polite"></p><button class="zu-switch-user" id="zu-lock-signout" type="button">Switch account</button></div><div class="zu-lock-footer">ZUZU.OS <span>•</span> SECURE ACCOUNT SCREEN</div>';
+    wrap.innerHTML='<div class="zu-lock-time" id="zu-lock-time"></div><div class="zu-lock-card"><div class="zu-lock-avatar" id="zu-lock-avatar">Z</div><h1 id="zu-pin-heading">Welcome back</h1><p class="zu-lock-subtitle">Enter your 4–6 digit ZuzuOS PIN to unlock this desktop.</p><form id="zu-pin-form"><label for="zu-pin-input">Account PIN</label><input id="zu-pin-input" type="password" inputmode="numeric" autocomplete="off" pattern="[0-9]{4,6}" minlength="4" maxlength="6" required placeholder="4–6 digit PIN"><button type="submit">Unlock desktop →</button></form><p id="zu-pin-error" role="alert" aria-live="polite"></p><button class="zu-switch-user" id="zu-lock-signout" type="button">Switch account</button></div><div class="zu-lock-footer">ZUZU.OS <span>•</span> SECURE ACCOUNT SCREEN</div>';
     document.body.append(wrap);
     $('zu-pin-form').addEventListener('submit',async event=>{
       event.preventDefault();
       const input=$('zu-pin-input'), button=$('zu-pin-form').querySelector('button');
-      const pin=input.value; if(!/^[0-9]{6}$/.test(pin))return;
+      const pin=input.value;
+      if(!validPin(pin)){$('zu-pin-error').textContent='Enter a 4–6 digit PIN.';return;}
       button.disabled=true;
       $('zu-pin-error').textContent='Checking PIN…';
       try{
-        const result=await db().rpc('zuzuos_verify_pin',{p_pin:pin});
+        const setup= $('zu-pin-screen').dataset.mode==='setup';
+        if (setup && pin!==$('zu-pin-setup-confirm').value) {
+          $('zu-pin-error').textContent='The PINs do not match.';
+          return;
+        }
+        const result=await db().rpc(setup?'zuzuos_set_pin':'zuzuos_verify_pin',{p_pin:pin});
         if(result.error)throw result.error;
-        if(!result.data){ $('zu-pin-error').textContent='Incorrect PIN or temporarily locked. Try again later.'; input.value=''; return; }
+        if(!setup && !result.data){ $('zu-pin-error').textContent='Incorrect PIN or temporarily locked. Try again later.'; input.value=''; return; }
         approved=unlockUser;
         $('zu-pin-screen').classList.add('hidden');
         if(unlockResolve)unlockResolve(true);
@@ -111,6 +182,16 @@
       }catch(e){ $('zu-pin-error').textContent=e.message || 'Could not check PIN. Try again.'; }
       finally{button.disabled=false; }
     });
+    const confirmation=document.createElement('label');
+    confirmation.id='zu-pin-setup-confirm-wrap';
+    confirmation.className='hidden';
+    confirmation.textContent='Confirm your PIN';
+    const input=document.createElement('input');
+    input.id='zu-pin-setup-confirm';input.type='password';input.inputMode='numeric';
+    input.autocomplete='off';input.pattern='[0-9]{4,6}';input.minLength=4;input.maxLength=6;
+    input.placeholder='Re-enter your PIN';
+    confirmation.append(input);
+    $('zu-pin-form').querySelector('button')?.before(confirmation);
     $('zu-lock-signout').addEventListener('click',async()=>{
       if(unlockResolve)unlockResolve(false);
       unlockResolve=null;unlockPromise=null;approved=null;unlockUser=null;
@@ -127,6 +208,11 @@
     $('zu-lock-time').textContent=new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(new Date());
     $('zu-pin-error').textContent='';
     $('zu-pin-input').value='';
+    $('zu-pin-screen').dataset.mode='verify';
+    $('zu-pin-screen').querySelector('.zu-lock-subtitle').textContent='Enter your 4–6 digit ZuzuOS PIN to unlock this desktop.';
+    $('zu-pin-setup-confirm-wrap')?.classList.add('hidden');
+    $('zu-pin-setup-confirm').required=false;
+    $('zu-pin-form').querySelector('button').textContent='Unlock desktop →';
     $('zu-pin-screen').classList.remove('hidden');
     setTimeout(()=>$('zu-pin-input')?.focus(),75);
   }
@@ -139,7 +225,27 @@
       try {
         const {data,error}=await db().rpc('zuzuos_has_pin');
         if(error) throw error;
-        if(!data){approved=user.id;unlockPromise=null;return true;}
+        if(!data){
+          if(user.user_metadata?.zuzuos_pin_required === true){
+            const requested=(()=>{
+              try{return readSignupPin();}catch{return null;}
+            })();
+            if(requested?.mode==='pin' && validPin(requested.pin)){
+              const saved=await db().rpc('zuzuos_set_pin',{p_pin:requested.pin});
+              if(!saved.error){approved=user.id;unlockPromise=null;return true;}
+            }
+            paintLock(user);
+            $('zu-pin-screen').dataset.mode='setup';
+            $('zu-pin-screen').querySelector('.zu-lock-subtitle').textContent='Finish setting up the PIN you chose during signup. Your password has been verified.';
+            $('zu-pin-setup-confirm-wrap').classList.remove('hidden');
+            $('zu-pin-setup-confirm').required=true;
+            $('zu-pin-form').querySelector('button').textContent='Save PIN and open desktop →';
+            $('zu-pin-input').value='';
+            $('zu-pin-setup-confirm').value='';
+            return await new Promise(resolve=>{unlockResolve=resolve;});
+          }
+          approved=user.id;unlockPromise=null;return true;
+        }
         paintLock(user);
         return await new Promise(resolve=>{unlockResolve=resolve;});
       }catch(e){
@@ -180,12 +286,12 @@
       [['windows','Windows'],['macos','macOS']],json(MENU_KEY,'windows'),v=>{store(MENU_KEY,v);applyLayout();}));
     target.closest('.setting-section')?.after(area);
     const security=document.createElement('section');security.className='setting-section';security.id='zu-pin-setup';
-    security.innerHTML='<h3>Windows-style PIN</h3><p class="muted">Add a six-digit PIN to unlock the ZuzuOS screen after password sign-in. Your account password remains required for full sign-in.</p><form id="zu-pin-setup-form" class="app-form"><label>New six-digit PIN<input id="zu-pin-new" type="password" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" required autocomplete="new-password"></label><label>Confirm PIN<input id="zu-pin-confirm" type="password" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" required autocomplete="new-password"></label><button class="primary" type="submit">Save account PIN</button><p id="zu-pin-save-status" role="status" class="muted"></p></form>';
+    security.innerHTML='<h3>Windows-style PIN</h3><p class="muted">Add a 4–6 digit PIN to unlock ZuzuOS after entering your account password. Your account password remains required for full sign-in.</p><form id="zu-pin-setup-form" class="app-form"><label>New 4–6 digit PIN<input id="zu-pin-new" type="password" inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" required autocomplete="new-password"></label><label>Confirm PIN<input id="zu-pin-confirm" type="password" inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" required autocomplete="new-password"></label><button class="primary" type="submit">Save account PIN</button><p id="zu-pin-save-status" role="status" class="muted"></p></form>';
     area.after(security);
     $('zu-pin-setup-form').addEventListener('submit',async e=>{
       e.preventDefault();
       const pin=$('zu-pin-new').value, confirm=$('zu-pin-confirm').value, button=$('zu-pin-setup-form').querySelector('button');
-      if(!/^[0-9]{6}$/.test(pin)||pin!==confirm){$('zu-pin-save-status').textContent='PINs must match and contain exactly six digits.';return;}
+      if(!validPin(pin)||pin!==confirm){$('zu-pin-save-status').textContent='PINs must match and contain 4 to 6 digits.';return;}
       button.disabled=true;
       const result=await db().rpc('zuzuos_set_pin',{p_pin:pin});
       $('zu-pin-save-status').textContent=result.error?result.error.message:'PIN saved. You will be prompted to unlock next time.';
@@ -319,7 +425,7 @@
     }
   }
   function boot() {
-    initAccounts();lockUI();applyLayout();setupStudio();
+    initAccounts();initSignupPin();lockUI();applyLayout();setupStudio();
     const settingsObserver=new MutationObserver(()=>{if($('shell-layout-choice')&&!$('zu-pin-setup'))mountSettings();});
     if($('app-window'))settingsObserver.observe($('app-window'),{subtree:true,childList:true});
     const dbClient=db();
@@ -336,6 +442,6 @@
       if(e.key==='Escape')$('zu-app-studio')?.classList.add('hidden');
     });
   }
-  window.ZuzuGate={beforeDesktop};
+  window.ZuzuGate={beforeDesktop,readSignupPin};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
