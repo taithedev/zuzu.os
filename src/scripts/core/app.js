@@ -71,7 +71,7 @@
     try {
       const { error } = await db.auth.updateUser({ password });
       if (error) throw error;
-      $('recovery-password-form').reset();
+      $('reset-password-form').reset();
       $('recovery-message').textContent = 'Password updated. You are now signed in.';
       history.replaceState({}, document.title, location.pathname);
       state.user = (await db.auth.getUser()).data.user || state.user;
