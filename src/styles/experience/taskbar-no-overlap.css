@@ -1,0 +1,102 @@
+/* Prevent taskbar content collision across desktop widths and app modules. */
+#desktop.zu-scene .taskbar{
+  box-sizing:border-box!important;
+  width:min(var(--zu-dock-natural,580px),calc(100vw - 212px))!important;
+  min-width:0!important;
+  max-width:calc(100vw - 212px)!important;
+  display:flex!important;
+  justify-content:flex-start!important;
+  align-items:center!important;
+  gap:6px!important;
+  padding:5px 9px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-x:contain!important;
+  scroll-snap-type:x proximity;
+  scrollbar-width:none!important;
+  scroll-behavior:smooth;
+}
+#desktop.zu-scene .taskbar::-webkit-scrollbar{display:none!important}
+#desktop.zu-scene .taskbar>button.task-app,
+#desktop.zu-scene .taskbar>button#os-start-button{
+  box-sizing:border-box!important;
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 42px!important;
+  width:42px!important;
+  min-width:42px!important;
+  max-width:42px!important;
+  height:41px!important;
+  min-height:41px!important;
+  max-height:41px!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:1!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  scroll-snap-align:center;
+  isolation:isolate;
+  transform:none!important;
+}
+#desktop.zu-scene .taskbar>button.task-app[hidden]{display:none!important}
+#desktop.zu-scene .taskbar>button.task-app:hover,
+#desktop.zu-scene .taskbar>button#os-start-button:hover{
+  transform:none!important;
+  background:rgba(255,255,255,.16)!important;
+}
+#desktop.zu-scene .taskbar>button.task-app svg,
+#desktop.zu-scene .taskbar>button#os-start-button svg,
+#desktop.zu-scene .taskbar>button.task-app .zu-custom-app-icon,
+#desktop.zu-scene .taskbar>button#os-start-button .zu-custom-app-icon{
+  display:block!important;
+  position:static!important;
+  flex:0 0 auto!important;
+  width:25px!important;
+  height:25px!important;
+  max-width:25px!important;
+  max-height:25px!important;
+  margin:auto!important;
+  padding:0!important;
+  object-fit:contain!important;
+  transform:none!important;
+}
+#desktop.zu-scene .taskbar>.taskbar-separator{
+  flex:0 0 1px!important;
+  min-width:1px!important;
+  width:1px!important;
+  height:25px!important;
+  margin:0 5px!important;
+  padding:0!important;
+  background:#ffffff3c!important;
+  border:0!important;
+}
+#desktop.zu-scene .taskbar>button.task-app:focus-visible,
+#desktop.zu-scene .taskbar>button#os-start-button:focus-visible{
+  outline:2px solid #a9d5ff!important;
+  outline-offset:-3px!important;
+}
+@media(max-width:900px){
+  #desktop.zu-scene .taskbar{
+    width:min(var(--zu-dock-natural,580px),calc(100vw - 26px))!important;
+    max-width:calc(100vw - 26px)!important;
+  }
+}
+@media(max-width:520px){
+  #desktop.zu-scene .taskbar{gap:4px!important;padding:4px 7px!important}
+  #desktop.zu-scene .taskbar>button.task-app,
+  #desktop.zu-scene .taskbar>button#os-start-button{
+    flex:0 0 39px!important;
+    width:39px!important;
+    min-width:39px!important;
+    max-width:39px!important;
+    height:39px!important;
+    min-height:39px!important;
+    max-height:39px!important;
+  }
+  #desktop.zu-scene .taskbar>button.task-app svg,
+  #desktop.zu-scene .taskbar>button#os-start-button svg{width:23px!important;height:23px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #desktop.zu-scene .taskbar{scroll-behavior:auto!important}
+}
