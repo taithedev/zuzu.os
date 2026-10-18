@@ -36,6 +36,7 @@
     // Do not carry a password across different local account tiles.
     if (changed && $('password')) $('password').value = '';
     $('zu-email-field')?.classList.add('hidden');
+    $('auth-form')?.classList.remove('hidden');
     $('zu-account-tiles')?.querySelectorAll('button[data-email]').forEach(b=>b.classList.toggle('selected',b.dataset.email===email));
     $('password')?.focus();
   }
@@ -44,6 +45,7 @@
     $('email').value = '';
     if ($('password')) $('password').value = '';
     $('zu-email-field')?.classList.remove('hidden');
+    $('auth-form')?.classList.remove('hidden');
     $('zu-account-tiles')?.querySelectorAll('button.selected').forEach(b=>b.classList.remove('selected'));
     $('email')?.focus();
   }
@@ -55,6 +57,7 @@
     picker.classList.toggle('hidden',signingUp || list.length===0);
     if (signingUp || list.length===0) {
       $('zu-email-field')?.classList.remove('hidden');
+      $('auth-form')?.classList.remove('hidden');
       return;
     }
     tiles.replaceChildren();
@@ -78,6 +81,7 @@
       $('email').value='';
       if($('password'))$('password').value='';
       $('zu-email-field')?.classList.add('hidden');
+      $('auth-form')?.classList.add('hidden');
     }
   }
   function initAccounts() {
@@ -106,7 +110,11 @@
     const email=$('email');
     const row=email?.closest('label');
     if(row)row.id='zu-email-field';
-    $('switch-mode')?.addEventListener('click',()=>setTimeout(renderAccounts,0));
+    $('switch-mode')?.addEventListener('click',()=>setTimeout(()=>{
+      selectedEmail='';
+      if($('password'))$('password').value='';
+      renderAccounts();
+    },0));
     const title=$('auth-title');
     if(title)new MutationObserver(renderAccounts).observe(title,{childList:true});
     renderAccounts();
