@@ -247,3 +247,72 @@ html:not([data-zu-wallpaper="motion-signal"]) #desktop.zu-scene .zu-reference-mo
  #desktop.zu-scene #os-start-menu:not(.hidden){animation:none!important}
  #desktop.zu-scene .taskbar button,#desktop.zu-scene .zu-panel{transition:none!important}
 }
+
+
+/* Account chooser requires an explicit selection before password entry. */
+#auth-screen #auth-form.hidden{display:none!important}
+#auth-screen .zu-account-search{
+  box-sizing:border-box;width:100%;height:42px;margin:3px 0 12px;
+  padding:0 12px;border:1px solid #ffffff41;border-radius:8px;
+  background:rgba(16,24,39,.82);color:#f5f8ff;
+  font-size:13px;outline:none;
+}
+#auth-screen .zu-account-search:focus{border-color:#a5d2ff;box-shadow:0 0 0 2px #579af345}
+#auth-screen .zu-account-search::placeholder{color:#acb9ce}
+#auth-screen .zu-account-picker{
+  width:min(430px,100%);max-height:min(420px,56dvh);
+  padding:10px!important;
+  margin:8px 0;
+  border:1px solid #ffffff27;border-radius:15px;
+  background:rgba(11,18,29,.56);backdrop-filter:blur(12px);
+  overflow-y:auto;
+}
+#auth-screen .zu-signup-pin-choice{
+  display:grid;gap:10px;min-width:0;padding:16px 14px;
+  border:1px solid rgba(163,203,253,.24);
+  border-radius:12px;background:#14233b72;
+  margin:4px 0;
+}
+#auth-screen .zu-signup-pin-choice.hidden,#auth-screen .zu-signup-pin-fields.hidden{
+  display:none!important;
+}
+#auth-screen .zu-signup-pin-choice legend{
+  padding:0 7px;color:#ecf4ff;font-size:13px;font-weight:650;
+}
+#auth-screen .zu-signup-pin-choice p{
+  font-size:11px;color:#acbad0;line-height:1.5;margin:0;
+}
+#auth-screen .zu-pin-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#auth-screen .zu-pin-options label{
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  gap:8px;min-height:42px;padding:5px;
+  border:1px solid #ffffff30;border-radius:8px;
+  background:#0d1726be;color:#edf4ff;font-size:11px;font-weight:600;
+}
+#auth-screen .zu-pin-options label:has(input:checked){
+  border-color:#8dc6ff;background:#234466aa;
+}
+#auth-screen .zu-pin-options input{accent-color:#9acbff;width:15px;height:15px;flex:none}
+#auth-screen .zu-signup-pin-fields{display:grid;gap:9px;min-width:0}
+#auth-screen .zu-signup-pin-fields .field{display:grid;gap:5px;text-align:left}
+#auth-screen .zu-signup-pin-fields input{
+  height:43px!important;background:#111725!important;
+  border:1px solid #ffffff40!important;
+  border-radius:8px!important;
+}
+#auth-screen .zu-pin-disclaimer{font-size:10px!important;line-height:1.5!important}
+.zu-pin-screen[data-mode="setup"] .zu-lock-subtitle{max-width:350px}
+.zu-pin-screen #zu-pin-setup-confirm-wrap.hidden{display:none!important}
+.zu-pin-screen #zu-pin-setup-confirm-wrap{
+  display:grid;gap:7px;font-size:11px;color:#bfcde0;
+}
+.zu-pin-screen #zu-pin-setup-confirm{
+  width:100%;height:48px;color:white;
+  text-align:center;font-size:20px;letter-spacing:.14em;
+  border-radius:6px;background:#1d293dbb;border:1px solid #ffffff5c;
+}
+@media(max-width:520px){
+  #auth-screen .zu-account-picker{max-height:43dvh}
+  #auth-screen .zu-pin-options{grid-template-columns:1fr}
+  #auth-screen .zu-signup-pin-choice{padding:12px 10px}
+}
