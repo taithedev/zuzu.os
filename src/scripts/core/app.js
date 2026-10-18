@@ -5,7 +5,7 @@
   const SUPABASE_KEY = 'sb_publishable_LsAzcgmeAp3fBCtdU6eQzw_u5PPJjar';
   const hasConfig = Boolean(window.supabase && SUPABASE_URL.startsWith('https://') && SUPABASE_KEY.startsWith('sb_publishable_'));
   const db = hasConfig ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    auth: { persistSession: false, autoRefreshToken: true, detectSessionInUrl: true }
   }) : null;
   // The public browser client contains only the publishable key; database RLS enforces all privileged actions.
   window.zuzuOSAuth = { client: db };
@@ -183,7 +183,15 @@
     try {
       if (state.mode === 'signup') {
         const displayName = $('display-name').value.trim();
-        const { data, error } = await db.auth.signUp({ email, password, options: { data: { display_name: displayName } } });
+        // Persist the PIN choice, never the actual PIN. Supabase confirmation emails may
+        // delay PIN creation until the user's first successful password sign-in.
+        const pinChoice=window.ZuzuGate?.readSignupPin?.()||{mode:'none'};
+        const { data, error } = await db.auth.signUp({
+          email,password,options:{data:{
+            display_name:displayName,
+            zuzuos_pin_required:pinChoice.mode==='pin'
+          }}
+        });
         if (error) throw error;
         if (data.session) {
           state.user = data.user;
@@ -191,7 +199,9 @@
           showDesktop();
           toast('Your account is ready.');
         } else {
-          message('Account created. Check your email to confirm your address, then sign in.');
+          message(pinChoice.mode==='pin'
+            ? 'Check your email to confirm your address, then sign in. You will be asked to enter your PIN again to finish setup.'
+            : 'Check your email to confirm your address, then sign in with your password.');
           setMode('signin');
           $('email').value = email;
         }
@@ -470,7 +480,9 @@
       button.disabled = true;
       button.textContent = 'Deleting account…';
       try {
-        const { data: { session } } = await db.auth.getSession();
+        // Non-persistent sessions require an account and password after each new visit.
+    // An email recovery callback is the only exception before password reset.
+    const { data: { session } } = await db.auth.getSession();
         if (!session?.access_token) throw new Error('Your session expired. Sign in again and retry.');
         const response = await fetch(SUPABASE_URL + '/functions/v1/delete-account', {
           method: 'POST',
@@ -975,10 +987,16 @@
       if (sessionNow?.user) {
         state.user = sessionNow.user;
         setTimeout(async () => {
-          await fetchProfile();
-          const recoveryLink = new URLSearchParams(location.hash.replace(/^#/, '')).get('type') === 'recovery' || new URLSearchParams(location.search).has('code');
-          if (event === 'PASSWORD_RECOVERY' || recoveryLink) showPasswordRecovery();
-          else showDesktop();
+          try {
+            await fetchProfile();
+            const recoveryLink = new URLSearchParams(location.hash.replace(/^#/, '')).get('type') === 'recovery' || new URLSearchParams(location.search).has('code');
+            if (event === 'PASSWORD_RECOVERY' || recoveryLink) showPasswordRecovery();
+            else await showDesktop();
+          } catch (error) {
+            console.warn('ZuzuOS authentication screen:',error?.message||error);
+            message('Could not finish signing in. Please try again.',true);
+            showAuth();
+          }
         }, 0);
       } else if (state.user) {
         state.user = null;
