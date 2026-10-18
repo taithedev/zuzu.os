@@ -54,7 +54,7 @@
     if(!dock)return;
     dock.setAttribute('aria-label','ZuzuOS application taskbar');
     const observer=new MutationObserver(queue);
-    observer.observe(dock,{childList:true,subtree:false});
+    observer.observe(dock,{childList:true,subtree:true});
     dock.addEventListener('focusin',event=>{
       if (event.target.matches('button') && dock.contains(event.target))event.target.scrollIntoView({block:'nearest',inline:'nearest'});
     });
