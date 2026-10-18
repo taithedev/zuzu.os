@@ -11,6 +11,9 @@
   window.zuzuOSAuth = { client: db };
   const $ = (id) => document.getElementById(id);
   const state = { user: null, profile: null, mode: 'signin', activeApp: null, noteTimer: null };
+  let credentialFormPending=false;
+  let passwordEnteredThisVisit=false;
+  const isRecoveryLink=()=>new URLSearchParams(location.hash.replace(/^#/, '')).get('type')==='recovery' || new URLSearchParams(location.search).get('type')==='recovery';
 
   const local = {
     get(key, fallback = null) {
@@ -180,6 +183,7 @@
     submit.disabled = true;
     submit.textContent = state.mode === 'signup' ? 'Creating account…' : 'Signing in…';
     message('');
+    credentialFormPending=true;
     try {
       if (state.mode === 'signup') {
         const displayName = $('display-name').value.trim();
@@ -194,6 +198,7 @@
         });
         if (error) throw error;
         if (data.session) {
+          passwordEnteredThisVisit=true;
           state.user = data.user;
           await fetchProfile();
           showDesktop();
@@ -208,13 +213,16 @@
       } else {
         const { data, error } = await db.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        passwordEnteredThisVisit=true;
         state.user = data.user;
         await fetchProfile();
-        showDesktop();
+        await showDesktop();
       }
     } catch (error) {
+      passwordEnteredThisVisit=false;
       message(error.message || 'Could not complete authentication. Try again.', true);
     } finally {
+      credentialFormPending=false;
       submit.disabled = false;
       submit.textContent = state.mode === 'signup' ? 'Create account' : 'Sign in';
     }
@@ -233,6 +241,8 @@
     }
     state.user = null;
     state.profile = null;
+    passwordEnteredThisVisit=false;
+    credentialFormPending=false;
     $('account-menu').classList.add('hidden');
     showAuth();
     $('password').value = '';
@@ -973,34 +983,47 @@
       return;
     }
     const { data: { session } } = await db.auth.getSession();
-    if (session?.user) {
-      state.user = session.user;
-      await fetchProfile();
-      const recoveryLink = new URLSearchParams(location.hash.replace(/^#/, '')).get('type') === 'recovery'
-        || new URLSearchParams(location.search).has('code');
-      if (recoveryLink) showPasswordRecovery();
-      else showDesktop();
+    if(session?.user && isRecoveryLink()) {
+      state.user=session.user;
+      showPasswordRecovery();
     } else {
+      if(session?.user){
+        // A previous session or an email-confirmation link is not a password login.
+        await db.auth.signOut({scope:'local'});
+      }
       showAuth();
     }
-    db.auth.onAuthStateChange((event, sessionNow) => {
-      if (sessionNow?.user) {
-        state.user = sessionNow.user;
-        setTimeout(async () => {
-          try {
+    db.auth.onAuthStateChange((event,sessionNow)=>{
+      if(event==='PASSWORD_RECOVERY' && sessionNow?.user){
+        state.user=sessionNow.user;
+        showPasswordRecovery();
+        return;
+      }
+      if(sessionNow?.user){
+        if(!credentialFormPending && !passwordEnteredThisVisit){
+          // Require the account password even after confirming an email link.
+          setTimeout(()=>{void db.auth.signOut({scope:'local'});},0);
+          state.user=null;
+          state.profile=null;
+          showAuth();
+          return;
+        }
+        state.user=sessionNow.user;
+        setTimeout(async()=>{
+          if(!passwordEnteredThisVisit && !credentialFormPending)return;
+          try{
             await fetchProfile();
-            const recoveryLink = new URLSearchParams(location.hash.replace(/^#/, '')).get('type') === 'recovery' || new URLSearchParams(location.search).has('code');
-            if (event === 'PASSWORD_RECOVERY' || recoveryLink) showPasswordRecovery();
-            else await showDesktop();
-          } catch (error) {
-            console.warn('ZuzuOS authentication screen:',error?.message||error);
-            message('Could not finish signing in. Please try again.',true);
-            showAuth();
+            if(!passwordEnteredThisVisit && !credentialFormPending)return;
+            await showDesktop();
+          }catch(error){
+            console.warn('ZuzuOS authentication:',error?.message||error);
           }
-        }, 0);
-      } else if (state.user) {
-        state.user = null;
-        state.profile = null;
+        },0);
+      } else if(state.user && event==='SIGNED_OUT'){
+        state.user=null;
+        state.profile=null;
+        passwordEnteredThisVisit=false;
+        credentialFormPending=false;
         showAuth();
       }
     });
