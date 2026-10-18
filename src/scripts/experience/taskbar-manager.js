@@ -15,12 +15,12 @@
          button.id==='zuzu-chat-task'?'system:chat':
          button.id==='os-task-view'?'system:taskview':
          button.dataset.zuzuGameDock?'system:arcade':'');
+      if (button.hidden) continue;
       if (identity && seen.has(identity)) {
         button.hidden=true;
         continue;
       }
       if (identity) seen.add(identity);
-      if (button.hidden) continue;
       const graphics=Array.from(button.querySelectorAll('svg, img.zu-custom-app-icon'));
       if(graphics.length>1) {
         const winner=graphics.find(icon=>icon.matches('img.zu-custom-app-icon')) ||
@@ -56,7 +56,7 @@
     const observer=new MutationObserver(queue);
     observer.observe(dock,{childList:true,subtree:false});
     dock.addEventListener('focusin',event=>{
-      if (event.target.matches(':scope > button'))event.target.scrollIntoView({block:'nearest',inline:'nearest'});
+      if (event.target.matches('button') && dock.contains(event.target))event.target.scrollIntoView({block:'nearest',inline:'nearest'});
     });
     window.addEventListener('resize',queue,{passive:true});
     queue();
