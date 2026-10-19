@@ -1,5 +1,17 @@
 {
   "version": 1,
-  "windows": {},
-  "apps": {}
+  "windows": {
+    "start": "/assets/icons/windows%20icon/start.svg"
+  },
+  "apps": {
+    "files": "/assets/icons/apps/files.svg",
+    "settings": "/assets/icons/apps/settings.svg",
+    "browser": "/assets/icons/apps/browser.svg",
+    "store": "/assets/icons/apps/store.svg",
+    "terminal": "/assets/icons/apps/terminal.svg",
+    "music": "/assets/icons/apps/music.svg",
+    "chat": "/assets/icons/apps/chat.svg",
+    "games": "/assets/icons/apps/games.svg",
+    "trash": "/assets/icons/apps/trash.svg"
+  }
 }

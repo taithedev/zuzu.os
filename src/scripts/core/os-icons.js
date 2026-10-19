@@ -29,8 +29,9 @@
   arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',
   default:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 12h8M8 15h5"/>'
  };
- const appIcon={notes:'notes',files:'files',settings:'settings',browser:'globe',cinehub:'cinehub',music:'music',paint:'paint',terminal:'terminal',ciri:'ciri',store:'store',editor:'editor',calc:'calculator',system:'monitor',studio:'image'};
- function svg(name){return '<svg class="zuzu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+(icons[name]||icons.default)+'</svg>'}
+ const appIcon={chat:'chat',games:'games',trash:'trash',notes:'notes',files:'files',settings:'settings',browser:'browser',cinehub:'cinehub',music:'music',paint:'paint',terminal:'terminal',ciri:'ciri',store:'store',editor:'editor',calc:'calculator',system:'monitor',studio:'image'};
+ const customIconPaths={"files":"/assets/icons/apps/files.svg","settings":"/assets/icons/apps/settings.svg","browser":"/assets/icons/apps/browser.svg","store":"/assets/icons/apps/store.svg","terminal":"/assets/icons/apps/terminal.svg","music":"/assets/icons/apps/music.svg","chat":"/assets/icons/apps/chat.svg","games":"/assets/icons/apps/games.svg","trash":"/assets/icons/apps/trash.svg"};
+ function svg(name){if(customIconPaths[name])return '<img class="zuzu-icon zuzu-icon-image" src="'+customIconPaths[name]+'" alt="" aria-hidden="true" draggable="false">';return '<svg class="zuzu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+(icons[name]||icons.default)+'</svg>'}
  function replace(node,name){if(!node||node.dataset.iconReady==='1')return;node.dataset.iconReady='1';node.innerHTML=svg(name);if(!node.hasAttribute('aria-label')&&node.closest('button')?.title)node.setAttribute('aria-label',node.closest('button').title)}
  function scan(root=document){
   root.querySelectorAll('.app-icon').forEach(n=>replace(n,appIcon[n.closest('[data-app]')?.dataset.app]||'default'));
