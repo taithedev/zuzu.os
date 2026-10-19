@@ -34,7 +34,7 @@ function restoreDesktopWallpaper(){
 
 function init(){
  const desktop=document.getElementById('desktop'),bar=desktop?.querySelector('.taskbar');if(!desktop||!bar||document.getElementById('os-start-button'))return;
- const start=el('button','os-start-button','<span class="os-start-mark">z.</span><span class="os-start-label">Start</span>');start.id='os-start-button';bar.insertBefore(start,bar.firstChild);
+ const start=el('button','os-start-button','<img class="zuzu-start-icon" src="/assets/icons/windows%20icon/start.svg" alt=""><span class="os-start-label">Start</span>');start.id='os-start-button';bar.insertBefore(start,bar.firstChild);
  const menu=el('section','os-start-menu hidden','<div class="os-start-head"><div><span class="os-start-mark">z.</span><div><strong>ZuzuOS</strong><small>Arctic workspace</small></div></div><button id="os-start-close" aria-label="Close Start">×</button></div><label class="os-search"><span>⌕</span><input id="os-search-input" placeholder="Search apps…" autocomplete="off"></label><div class="os-start-section"><strong>All apps</strong><span>YOUR WORKSPACE</span></div><div class="os-launch-grid" id="os-launch-grid"></div><div class="os-start-bottom"><span><i></i> Browser session active</span><button id="os-signout">⏻ Sign out</button></div>');
  menu.id='os-start-menu';desktop.appendChild(menu);
  menu.querySelector('#os-launch-grid').innerHTML=apps.map(a=>'<button class="os-launch-item" data-os-launch="'+a[0]+'"><span>'+a[2]+'</span><span><strong>'+esc(a[1])+'</strong><small>'+esc(a[3])+'</small></span></button>').join('');
